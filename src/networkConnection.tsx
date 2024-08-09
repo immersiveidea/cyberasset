@@ -1,5 +1,6 @@
 import {Badge, Box, Button, Group, NumberInput, Select} from "@mantine/core";
 import {IconArrowLeftFromArc, IconArrowRightToArc, IconTrash} from "@tabler/icons-react";
+import DeleteButton from "./deleteButton.tsx";
 const protocols = ['HTTP', 'HTTPS', 'TCP', 'UDP', 'MQTT', 'AMQP', 'CoAP', 'Websockets']
 export default function NetworkConnection(data) {
     const componentId = data.componentId;
@@ -25,25 +26,19 @@ export default function NetworkConnection(data) {
         doc.destination = value;
         doc.components = [{id: doc.source}, {id: doc.destination}];
         await db.put(doc);
-
-
     }
     const selectConnection = (connection, direction) => {
         if (direction==='source' && connection.source === componentId) {
-            return (
-                <></>
-            )
+            return rowIcon(connection)
         }
         if (direction==='destination' && connection.destination === componentId) {
-            return (
-                <></>
-            )
+            return rowIcon(connection)
         }
 
         return( <Select
             label={direction==='source' ? 'From' : 'To'}
             size="xs"
-            key={'source-' + connection._id}
+            key={'external-' + connection._id}
             onChange={(source) => {
                 if (direction==='source') {
                     updateSource(connection._id, source)
@@ -59,17 +54,16 @@ export default function NetworkConnection(data) {
     }
     const rowIcon = (connection) => {
         if (connection.source != componentId) {
-            return <Box w={120} pt={28}>
+            return <Box key={'icon-' + connection._id} w={120} pt={30}>
                 <Badge leftSection={<IconArrowRightToArc/>}>Inbound</Badge>
             </Box>
         } else {
-            return <Box w={120} pt={20}>
+            return <Box key={'icon-'+connection._id} w={120} pt={20}>
                 <Badge rightSection={<IconArrowLeftFromArc/>}>Outbound</Badge>
             </Box>
         }
     }
     return (<Group key={'group-' + connection._id}>
-        {rowIcon(connection)}
         {selectConnection(connection, 'source')}
         {selectConnection(connection, 'destination')}
 
@@ -86,15 +80,9 @@ export default function NetworkConnection(data) {
             key={'port-' + connection._id}
             placeholder="Port"
         />
-        <Box pt={24}>
+        <Box key={'addmore-' + connection._id} pt={24}>
             <Button size="xs" onClick={(evt)=>{ addMoreOptions(connection._id)}}>More Options</Button>
         </Box>
-        <Box pt={24}>
-            <Button leftSection={<IconTrash/>} size="xs" color="red" key={'delete-' + connection._id}
-                    onClick={(e) => {
-                        removeConnection(connection._id);
-                    }}>Delete</Button>
-        </Box>
-
+        <DeleteButton id={connection._id} onClick={removeConnection}/>
     </Group>)
 }

@@ -2,6 +2,7 @@ import {Box, Button, Card, Group, Select, TextInput} from '@mantine/core';
 import {useDoc, usePouch} from "use-pouchdb";
 import {Platform} from "./platform.tsx";
 import {IconTrash} from "@tabler/icons-react";
+import DeleteButton from "./deleteButton.tsx";
 
 
 export function SystemComponent(data) {
@@ -79,11 +80,7 @@ export function SystemComponent(data) {
                                 doc.component_type = e;
                                 updateDoc(doc);
                             }}/>
-                    <Box pt={24}>
-                        <Button leftSection={<IconTrash/>} key='delete-component' color="red" size="compact-md" onClick={(e) => {
-                            deleteDoc(selectedComponent)
-                        }}>Delete</Button>
-                    </Box>
+                    <DeleteButton onClick={deleteDoc} id={selectedComponent}/>
                 </Group>
                 {Platform(doc)}
             </Card>

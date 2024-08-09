@@ -1,8 +1,8 @@
-import {Connections} from "./connections.tsx";
+import {NetworkConnections} from "./networkConnections.tsx";
 import {Card, Group, Select, Stack, TextInput} from "@mantine/core";
 const images = ['ubuntu', 'redhat', 'windows', 'alpine', 'debian']
 export function Platform(data) {
-    const connections = <Connections data={data}/>
+    const connections = <NetworkConnections data={data}/>
     switch(data.component_type) {
         case 'Function App':
             return <Stack>
