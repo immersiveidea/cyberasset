@@ -1,16 +1,11 @@
 import "@mantine/core/styles.css";
 import {AppShell, Button, MantineProvider} from "@mantine/core";
 import {theme} from "./theme";
-import {useState} from "react";
-import MainView, {States} from "./mainView.tsx";
-import {SystemComponentList} from "./systemComponentList.tsx";
-import {ConnectionList} from "./connectionList.tsx";
 import {Link} from "react-router-dom";
+import AdminActions from "./adminActions.tsx";
 
 
-export default function App() {
-    const [state, setState] = useState(States.main);
-    const [selectedComponent, setSelectedComponent] = useState( '');
+export default function AdminApp() {
 
     return <MantineProvider theme={theme}>
         <AppShell
@@ -24,11 +19,9 @@ export default function App() {
                 <Button><Link to="/admin">Admin</Link></Button>
             </AppShell.Header>
             <AppShell.Navbar>
-                <SystemComponentList selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}/>
-                <ConnectionList/>
+                <AdminActions/>
             </AppShell.Navbar>
             <AppShell.Main>
-                <MainView state={state} selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}/>
 
             </AppShell.Main>
         </AppShell>
