@@ -1,4 +1,4 @@
-import {Box, Button, Stack} from "@mantine/core";
+import {Button, Stack} from "@mantine/core";
 import {useAllDocs} from "use-pouchdb";
 
 export function ConnectionList() {
@@ -24,7 +24,7 @@ export function ConnectionList() {
 
             return (
                 <Button size="xs" key={row._id}>
-                     {row.name || row._id}
+                    {row.name || row._id}
                 </Button>
             )
         })

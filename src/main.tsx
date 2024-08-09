@@ -3,12 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import {Provider} from "use-pouchdb";
 import {data} from "./data.ts";
-import {
-    createBrowserRouter,
-    RouterProvider,
-    Route,
-    Link,
-} from "react-router-dom";
+import {createBrowserRouter, RouterProvider,} from "react-router-dom";
 import AdminApp from "./adminApp.tsx";
 
 const [components, connections] = data();

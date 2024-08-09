@@ -1,15 +1,6 @@
-import {
-    Button,
-    Card,
-    Group,
-    Stack,
-    Title
-} from "@mantine/core";
+import {Button, Card, Group, Stack, Title} from "@mantine/core";
 import {useFind, usePouch} from "use-pouchdb";
-import {
-    IconArrowLeftFromArc,
-    IconArrowRightToArc
-} from "@tabler/icons-react";
+import {IconArrowLeftFromArc, IconArrowRightToArc} from "@tabler/icons-react";
 import NetworkConnection from "./networkConnection.tsx";
 
 const protocols = ['HTTP', 'HTTPS', 'TCP', 'UDP', 'MQTT', 'AMQP', 'CoAP', 'Websockets']
@@ -64,8 +55,9 @@ export function NetworkConnections(data) {
 
     const items = connections ? connections.map((conn, index) => {
         const connection = conn;
-        return (<NetworkConnection key={'connection-'+connection._id} db={db} connection={connection} components={components} componentId={componentId}/>)
-    }): [];
+        return (<NetworkConnection key={'connection-' + connection._id} db={db} connection={connection}
+                                   components={components} componentId={componentId}/>)
+    }) : [];
     return <Card withBorder radius="md" shadow="sm">
         <Stack>
             <Title order={4} key='connections'>{connections.length} Connections</Title>

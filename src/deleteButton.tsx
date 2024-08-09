@@ -5,7 +5,7 @@ export default function DeleteButton(data) {
     const onClick = data.onClick;
     const id = data.id;
 
-    return(<Box key={'delete-' + id} pt={24}>
+    return (<Box key={'delete-' + id} pt={24}>
         <Button leftSection={<IconTrash/>} size="xs" color="red"
                 onClick={(e) => {
                     onClick(id);

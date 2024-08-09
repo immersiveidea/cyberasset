@@ -10,7 +10,7 @@ import {Link} from "react-router-dom";
 
 export default function App() {
     const [state, setState] = useState(States.main);
-    const [selectedComponent, setSelectedComponent] = useState( '');
+    const [selectedComponent, setSelectedComponent] = useState('');
 
     return <MantineProvider theme={theme}>
         <AppShell
@@ -28,7 +28,8 @@ export default function App() {
                 <ConnectionList/>
             </AppShell.Navbar>
             <AppShell.Main>
-                <MainView state={state} selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}/>
+                <MainView state={state} selectedComponent={selectedComponent}
+                          setSelectedComponent={setSelectedComponent}/>
 
             </AppShell.Main>
         </AppShell>

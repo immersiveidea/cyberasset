@@ -16,5 +16,5 @@ export default function AdminActions() {
             <Button onClick={clearComponents} fullWidth>Clear Components</Button>
             <Button onClick={clearConnections} fullWidth>Clear Connections</Button>
         </Stack>
-    )
+    );
 }

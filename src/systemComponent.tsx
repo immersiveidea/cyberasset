@@ -1,7 +1,6 @@
-import {Box, Button, Card, Group, Select, TextInput} from '@mantine/core';
+import {Card, Group, Select, TextInput} from '@mantine/core';
 import {useDoc, usePouch} from "use-pouchdb";
 import {Platform} from "./platform.tsx";
-import {IconTrash} from "@tabler/icons-react";
 import DeleteButton from "./deleteButton.tsx";
 
 
