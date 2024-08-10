@@ -11,13 +11,6 @@ export function ConnectionList() {
     if (state === 'error' && error) {
         return <div>Error: {error.message}</div>
     }
-    const selectConnection = (event) => {
-
-    }
-    const data = [
-        {_id: '1', name: 'Connection 1'},
-        {_id: '2', name: 'Connection 2'},
-    ]
     const rowRender =
         rows.map((r, index) => {
             const row = r.doc;

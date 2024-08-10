@@ -12,7 +12,7 @@ export default function Header() {
                 <Title key="header">Cyber Sec SHIELD</Title>
                 <Group key="header-buttons" p={12} justify="flex-end">
                     <Button key="home" width={240} onClick={()=>{changeTab('/')}}>Home</Button>
-                    <Button key="demo" width={240} onClick={()=>{changeTab('/demo')}}>Demo</Button>
+                    <Button key="inventory" width={240} onClick={()=>{changeTab('/inventory')}}>Inventory</Button>
                     <Button key="admin" width={240} onClick={()=>{changeTab('/admin')}}>Admin</Button>
                 </Group>
             </Group>

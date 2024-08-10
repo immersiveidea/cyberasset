@@ -1,5 +1,6 @@
 import {NetworkConnections} from "./networkConnections/networkConnections.tsx";
 import {Card, Group, Select, Stack, TextInput} from "@mantine/core";
+import Diagram from "./diagram.tsx";
 
 const images = ['ubuntu', 'redhat', 'windows', 'alpine', 'debian']
 
@@ -17,6 +18,7 @@ export function Platform(data) {
                     </Group>
                 </Card>
                 {connections}
+                <Diagram data={data}/>
             </Stack>
         case 'Microservice API':
             return <Stack>
@@ -27,8 +29,11 @@ export function Platform(data) {
                     <Select data={images} label="Base Image"/>
                 </Group>
                 {connections}
+                <Diagram data={data}/>
             </Stack>
         default:
-            return <div>{connections}</div>
+            return <Stack>{connections}
+                <Diagram data={data}/>
+            </Stack>
     }
 }

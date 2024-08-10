@@ -54,15 +54,17 @@ export default function NetworkConnection(data) {
             placeholder="Select Existing Component"/>);
     }
     const rowIcon = (connection) => {
-        if (connection.source != componentId) {
-            return <Box key={'icon-' + connection._id} w={120} pt={30}>
+        if (connection.destination == componentId) {
+            return <Box key={'row-icon-' + connection._id} w={120} pt={30}>
                 <Badge leftSection={<IconArrowRightToArc/>}>Inbound</Badge>
             </Box>
-        } else {
-            return <Box key={'icon-' + connection._id} w={120} pt={20}>
+        }
+        if (connection.source ==componentId) {
+            return <Box key={'row-icon-' + connection._id} w={120} pt={20}>
                 <Badge rightSection={<IconArrowLeftFromArc/>}>Outbound</Badge>
             </Box>
         }
+        return <></>
     }
     return (<Group key={'group-' + connection._id}>
         {selectConnection(connection, 'source')}
@@ -86,6 +88,6 @@ export default function NetworkConnection(data) {
                 addMoreOptions(connection._id)
             }}>More Options</Button>
         </Box>
-        <DeleteButton id={connection._id} onClick={removeConnection}/>
+        <DeleteButton key={'delete-'+ connection._id} id={connection._id} onClick={removeConnection}/>
     </Group>)
 }

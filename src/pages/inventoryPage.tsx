@@ -23,7 +23,7 @@ export default function InventoryPage() {
             <AppShell.Navbar bg="rgba(30,30,20,.2)"  p={20}>
                 <SystemComponentList selectedComponent={selectedComponent}
                                      setSelectedComponent={setSelectedComponent}/>
-                <ConnectionList/>
+
             </AppShell.Navbar>
             <AppShell.Main bg="none">
                 <MainView bg="none" state={state} selectedComponent={selectedComponent}

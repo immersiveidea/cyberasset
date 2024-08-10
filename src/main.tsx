@@ -8,6 +8,7 @@ import {data} from "./data.ts";
 import {createBrowserRouter, RouterProvider,} from "react-router-dom";
 import AdminPage from "./pages/adminPage.tsx";
 import HomePage from "./pages/homePage.tsx";
+import Demopage from "./pages/demopage.tsx";
 
 
 
@@ -18,13 +19,15 @@ const router = createBrowserRouter([
         element: (<HomePage/>),
     },
     {
-        path: "/demo",
+        path: "/inventory",
         element: (<InventoryPage/>),
     },
     {
         path: "/admin",
         element: (<AdminPage/>),
-    }
+    },
+    {   path: "/demo",
+        element: <Demopage/>,}
 ]);
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>

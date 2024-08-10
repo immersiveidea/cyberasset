@@ -2,6 +2,7 @@ import {AppShell, MantineProvider} from "@mantine/core";
 import {theme} from "../theme.ts";
 import AdminActions from "../adminActions.tsx";
 import Header from "../header.tsx";
+import Diagram from "../diagram.tsx";
 
 
 export default function AdminPage() {
@@ -14,10 +15,10 @@ export default function AdminPage() {
             }} padding="md">
             <Header/>
             <AppShell.Navbar>
-                <AdminActions/>
+
             </AppShell.Navbar>
             <AppShell.Main>
-
+                <AdminActions/>
             </AppShell.Main>
         </AppShell>
     </MantineProvider>

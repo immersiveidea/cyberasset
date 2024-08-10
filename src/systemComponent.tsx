@@ -8,7 +8,7 @@ export function SystemComponent(data) {
     const db = usePouch('components');
     const selectedComponent = data.selectedComponent;
     const {doc, loading, state, error} = useDoc(selectedComponent || '');
-    const setSelectedComponent = data.setSelectedComponent;
+    console.log(data);
 
     const updateDoc = async (doc) => {
         await db.put(doc);
@@ -26,10 +26,10 @@ export function SystemComponent(data) {
     }
 
     const options = [
-        'Function InventoryPage',
+        'Function App',
         'Microservice API',
         'SaaS Platform',
-        'Web InventoryPage',
+        'Web App',
         'Hosted Platform',
         'Network Device',
         'Platform Process',
