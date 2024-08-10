@@ -26,10 +26,10 @@ export function SystemComponent(data) {
     }
 
     const options = [
-        'Function App',
+        'Function InventoryPage',
         'Microservice API',
         'SaaS Platform',
-        'Web App',
+        'Web InventoryPage',
         'Hosted Platform',
         'Network Device',
         'Platform Process',
@@ -52,7 +52,7 @@ export function SystemComponent(data) {
     if (!doc) {
         return <div>Empty</div>
     } else {
-        return (<Card>
+        return (<Card bg="rgba(0,0,0,.3)">
                 <Group>
                     <TextInput
                         withAsterisk

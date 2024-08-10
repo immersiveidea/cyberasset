@@ -53,7 +53,6 @@ export function SystemComponentList(data) {
         })
     return (
         <div>
-
             <Stack>
                 <Title order={3}>Components</Title>
                 <Button variant="dark" onClick={createComponent}>New Component</Button>
@@ -63,7 +62,6 @@ export function SystemComponentList(data) {
                     </Stack>
                 </ScrollArea>
             </Stack>
-
         </div>
     )
 }

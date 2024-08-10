@@ -58,7 +58,7 @@ export function NetworkConnections(data) {
         return (<NetworkConnection key={'connection-' + connection._id} db={db} connection={connection}
                                    components={components} componentId={componentId}/>)
     }) : [];
-    return <Card withBorder radius="md" shadow="sm">
+    return <Card withBorder radius="md" bg="rgba(1,1,1,.5)" p={40}  shadow="sm">
         <Stack>
             <Title order={4} key='connections'>{connections.length} Connections</Title>
             <Group key='buttons'>

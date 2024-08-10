@@ -1,6 +1,6 @@
 import {Badge, Box, Button, Group, NumberInput, Select} from "@mantine/core";
 import {IconArrowLeftFromArc, IconArrowRightToArc} from "@tabler/icons-react";
-import DeleteButton from "./deleteButton.tsx";
+import DeleteButton from "../deleteButton.tsx";
 
 const protocols = ['HTTP', 'HTTPS', 'TCP', 'UDP', 'MQTT', 'AMQP', 'CoAP', 'Websockets']
 export default function NetworkConnection(data) {

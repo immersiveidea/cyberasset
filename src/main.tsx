@@ -1,43 +1,41 @@
+import "@mantine/core/styles.css";
+import "./global.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
+import InventoryPage from "./pages/inventoryPage.tsx";
 import {Provider} from "use-pouchdb";
 import {data} from "./data.ts";
 import {createBrowserRouter, RouterProvider,} from "react-router-dom";
-import AdminApp from "./adminApp.tsx";
+import AdminPage from "./pages/adminPage.tsx";
+import HomePage from "./pages/homePage.tsx";
+
+
 
 const [components, connections] = data();
 const router = createBrowserRouter([
     {
         path: "/",
-        element: (
-            <Provider
-                default="components"
-                databases={{
-                    components: components,
-                    connections: connections
-
-                }}>
-                <App/>
-            </Provider>
-        ),
+        element: (<HomePage/>),
+    },
+    {
+        path: "/demo",
+        element: (<InventoryPage/>),
     },
     {
         path: "/admin",
-        element: (
-            <Provider
-                default="components"
-                databases={{
-                    components: components,
-                    connections: connections
-                }}>
-                <AdminApp/>
-            </Provider>
-        ),
+        element: (<AdminPage/>),
     }
 ]);
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <RouterProvider router={router}/>
+        <Provider
+            default="components"
+            databases={{
+                components: components,
+                connections: connections
+
+            }}>
+            <RouterProvider router={router}/>
+        </Provider>
     </React.StrictMode>
 );
