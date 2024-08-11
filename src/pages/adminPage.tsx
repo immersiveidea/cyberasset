@@ -14,9 +14,6 @@ export default function AdminPage() {
                 breakpoint: 'sm',
             }} padding="md">
             <Header/>
-            <AppShell.Navbar>
-
-            </AppShell.Navbar>
             <AppShell.Main>
                 <AdminActions/>
             </AppShell.Main>

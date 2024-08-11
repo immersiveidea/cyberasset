@@ -1,7 +1,7 @@
 import {Card, Group, Select, TextInput} from '@mantine/core';
 import {useDoc, usePouch} from "use-pouchdb";
 import {Platform} from "./platform.tsx";
-import DeleteButton from "./deleteButton.tsx";
+import DeleteButton from "./components/deleteButton.tsx";
 
 
 export function SystemComponent(data) {

@@ -1,4 +1,4 @@
-import {Button, Stack} from "@mantine/core";
+import {Button, SimpleGrid, Stack} from "@mantine/core";
 import {usePouch} from "use-pouchdb";
 
 export default function AdminActions() {
@@ -12,9 +12,9 @@ export default function AdminActions() {
         connectionDb.destroy();
     }
     return (
-        <Stack>
+        <SimpleGrid>
             <Button onClick={clearComponents} fullWidth>Clear Components</Button>
             <Button onClick={clearConnections} fullWidth>Clear Connections</Button>
-        </Stack>
+        </SimpleGrid>
     );
 }
