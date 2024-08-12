@@ -7,16 +7,14 @@ import createEngine, {
 } from '@projectstorm/react-diagrams';
 
 import {CanvasWidget} from '@projectstorm/react-canvas-core';
-import {Box, Card, Modal} from "@mantine/core";
+import {Box} from "@mantine/core";
 import {useAllDocs, useFind} from "use-pouchdb";
 
-export default function Diagram({data}) {
+export default function OverviewDiagram() {
     const {rows: components, state: componentsState} = useAllDocs({
         include_docs: true,
         db: 'components'
     })
-
-    const componentId = data._id;
 
     const CONNECTION_QUERY = {
         index: {
@@ -24,13 +22,6 @@ export default function Diagram({data}) {
         },
         selector: {
             type: 'connection',
-            components: {
-                $elemMatch: {
-                    id: {
-                        $eq: componentId
-                    }
-                }
-            }
         },
         db: 'connections'
     };
@@ -40,25 +31,11 @@ export default function Diagram({data}) {
     if (connectionsState !== 'done') return <Box>Loading Connections...</Box>;
 
     if (!components || components.length === 0) return <Box>Nothing Here</Box>
-    if (!data) return <Box>Nothing Here</Box>
+
     const engine = createEngine();
     const model = new DiagramModel();
     let i = 10;
-    const mainNode = new DefaultNodeModel({
-        id: data._id,
-        name: data.name,
-        color: 'rgb(0,192,255)'
-    });
-    mainNode.setPosition(i, 100);
-    mainNode.registerListener(
-        {
-            positionChanged: (event) => {
 
-
-            }
-        }
-    );
-    model.addNode(mainNode);
     const upsert = (id) => {
         const existing = model.getNodes().find((node) => node.getOptions().id === id);
         if (!existing) {
@@ -111,6 +88,6 @@ export default function Diagram({data}) {
         layoutEngine.redistribute(model);
         layoutEngine.refreshLinks(model);
 
-        return <Modal opened={false} onClose={()=> {console.log(closed)}}><CanvasWidget className="diagramcanvas" engine={engine}/></Modal>
+        return <CanvasWidget className="diagramcanvas" engine={engine}/>
     }
 }

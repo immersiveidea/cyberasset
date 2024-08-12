@@ -58,14 +58,14 @@ export function NetworkConnections(data) {
         return (<NetworkConnection key={'connection-' + connection._id} db={db} connection={connection}
                                    components={components} componentId={componentId}/>)
     }) : [];
-    return <Card withBorder radius="md" bg="rgba(1,1,1,.5)" p={40}  shadow="sm">
+    return <Card m={20} withBorder radius="md" bg="rgba(1,1,1,.5)" p={40}  shadow="sm">
         <Stack>
             <Title order={4} key='connections'>{connections.length} Connections</Title>
+            {items}
             <Group key='buttons'>
                 {button(<IconArrowRightToArc/>, addInboundConnection, 'New Inbound Connection', 'inbound')}
                 {button(<IconArrowLeftFromArc/>, addOutboundConnection, 'New Outbound Connection', 'outbound')}
             </Group>
-            {items}
         </Stack>
     </Card>
 }

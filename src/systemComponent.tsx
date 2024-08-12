@@ -52,9 +52,10 @@ export function SystemComponent(data) {
     if (!doc) {
         return <div>Empty</div>
     } else {
-        return (<Card bg="rgba(0,0,0,.3)">
+        return (<Card withBorder={true} m={10} bg="rgba(0,0,0,.3)">
                 <Group>
                     <TextInput
+                        id={selectedComponent + '-name'}
                         withAsterisk
                         label="Name"
                         value={doc.name || ''}
@@ -72,7 +73,7 @@ export function SystemComponent(data) {
                                    doc.network_location = e.currentTarget.value;
                                    updateDoc(doc);
                                }}/>
-                    <Select label="Type" placeholder="Select type"
+                    <Select searchable={true} label="Type" placeholder="Select type"
                             data={options}
                             value={doc.component_type || ''}
                             onChange={(e) => {

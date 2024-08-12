@@ -13,6 +13,7 @@ export default function Header() {
                 <Group key="header-buttons" p={12} justify="flex-end">
                     <Button key="home" width={240} onClick={()=>{changeTab('/')}}>Home</Button>
                     <Button key="inventory" width={240} onClick={()=>{changeTab('/inventory')}}>Inventory</Button>
+                    <Button key="diagram" width={240} onClick={()=>{window.open('/diagram', "_blank", "popup=true")}}>Diagram</Button>
                     <Button key="admin" width={240} onClick={()=>{changeTab('/admin')}}>Admin</Button>
                 </Group>
             </Group>

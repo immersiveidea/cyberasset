@@ -1,4 +1,4 @@
-import {Badge, Box, Button, Group, NumberInput, Select} from "@mantine/core";
+import {Badge, Box, Button, Checkbox, Group, NumberInput, Select} from "@mantine/core";
 import {IconArrowLeftFromArc, IconArrowRightToArc} from "@tabler/icons-react";
 import DeleteButton from "../components/deleteButton.tsx";
 
@@ -37,6 +37,7 @@ export default function NetworkConnection(data) {
         }
 
         return (<Select
+            searchable={true}
             label={direction === 'source' ? 'From' : 'To'}
             size="xs"
             key={'external-' + connection._id}
@@ -67,10 +68,12 @@ export default function NetworkConnection(data) {
         return <></>
     }
     return (<Group key={'group-' + connection._id}>
+        <DeleteButton key={'delete-'+ connection._id} id={connection._id} onClick={removeConnection}/>
         {selectConnection(connection, 'source')}
         {selectConnection(connection, 'destination')}
 
         <Select
+            searchable={true}
             size="xs"
             label="Protocol"
             data={protocols}
@@ -88,6 +91,5 @@ export default function NetworkConnection(data) {
                 addMoreOptions(connection._id)
             }}>More Options</Button>
         </Box>
-        <DeleteButton key={'delete-'+ connection._id} id={connection._id} onClick={removeConnection}/>
     </Group>)
 }
