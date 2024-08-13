@@ -53,6 +53,12 @@ export default function OverviewDiagram() {
             }
         }
     }
+    components.forEach((component) => {
+        if (component.doc.type == 'component') {
+            upsert(component.doc._id);
+        }
+
+    })
     if (connections && connections.length >0 ) {
         connections.forEach((connection) => {
             upsert(connection.source);
