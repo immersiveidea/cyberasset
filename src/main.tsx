@@ -2,7 +2,7 @@ import "@mantine/core/styles.css";
 import "./global.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import InventoryPage from "./pages/inventoryPage.tsx";
+import ComponentPage from "./pages/componentPage.tsx";
 import {Provider} from "use-pouchdb";
 import {data} from "./data.ts";
 import {createBrowserRouter, RouterProvider,} from "react-router-dom";
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/inventory",
-        element: (<InventoryPage/>),
+        element: (<ComponentPage/>),
     },
     {
         path: "/diagram",

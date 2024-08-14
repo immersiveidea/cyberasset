@@ -1,23 +1,24 @@
-import {AppShell, Button, Group, NavLink, Tabs, Title} from "@mantine/core";
-import {Link, useNavigate} from "react-router-dom";
+import {Button, Group} from "@mantine/core";
 
 export default function Header() {
-    const navigate = useNavigate();
-    const changeTab = (tab) => {
-        navigate(tab);
-    }
+    const topNavData = [
+        {url: '/try', name: 'Try It Out'},
+        {url: '/pricing', name: 'Pricing'},
+        {url: '/features', name: 'Features'},
+        {url: '/admin', name: 'Admin'},
+    ]
+    const topNaveItems = topNavData.map((item) => {
+        return <Button href={item.url} component="a" w={120}>{item.name}</Button>
+    });
     return (
-        <AppShell.Header bg="none">
-            <Group grow>
-                <Title key="header">Cyber Sec SHIELD</Title>
-                <Group key="header-buttons" p={12} justify="flex-end">
-                    <Button key="home" width={240} onClick={()=>{changeTab('/')}}>Home</Button>
-                    <Button key="inventory" width={240} onClick={()=>{changeTab('/inventory')}}>Inventory</Button>
-                    <Button key="diagram" width={240} onClick={()=>{window.open('/diagram', "_blank", "popup=true")}}>Diagram</Button>
-                    <Button key="admin" width={240} onClick={()=>{changeTab('/admin')}}>Admin</Button>
-                </Group>
+        <Group justify="center">
+            <Group justify="left" p={22}>
+                Cyber SHIELD
             </Group>
+            <Group justify="right" p={22}>
+                {topNaveItems}
+            </Group>
+        </Group>
 
-        </AppShell.Header>)
-
+    )
 }

@@ -1,20 +1,26 @@
-import {AppShell, Card, Center, Image, MantineProvider, Modal, Title} from "@mantine/core";
+import {AppShell, Card, Center, Image, MantineProvider, Modal, rgba, SimpleGrid, Title} from "@mantine/core";
 import {theme} from "../theme.ts";
-import Header from "../header.tsx";
+import Navigation from "../navigation.tsx";
 import {useDisclosure} from "@mantine/hooks";
+import {useNavigate} from "react-router-dom";
+import Header from "../header.tsx";
 //href="https://www.youtube.com/watch?v=-pVY2rJ0Bc4
 
 export default function HomePage() {
-    const [opened, {open, close}] = useDisclosure(false)
+    const [opened, {open, close}] = useDisclosure(false);
+    const navigate = useNavigate();
+    const changeTab = (tab) => {
+        navigate(tab);
+    }
 
     //image.src = '/youtube.webp';
     //image.alt = 'Cyber Security';
     return <MantineProvider defaultColorScheme="dark" theme={theme}>
         <AppShell
-            header={{height: 60}}
-            padding="md">
-
-            <Header/>
+            header={{height:80}}>
+            <AppShell.Header bg={rgba('#FFF',.1)}>
+                <Header/>
+            </AppShell.Header>
             <AppShell.Main>
                 <Modal size="auto" opened={opened} onClose={close}>
                     <Center>
@@ -24,9 +30,8 @@ export default function HomePage() {
                                 referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                     </Center>
                 </Modal>
-                <Center>
-
-                    <Card w={400} styles={{root:{ cursor: "pointer"}}} component="a" onClick={open}>
+                <SimpleGrid cols={{xs:1, sm: 2, lg: 3}} >
+                    <Card m="md" w={400} styles={{root:{ cursor: "pointer"}}} component="a" onClick={open}>
                         <Card.Section>
                             <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
 
@@ -38,7 +43,33 @@ export default function HomePage() {
                         </Card.Section>
 
                     </Card>
-                </Center>
+
+
+                    <Card m="md" w={400} styles={{root:{ cursor: "pointer"}}} component="a" onClick={() => {changeTab('/inventory')}}>
+                        <Card.Section>
+                            <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
+
+                        </Card.Section>
+                        <Card.Section>
+                            <Center>
+                                Solutions
+                            </Center>
+                        </Card.Section>
+
+                    </Card>
+                    <Card m="md" w={400} styles={{root:{ cursor: "pointer"}}} component="a" onClick={open}>
+                        <Card.Section>
+                            <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
+
+                        </Card.Section>
+                        <Card.Section>
+                            <Center>
+                                Templates
+                            </Center>
+                        </Card.Section>
+
+                    </Card>
+                </SimpleGrid>
             </AppShell.Main>
         </AppShell>
 

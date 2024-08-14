@@ -1,13 +1,14 @@
 import {useFind, usePouch} from "use-pouchdb";
-import {Button, Drawer, Group, Menu, NavLink, ScrollArea, Stack, TextInput} from "@mantine/core";
-import {useDisclosure} from "@mantine/hooks";
+import {Button, NavLink} from "@mantine/core";
 import {useState} from "react";
-import Divider = Menu.Divider;
+import {useNavigate} from "react-router-dom";
+import {IconStar, IconStarFilled} from "@tabler/icons-react";
 
 
-export function SystemComponentList(data) {
-    const selectedComponent = data.selectedComponent;
-    const setSelectedComponent = data.setSelectedComponent;
+export function SystemComponentList({selectedComponent, setSelectedComponent}) {
+    //const selectedComponent = data.selectedComponent;
+    //const setSelectedComponent = data.setSelectedComponent;
+    const navigate = useNavigate();
     const db = usePouch();
     const [componentValue, setComponentValue] = useState('');
     const {docs, state, loading, error} = useFind({
@@ -18,7 +19,7 @@ export function SystemComponentList(data) {
             type: 'component'
         }
     });
-    const [opened, {open, close}] = useDisclosure();
+
     const createComponent = () => {
         db.post({
             name: componentValue,
@@ -43,7 +44,7 @@ export function SystemComponentList(data) {
 
     const selectComponent = (event) => {
         setSelectedComponent(event.currentTarget.id);
-        close();
+        navigate('/inventory');
     }
 
     if (loading && docs && docs.length === 0) return <div>Loading...</div>
@@ -51,38 +52,23 @@ export function SystemComponentList(data) {
     if (state === 'error' && error) {
         return <div>Error: {error.message}</div>
     }
-    if (!docs) return createControl()
+
     const rowRender =
         docs.map((row, index) => {
             if (selectedComponent == row._id) {
-                return <NavLink disabled size="compact-md" id={row._id} key={row._id}
+                return <NavLink leftSection={<IconStarFilled color="#FF0"/>} size="compact-md" id={row._id} key={row._id}
                                 onClick={selectComponent} label={row.name || row._id}/>
             } else {
-                return <NavLink size="compact-md" id={row._id} key={row._id}
+                return <NavLink leftSection={<IconStar color="#00F"/>} size="compact-md" id={row._id} key={row._id}
                                 onClick={selectComponent} label={row.name || row._id}/>
             }
 
         })
-    const createControl = () => {
-        return (
-            <Stack>
 
-                <Group >
-                <TextInput onChange={(event) => {setComponentValue(event.currentTarget.value)}} value={componentValue} label="Component Name"/>
-                <Button mt={24} variant="dark" onClick={createComponent}>Add</Button>
-                    <Button justify="right" mt={24} onClick={open}>Components</Button>
-                </Group>
-
-                <Drawer opened={opened} onClose={close} padding="md" title="Components">
-                    <Menu>
-                        {rowRender}
-                    </Menu>
-                </Drawer>
-
-            </Stack>
-        )
-    }
-
-    return createControl()
+    return (<>
+            <Button onClick={() => {createComponent()}} fullWidth={true}>Create</Button>
+        {rowRender}
+        </>
+    )
 
 }

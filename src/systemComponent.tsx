@@ -2,22 +2,22 @@ import {Card, Group, Select, TextInput} from '@mantine/core';
 import {useDoc, usePouch} from "use-pouchdb";
 import {Platform} from "./platform.tsx";
 import DeleteButton from "./components/deleteButton.tsx";
+import {useDebouncedCallback, useThrottledCallback} from "@mantine/hooks";
+import {useState} from "react";
 
 
 export function SystemComponent(data) {
     const db = usePouch('components');
+
     const selectedComponent = data.selectedComponent;
     const {doc, loading, state, error} = useDoc(selectedComponent || '');
-    console.log(data);
 
-    const updateDoc = async (doc) => {
+    const updateDoc =async (doc) => {
         await db.put(doc);
-    }
+    };
     const deleteDoc = async (doc) => {
         try {
-            console.log(doc)
             const existing = await db.get(doc);
-            console.log(existing);
             await db.remove(existing);
         } catch (err) {
             console.log(err);
