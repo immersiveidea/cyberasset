@@ -1,8 +1,10 @@
 import WorkOS from '@workos-inc/node';
-const workos = new WorkOS(env.WORKOS_SECRET);
+
 const organization = 'org_01J58ZZ8RPA6AF3B6717PHSVA8';
-const clientId = env.WORKOS_CLIENTID;
-const auth = async (context) => {
+
+const auth = async (context, env) => {
+    const workos = new WorkOS(env.WORKOS_SECRET);
+    const clientId = env.WORKOS_CLIENTID;
       const url = workos.sso.getAuthorizationUrl({
           organization,
           provider: 'authkit',
