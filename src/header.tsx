@@ -6,6 +6,7 @@ export default function Header() {
         {url: '/pricing', name: 'Pricing'},
         {url: '/features', name: 'Features'},
         {url: '/admin', name: 'Admin'},
+        {url: '/', name: 'Home'}
     ]
     const topNaveItems = topNavData.map((item) => {
         return <Button href={item.url} component="a" w={120}>{item.name}</Button>

@@ -12,6 +12,7 @@ import Demopage from "./pages/demopage.tsx";
 import OverviewDiagram from "./overviewDiagram.tsx";
 import DiagramPage from "./pages/diagramPage.tsx";
 import SolutionPage from "./pages/solutionPage.tsx";
+import PricingPage from "./pages/pricingPage.tsx";
 
 
 const [components, connections] = data();
@@ -24,9 +25,14 @@ const router = createBrowserRouter([
         path: "/solution/:solutionId",
         element: (<SolutionPage/>),
     },
+    { path: "/solutions", element: (<SolutionPage/>) },
 
     {
         path: "/solution/:solutionId/component/:componentId",
+        element: (<ComponentPage/>),
+    },
+    {
+        path: "/solution/:solutionId/components",
         element: (<ComponentPage/>),
     },
     {
@@ -40,7 +46,9 @@ const router = createBrowserRouter([
     {
         path: "/demo",
         element: <Demopage/>,
-    }
+    },
+    {path: "/pricing",
+     element: <PricingPage/>}
 ]);
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>

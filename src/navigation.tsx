@@ -24,7 +24,7 @@ export default function Navigation({selectedComponent, setSelectedComponent, sel
             <NavLink label='Solutions'>
                 <SolutionList selectedSolution={selectedSolution} setSelectedSolution={setSelectedSolution}/>
             </NavLink>
-            <NavLink label='Components'>
+            <NavLink opened={selectedSolution && true} label='Components'>
                 <SystemComponentList selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}/>
             </NavLink>
             {links}

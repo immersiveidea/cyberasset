@@ -42,7 +42,7 @@ export function SolutionList({selectedSolution, setSelectedSolution}) {
     }
 
     const selectSolution = (event) => {
-        setSelectedSolution(event.currentTarget.id + '-solution');
+        setSelectedSolution(event.currentTarget.id);
         navigate('/solution/' + event.currentTarget.id )
     }
 
@@ -53,9 +53,9 @@ export function SolutionList({selectedSolution, setSelectedSolution}) {
     }
 
     const rowRender =
-        docs.map((row, index) => {
-            if (selectedSolution == row._id + '-solution') {
-                return <NavLink leftSection={<IconStarFilled color="#FF0"/>} size="compact-md" id={row._id+'-solution'} key={row._id+'-solution'}
+        docs.map((row) => {
+            if (selectedSolution == row._id) {
+                return <NavLink leftSection={<IconStarFilled color="#FF0"/>} size="compact-md" id={row._id} key={row._id}
                                 onClick={selectSolution} label={row.name || row._id}/>
             } else {
                 return <NavLink leftSection={<IconStar color="#00F"/>} size="compact-md" id={row._id} key={row._id}

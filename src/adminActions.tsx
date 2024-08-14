@@ -1,4 +1,4 @@
-import {Button, SimpleGrid, Stack} from "@mantine/core";
+import {Button, SimpleGrid} from "@mantine/core";
 import {usePouch} from "use-pouchdb";
 
 export default function AdminActions() {

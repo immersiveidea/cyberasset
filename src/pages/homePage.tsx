@@ -1,6 +1,5 @@
 import {AppShell, Card, Center, Image, MantineProvider, Modal, rgba, SimpleGrid, Title} from "@mantine/core";
 import {theme} from "../theme.ts";
-import Navigation from "../navigation.tsx";
 import {useDisclosure} from "@mantine/hooks";
 import {useNavigate} from "react-router-dom";
 import Header from "../header.tsx";
