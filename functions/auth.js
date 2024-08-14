@@ -8,6 +8,7 @@ const auth = async (context) => {
           redirectUri: 'https://www.cybersecshield.com/callback',
           clientId
       })
-      return Response.redirect(url, 301);
+      const response = new Response(null, {status: 301, headers: {Location: url}});
+      return response;
 }
 export const onRequest = [auth];
