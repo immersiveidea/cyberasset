@@ -1,13 +1,17 @@
-import {Badge, Box, Button, Checkbox, Group, NumberInput, Select} from "@mantine/core";
-import {IconArrowLeftFromArc, IconArrowRightToArc} from "@tabler/icons-react";
+import {Box, Button, NumberInput, Select, Table} from "@mantine/core";
+import {IconArrowLeftFromArc, IconArrowRightToArc, IconTrash} from "@tabler/icons-react";
 import DeleteButton from "../components/deleteButton.tsx";
 
-const protocols = ['HTTP', 'HTTPS', 'TCP', 'UDP', 'MQTT', 'AMQP', 'CoAP', 'Websockets']
-export default function NetworkConnection(data) {
-    const componentId = data.componentId;
-    const connection = data.connection;
-    const db = data.db;
-    const components = data.components;
+const protocols = [
+    {value: 'ftp', label: 'FTP', defaultPort: 21},
+    {value: 'ssh', label: 'SSH', defaultPort: 44},
+    {value: 'http', label: 'HTTP', defaultPort: 80},
+    {value: 'https', label: 'HTTPS', defaultPort: 443},
+    {value: 'tcp', label: 'TCP', defaultPort: null},
+    {value: 'udp', label: 'UDP', defaultPort: null},
+]
+export default function NetworkConnection({componentId, connection, db, components}) {
+
     const addMoreOptions = (id) => {
         console.log(id);
     }
@@ -29,17 +33,18 @@ export default function NetworkConnection(data) {
         await db.put(doc);
     }
     const selectConnection = (connection, direction) => {
+        const highlight = !(connection.source && connection.destination);
         if (direction === 'source' && connection.source === componentId) {
-            return rowIcon(connection)
+            return <>This Component</>
         }
         if (direction === 'destination' && connection.destination === componentId) {
-            return rowIcon(connection)
+            return <>This Component</>
         }
 
         return (<Select
             searchable={true}
-            label={direction === 'source' ? 'From' : 'To'}
             size="xs"
+            error={highlight}
             key={'external-' + connection._id}
             onChange={(source) => {
                 if (direction === 'source') {
@@ -56,40 +61,58 @@ export default function NetworkConnection(data) {
     }
     const rowIcon = (connection) => {
         if (connection.destination == componentId) {
-            return <Box key={'row-icon-' + connection._id} w={120} pt={30}>
-                <Badge leftSection={<IconArrowRightToArc/>}>Inbound</Badge>
+            return <Box key={'row-icon-' + connection._id}>
+                <IconArrowRightToArc/>
             </Box>
         }
-        if (connection.source ==componentId) {
-            return <Box key={'row-icon-' + connection._id} w={120} pt={20}>
-                <Badge rightSection={<IconArrowLeftFromArc/>}>Outbound</Badge>
+        if (connection.source == componentId) {
+            return <Box key={'row-icon-' + connection._id}>
+                <IconArrowLeftFromArc/>
             </Box>
         }
         return <></>
     }
-    return (<Group key={'group-' + connection._id}>
-        <DeleteButton key={'delete-'+ connection._id} id={connection._id} onClick={removeConnection}/>
-        {selectConnection(connection, 'source')}
-        {selectConnection(connection, 'destination')}
+    return (<Table.Tr key={'group-' + connection._id}>
+        <Table.Td>{rowIcon(connection)}
+            </Table.Td>
+            <Table.Td>{selectConnection(connection, 'source')}
+            </Table.Td>
+            <Table.Td>{selectConnection(connection, 'destination')}
+            </Table.Td>
 
-        <Select
-            searchable={true}
-            size="xs"
-            label="Protocol"
-            data={protocols}
-            key={'protocol-' + connection._id}
-            placeholder="Select protocol"/>
+            <Table.Td><Select
+                searchable={true}
+                size="xs"
+                data={protocols.map((protocol) => { return {value: protocol.value, label: protocol.label}})}
+                key={'protocol-' + connection._id}
+                onChange={(protocol) => {
+                  if (protocols.find((p) => p.value === protocol).defaultPort) {
+                    document.getElementById('port-' + connection._id).value = protocols.find((p) => p.value === protocol).defaultPort
+                  } else {
+                      document.getElementById('port-' + connection._id).value = '';
+                  }
+                }}
+                placeholder="Select protocol"/>
+            </Table.Td>
+            <Table.Td>
+                <NumberInput
+                    size="xs"
+                    key={'port-' + connection._id}
+                    id={'port-' + connection._id}
+                    placeholder="Custom Port"
+                /></Table.Td>
+            <Table.Td>
+                <Button size="xs" onClick={(evt) => {
+                    addMoreOptions(connection._id)
+                }}>More Options</Button>
+            </Table.Td>
+            <Table.Td>
+                <Button color="#f00" size="xs" key={'delete-' + connection._id} id={connection._id}
+                              onClick={(e) => {removeConnection(connection._id)}}>
+                    <IconTrash/>
+                </Button>
+            </Table.Td>
 
-        <NumberInput
-            size="xs"
-            label="Port"
-            key={'port-' + connection._id}
-            placeholder="Port"
-        />
-        <Box key={'addmore-' + connection._id} pt={24}>
-            <Button size="xs" onClick={(evt) => {
-                addMoreOptions(connection._id)
-            }}>More Options</Button>
-        </Box>
-    </Group>)
+
+    </Table.Tr>)
 }

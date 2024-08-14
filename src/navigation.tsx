@@ -1,8 +1,9 @@
 import {AppShell, NavLink} from "@mantine/core";
 import {useNavigate} from "react-router-dom";
 import {SystemComponentList} from "./systemComponentList.tsx";
+import {SolutionList} from "./solutionList.tsx";
 
-export default function Navigation({selectedComponent, setSelectedComponent}) {
+export default function Navigation({selectedComponent, setSelectedComponent, selectedSolution, setSelectedSolution}) {
     const navigate = useNavigate();
     const changeTab = (tab) => {
         navigate(tab);
@@ -21,7 +22,7 @@ export default function Navigation({selectedComponent, setSelectedComponent}) {
     return (
         <AppShell.Navbar>
             <NavLink label='Solutions'>
-                <SystemComponentList selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}/>
+                <SolutionList selectedSolution={selectedSolution} setSelectedSolution={setSelectedSolution}/>
             </NavLink>
             <NavLink label='Components'>
                 <SystemComponentList selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}/>

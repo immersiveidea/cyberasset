@@ -1,4 +1,4 @@
-import {Button, Card, Group, Stack, Title} from "@mantine/core";
+import {Button, Card, Group, Stack, Table, Title} from "@mantine/core";
 import {useFind, usePouch} from "use-pouchdb";
 import {IconArrowLeftFromArc, IconArrowRightToArc} from "@tabler/icons-react";
 import NetworkConnection from "./networkConnection.tsx";
@@ -59,14 +59,24 @@ export function NetworkConnections(data) {
                                    components={components} componentId={componentId}/>)
     }) : [];
     return <Card m={20} withBorder radius="md" bg="rgba(1,1,1,.5)" p={40}  shadow="sm">
-        <Stack>
-            <Title order={4} key='connections'>{connections.length} Connections</Title>
+        <Title order={4} key='connections'>{connections.length} Connections</Title>
+        <Table>
+            <Table.Thead>
+                <Table.Tr>
+                    <Table.Th>Direction</Table.Th>
+                    <Table.Th>Source</Table.Th>
+                    <Table.Th>Destination</Table.Th>
+                    <Table.Th>Protocol</Table.Th>
+                    <Table.Th>Port</Table.Th>
+                    <Table.Th>Actions</Table.Th>
+                </Table.Tr>
+            </Table.Thead>
             {items}
-            <Group key='buttons'>
-                {button(<IconArrowRightToArc/>, addInboundConnection, 'New Inbound Connection', 'inbound')}
-                {button(<IconArrowLeftFromArc/>, addOutboundConnection, 'New Outbound Connection', 'outbound')}
-            </Group>
-        </Stack>
+        </Table>
+        <Group key='buttons'>
+            {button(<IconArrowRightToArc/>, addInboundConnection, 'New Inbound Connection', 'inbound')}
+            {button(<IconArrowLeftFromArc/>, addOutboundConnection, 'New Outbound Connection', 'outbound')}
+        </Group>
     </Card>
 }
 

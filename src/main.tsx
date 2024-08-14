@@ -11,6 +11,7 @@ import HomePage from "./pages/homePage.tsx";
 import Demopage from "./pages/demopage.tsx";
 import OverviewDiagram from "./overviewDiagram.tsx";
 import DiagramPage from "./pages/diagramPage.tsx";
+import SolutionPage from "./pages/solutionPage.tsx";
 
 
 const [components, connections] = data();
@@ -20,11 +21,16 @@ const router = createBrowserRouter([
         element: (<HomePage/>),
     },
     {
-        path: "/inventory",
+        path: "/solution/:solutionId",
+        element: (<SolutionPage/>),
+    },
+
+    {
+        path: "/solution/:solutionId/component/:componentId",
         element: (<ComponentPage/>),
     },
     {
-        path: "/diagram",
+        path: "/solution/:solutionId/diagram",
         element: (<DiagramPage/>)
     },
     {

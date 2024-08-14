@@ -1,31 +1,31 @@
 import {useFind, usePouch} from "use-pouchdb";
 import {Button, NavLink} from "@mantine/core";
 import {useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {IconStar, IconStarFilled} from "@tabler/icons-react";
 
 
-export function SystemComponentList({selectedComponent, setSelectedComponent}) {
-    const params = useParams();
+export function SolutionList({selectedSolution, setSelectedSolution}) {
     const navigate = useNavigate();
+
     const db = usePouch();
-    const [componentValue, setComponentValue] = useState('');
+    const [solutionValue, setSolutionValue] = useState('');
     const {docs, state, loading, error} = useFind({
         index: {
             fields: ['type', 'name']
         },
         selector: {
-            type: 'component'
+            type: 'solution'
         }
     });
 
-    const createComponent = () => {
+    const createSolution = () => {
         db.post({
-            name: componentValue,
-            type: 'component'
+            name: solutionValue,
+            type: 'solution'
         }).then((response) => {
-            setSelectedComponent(response.id);
-            setComponentValue('');
+            setSelectedSolution(response.id);
+            setSolutionValue('');
             const el = document.getElementById(response.id + '-name');
             if (el) {
                 el.focus();
@@ -41,9 +41,9 @@ export function SystemComponentList({selectedComponent, setSelectedComponent}) {
         });
     }
 
-    const selectComponent = (event) => {
-        setSelectedComponent(event.currentTarget.id);
-        navigate('/solution/' + params.solutionId + '/component/' + event.currentTarget.id );
+    const selectSolution = (event) => {
+        setSelectedSolution(event.currentTarget.id + '-solution');
+        navigate('/solution/' + event.currentTarget.id )
     }
 
     if (loading && docs && docs.length === 0) return <div>Loading...</div>
@@ -54,19 +54,19 @@ export function SystemComponentList({selectedComponent, setSelectedComponent}) {
 
     const rowRender =
         docs.map((row, index) => {
-            if (selectedComponent == row._id) {
-                return <NavLink leftSection={<IconStarFilled color="#FF0"/>} size="compact-md" id={row._id} key={row._id}
-                                onClick={selectComponent} label={row.name || row._id}/>
+            if (selectedSolution == row._id + '-solution') {
+                return <NavLink leftSection={<IconStarFilled color="#FF0"/>} size="compact-md" id={row._id+'-solution'} key={row._id+'-solution'}
+                                onClick={selectSolution} label={row.name || row._id}/>
             } else {
                 return <NavLink leftSection={<IconStar color="#00F"/>} size="compact-md" id={row._id} key={row._id}
-                                onClick={selectComponent} label={row.name || row._id}/>
+                                onClick={selectSolution} label={row.name || row._id}/>
             }
 
         })
 
     return (<>
-            <Button onClick={() => {createComponent()}} fullWidth={true}>Create</Button>
-        {rowRender}
+            <Button onClick={() => {createSolution()}} fullWidth={true}>Create</Button>
+            {rowRender}
         </>
     )
 

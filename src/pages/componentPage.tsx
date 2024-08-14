@@ -2,15 +2,17 @@ import "@mantine/core/styles.css";
 import {AppShell, MantineProvider, rgba} from "@mantine/core";
 import {theme} from "../theme.ts";
 import {useState} from "react";
-import MainView, {States} from "../mainView.tsx";
+import MainView from "../mainView.tsx";
 
 import Navigation from "../navigation.tsx";
 import Header from "../header.tsx";
+import {useParams} from "react-router-dom";
 
 
 export default function ComponentPage() {
-    const [state, setState] = useState(States.main);
-    const [selectedComponent, setSelectedComponent] = useState('');
+    const params = useParams();
+    const [selectedComponent, setSelectedComponent] = useState(params.componentId||'');
+    const [selectedSolution, setSelectedSolution] = useState(params.solutionId || '');
 
     return <MantineProvider defaultColorScheme="dark" theme={theme}>
         <AppShell
@@ -20,10 +22,11 @@ export default function ComponentPage() {
             <AppShell.Header bg={rgba('#FFF',.1)}>
                 <Header/>
             </AppShell.Header>
-            <Navigation selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}/>
+            <Navigation selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}
+                selectedSolution={selectedSolution} setSelectedSolution={setSelectedSolution}/>
             <AppShell.Main bg="none">
 
-                <MainView bg="none" state={state} selectedComponent={selectedComponent}
+                <MainView bg="none" selectedComponent={selectedComponent}
                           setSelectedComponent={setSelectedComponent}/>
 
             </AppShell.Main>
