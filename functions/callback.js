@@ -10,7 +10,9 @@ const auth = async (context) => {
         provider: 'authkit',
         redirectUri: 'https://www.cybersecshield.com/callback',
         clientId
-    })
+    });
+    console.log(url);
+    console.log(clientId);
     const response = new Response(null, {status: 301, headers: {Location: url}});
     return response;
 }
