@@ -9,7 +9,7 @@ import {createBrowserRouter, RouterProvider,} from "react-router-dom";
 import AdminPage from "./pages/adminPage.tsx";
 import HomePage from "./pages/homePage.tsx";
 import Demopage from "./pages/demopage.tsx";
-import OverviewDiagram from "./overviewDiagram.tsx";
+import {Auth0Provider}  from "@auth0/auth0-react";
 import DiagramPage from "./pages/diagramPage.tsx";
 import SolutionPage from "./pages/solutionPage.tsx";
 import PricingPage from "./pages/pricingPage.tsx";
@@ -59,7 +59,16 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 connections: connections
 
             }}>
-            <RouterProvider router={router}/>
+            <Auth0Provider
+                domain="dev-g0lt18ndbcp6earr.us.auth0.com"
+                clientId="sxAJub9Uo2mOE7iYCTOuQGhppGLEPWzb"
+                authorizationParams={{
+                    redirect_uri: window.location.origin
+                }}>
+                <RouterProvider router={router}/>
+            </Auth0Provider>
+
+
         </Provider>
     </React.StrictMode>
 );
