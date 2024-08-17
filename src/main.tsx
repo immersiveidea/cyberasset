@@ -1,8 +1,9 @@
 import "@mantine/core/styles.css";
 import "./global.css";
-import React from "react";
+import React, {lazy, Suspense} from "react";
+
 import ReactDOM from "react-dom/client";
-import ComponentPage from "./pages/componentPage.tsx";
+
 import {Provider} from "use-pouchdb";
 import {data} from "./data.ts";
 import {createBrowserRouter, RouterProvider,} from "react-router-dom";
@@ -10,11 +11,12 @@ import AdminPage from "./pages/adminPage.tsx";
 import HomePage from "./pages/homePage.tsx";
 import Demopage from "./pages/demopage.tsx";
 import {Auth0Provider}  from "@auth0/auth0-react";
-import DiagramPage from "./pages/diagramPage.tsx";
-import SolutionPage from "./pages/solutionPage.tsx";
+
 import PricingPage from "./pages/pricingPage.tsx";
 import FeaturesPage from "./pages/featuresPage.tsx";
-
+const SolutionPage = lazy(() => import('./pages/solutionPage.tsx'));
+const ComponentPage = lazy( () => import('./pages/componentPage.tsx'));
+const DiagramPage = lazy(() => import('./pages/diagramPage.tsx'));
 
 const [components, connections] = data();
 const router = createBrowserRouter([
@@ -24,13 +26,19 @@ const router = createBrowserRouter([
     },
     {
         path: "/solution/:solutionId",
-        element: (<SolutionPage/>),
+        element: (<Suspense fallback={<div>Loading</div>}>
+            <SolutionPage/>
+        </Suspense>),
     },
-    { path: "/solutions", element: (<SolutionPage/>) },
+    { path: "/solutions", element: (<Suspense fallback={<div>Loading</div>}>
+            <SolutionPage/>
+        </Suspense>) },
 
     {
         path: "/solution/:solutionId/component/:componentId",
-        element: (<ComponentPage/>),
+        element: (<Suspense fallback={<div>Loading</div>}>
+            <ComponentPage/>
+        </Suspense>),
     },
     {
         path: "/solution/:solutionId/components",
@@ -72,9 +80,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <RouterProvider router={router}>
                 </RouterProvider>
             </Auth0Provider>
-
-
-
         </Provider>
     </React.StrictMode>
 );
