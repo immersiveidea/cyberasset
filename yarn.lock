@@ -1212,6 +1212,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stripe/react-stripe-js@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "@stripe/react-stripe-js@npm:2.8.0"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    "@stripe/stripe-js": ^1.44.1 || ^2.0.0 || ^3.0.0 || ^4.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/101cedd521ec90fa446fa333f5464899036bd089d6e9798961f956c66975f066cd19625ce81b1c1becd9323b2a72addd1f4f63444404ebf6a6b12e27ba2bd91b
+  languageName: node
+  linkType: hard
+
+"@stripe/stripe-js@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "@stripe/stripe-js@npm:4.3.0"
+  checksum: 10c0/43ec28d0bf5d9fa68ba9394bb90ada96142594448115ae906b7dbb4a8bc47f629dac9fbf685ef0b592d303365344d23f97171fa808a4a98187e622d942e0984f
+  languageName: node
+  linkType: hard
+
 "@tabler/icons-react@npm:^3.11.0":
   version: 3.11.0
   resolution: "@tabler/icons-react@npm:3.11.0"
@@ -5526,6 +5546,8 @@ __metadata:
     "@mantine/form": "npm:7.12.0"
     "@mantine/hooks": "npm:7.12.0"
     "@projectstorm/react-diagrams": "npm:^7.0.3"
+    "@stripe/react-stripe-js": "npm:^2.8.0"
+    "@stripe/stripe-js": "npm:^4.3.0"
     "@tabler/icons-react": "npm:^3.11.0"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"

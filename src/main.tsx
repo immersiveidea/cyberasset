@@ -13,6 +13,7 @@ import {Auth0Provider}  from "@auth0/auth0-react";
 import DiagramPage from "./pages/diagramPage.tsx";
 import SolutionPage from "./pages/solutionPage.tsx";
 import PricingPage from "./pages/pricingPage.tsx";
+import FeaturesPage from "./pages/featuresPage.tsx";
 
 
 const [components, connections] = data();
@@ -47,6 +48,8 @@ const router = createBrowserRouter([
         path: "/demo",
         element: <Demopage/>,
     },
+    { path: "/features",
+    element: <FeaturesPage/>},
     {path: "/pricing",
      element: <PricingPage/>}
 ]);
@@ -59,14 +62,17 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 connections: connections
 
             }}>
+
             <Auth0Provider
                 domain="dev-g0lt18ndbcp6earr.us.auth0.com"
                 clientId="sxAJub9Uo2mOE7iYCTOuQGhppGLEPWzb"
                 authorizationParams={{
                     redirect_uri: window.location.origin
                 }}>
-                <RouterProvider router={router}/>
+                <RouterProvider router={router}>
+                </RouterProvider>
             </Auth0Provider>
+
 
 
         </Provider>
