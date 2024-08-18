@@ -18,7 +18,7 @@ const SolutionPage = lazy(() => import('./pages/solutionPage.tsx'));
 const ComponentPage = lazy( () => import('./pages/componentPage.tsx'));
 const DiagramPage = lazy(() => import('./pages/diagramPage.tsx'));
 
-const [components, connections] = data();
+const components = data();
 const router = createBrowserRouter([
     {
         path: "/",
@@ -66,9 +66,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <Provider
             default="components"
             databases={{
-                components: components,
-                connections: connections
-
+                components: components
             }}>
 
             <Auth0Provider

@@ -17,20 +17,20 @@ export default function SolutionPage() {
             return <h1>Choose a solution</h1>
         }
         return (<>
-            <h1>{selectedSolution}</h1>
+            <h1>{selectedSolution} a</h1>
         <Button component="a" href={selectedSolution + '/diagram'} onClick={(e) => {
             e.preventDefault();
-            window.open(selectedSolution + '/diagram', 'solution' + selectedSolution, 'width=800,height=600,popup=1');
+            window.open(selectedSolution + '/diagram', 'solution' + selectedSolution);
 
         }}>View Diagram</Button>
-        <TextInput label="Solution Name" value={selectedSolution} defaultValue='' onChange={(e) => {
+        <TextInput label="Solution Name" value={selectedSolution}  onChange={(e) => {
 
         }}/>
             </>
     )}
     return <MantineProvider defaultColorScheme="dark" theme={theme}>
     <AppShell
-            header={{height: 80}}
+            header={{height: 44}}
             navbar={{width: 190}}
             padding="md">
             <AppShell.Header bg={rgba('#FFF',.1)}>

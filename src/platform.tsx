@@ -4,36 +4,37 @@ import Diagram from "./diagram.tsx";
 
 const images = ['ubuntu', 'redhat', 'windows', 'alpine', 'debian']
 
-export function Platform(data) {
-    const connections = <NetworkConnections data={data}/>
-    switch (data.component_type) {
+export function Platform({component, connections}) {
+    const connectionElement = <NetworkConnections component={component} connections={connections}/>
+
+    switch (component.component_type) {
         case 'Function InventoryPage':
             return <Stack>
                 <Card withBorder radius="md" shadow="sm">
-                    <div>{data.name} (Function App)</div>
+                    <div>{component.name} (Function App)</div>
                     <Group>
                         <TextInput label="Language"/>
                         <TextInput label="Runtime"/>
                         <TextInput label="Version"/>
                     </Group>
                 </Card>
-                {connections}
-                <Diagram data={data}/>
+                {connectionElement}
+                <Diagram data={component}/>
             </Stack>
         case 'Microservice API':
             return <Stack>
-                <div>{data.name} (Microservice API)</div>
+                <div>{component.name} (Microservice API)</div>
                 <Group>
                     <TextInput label="Language"/>
                     <TextInput label="Runtime"/>
                     <Select data={images} label="Base Image"/>
                 </Group>
-                {connections}
-                <Diagram data={data}/>
+                {connectionElement}
+                <Diagram data={component}/>
             </Stack>
         default:
-            return <Stack>{connections}
-                <Diagram data={data}/>
+            return <Stack>{connectionElement}
+                <Diagram data={component}/>
             </Stack>
     }
 }

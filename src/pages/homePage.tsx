@@ -16,7 +16,7 @@ export default function HomePage() {
     //image.alt = 'Cyber Security';
     return <MantineProvider defaultColorScheme="dark" theme={theme}>
         <AppShell
-            header={{height:80}}>
+            header={{height:44}}>
             <AppShell.Header bg={rgba('#FFF',.1)}>
                 <Header/>
             </AppShell.Header>

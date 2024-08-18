@@ -15,31 +15,12 @@ const COMPONENT_QUERY = {
     fields: ['_id', 'name']
 };
 
-export function NetworkConnections(data) {
-    const db = usePouch('connections');
-    //const [components, setComponents] = useFind({selector: {type: 'component'}});
-
+export function NetworkConnections({component, connections}) {
+    const db = usePouch();
     const {docs: components} = useFind(COMPONENT_QUERY);
-    const componentId = data.data._id;
+    const componentId = component._id;
 
-    const CONNECTION_QUERY = {
-        index: {
-            fields: ['type', 'components']
-        },
-        selector: {
-            type: 'connection',
-            components: {
-                $elemMatch: {
-                    id: {
-                        $eq: componentId
-                    }
-                }
-            }
-        },
-        db: 'connections'
-    };
-
-    const {docs: connections} = useFind(CONNECTION_QUERY);
+    //const {docs: connections} = useFind(CONNECTION_QUERY);
 
     const addOutboundConnection = () => {
         db.post({name: 'New Connection', type: 'connection', source: componentId, components: [{id: componentId}]});
@@ -53,8 +34,9 @@ export function NetworkConnections(data) {
         });
     }
 
-    const items = connections ? connections.map((conn, index) => {
+    const items = connections && connections.length>0? connections.map((conn, index) => {
         const connection = conn;
+
         return (<NetworkConnection key={'connection-' + connection._id} db={db} connection={connection}
                                    components={components} componentId={componentId}/>)
     }) : [];
@@ -71,7 +53,9 @@ export function NetworkConnections(data) {
                     <Table.Th>Actions</Table.Th>
                 </Table.Tr>
             </Table.Thead>
-            {items}
+            <Table.Tbody>
+                {items}
+            </Table.Tbody>
         </Table>
         <Group key='buttons'>
             {button(<IconArrowRightToArc/>, addInboundConnection, 'New Inbound Connection', 'inbound')}

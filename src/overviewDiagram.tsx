@@ -11,10 +11,15 @@ import {Box} from "@mantine/core";
 import {useAllDocs, useFind} from "use-pouchdb";
 
 export default function OverviewDiagram() {
-    const {rows: components, state: componentsState} = useAllDocs({
-        include_docs: true,
-        db: 'components'
-    })
+    const COMPONENTS_QUERY = {
+        index: {
+            fields: ['type']
+        },
+        selector: {
+            type: 'component',
+        }
+    };
+    const {docs: components, state: componentsState} = useFind(COMPONENTS_QUERY);
 
     const CONNECTION_QUERY = {
         index: {
@@ -22,8 +27,7 @@ export default function OverviewDiagram() {
         },
         selector: {
             type: 'connection',
-        },
-        db: 'connections'
+        }
     };
 
     const {docs: connections, state: connectionsState} = useFind(CONNECTION_QUERY);
@@ -39,11 +43,11 @@ export default function OverviewDiagram() {
     const upsert = (id) => {
         const existing = model.getNodes().find((node) => node.getOptions().id === id);
         if (!existing) {
-            const other = components.find((component) => component.doc._id === id);
+            const other = components.find((component) => component._id === id);
             if (other) {
                 const node = new DefaultNodeModel({
-                    id: other.doc._id,
-                    name: other.doc.name,
+                    id: other._id,
+                    name: other.name,
                     color: 'rgb(0,192,255)',
                     width: 100,
                     height: 20
@@ -54,8 +58,8 @@ export default function OverviewDiagram() {
         }
     }
     components.forEach((component) => {
-        if (component.doc.type == 'component') {
-            upsert(component.doc._id);
+        if (component.type == 'component') {
+            upsert(component.id);
         }
 
     })

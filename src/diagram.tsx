@@ -10,10 +10,10 @@ import {CanvasWidget} from '@projectstorm/react-canvas-core';
 import {Box, Card, Modal} from "@mantine/core";
 import {useAllDocs, useFind} from "use-pouchdb";
 
+
 export default function Diagram({data}) {
     const {rows: components, state: componentsState} = useAllDocs({
         include_docs: true,
-        db: 'components'
     })
 
     const componentId = data._id;
@@ -31,8 +31,7 @@ export default function Diagram({data}) {
                     }
                 }
             }
-        },
-        db: 'connections'
+        }
     };
 
     const {docs: connections, state: connectionsState} = useFind(CONNECTION_QUERY);
@@ -88,7 +87,7 @@ export default function Diagram({data}) {
                 source.addPort(outPort);
                 destination.addPort(inPort);
                 const link = outPort.link(inPort);
-                console.log(link);
+
                 model.addLink(link);
             } else {
                 console.log('no existing node');

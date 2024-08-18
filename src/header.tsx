@@ -1,4 +1,4 @@
-import {Button, Group, Image} from "@mantine/core";
+import {Box, Button, Container, Flex, Grid, Group, Image} from "@mantine/core";
 import {useAuth0} from "@auth0/auth0-react";
 import {Link} from "react-router-dom";
 
@@ -7,28 +7,28 @@ export default function Header() {
 
     const topNavData = [
         {url: '/solutions', name: 'Solutions', auth: true},
+        {url: '/pricing', name: 'Pricing', auth: false},
+        {url: '/features', name: 'Features', auth: false},
+        {url: '/admin', name: 'Admin', auth: true},
+        {url: '/', name: 'Home', auth: false},
         {url: '/signup', name: 'Sign Up', auth: false},
-        {url: '/pricing', name: 'Pricing', auth: null},
-        {url: '/features', name: 'Features', auth: null},
-        {url: '/admin', name: 'Admin', auth: null},
-        {url: '/', name: 'Home', auth: null}
     ]
     const topNaveItems = topNavData.map((item) => {
         switch (item.auth as boolean | null) {
             case true:
                 if (isAuthenticated) {
-                    return <Link key={item.name} to={item.url} w={120}>{item.name}</Link>
+                    return <Link  component="button" key={item.name} to={item.url} w={120}>{item.name}</Link>
                 } else {
                     return <></>
                 }
             case false:
                 if (!isAuthenticated) {
-                    return <Link key={item.name} to={item.url} w={120}>{item.name}</Link>
+                    return <Link component="button"  key={item.name} to={item.url} w={120}>{item.name}</Link>
                 } else {
                     return <></>
                 }
             default:
-                return <Link key={item.name} to={item.url} w={120}>{item.name}</Link>
+                return <Link component="button" key={item.name} to={item.url} w={120}>{item.name}</Link>
         }
     });
     const picture = () => {
@@ -41,23 +41,28 @@ export default function Header() {
     const userDisplay = () => {
         if (isAuthenticated) {
             return <Group>
-                {user.name}
-                {picture()}
-                <Button onClick={() => logout({logoutParams: {returnTo: window.location.origin}})}>Logout</Button>
+                <Box visibleFrom="sm" component="span">{picture()}</Box>
+                <Button  onClick={() => logout({logoutParams: {returnTo: window.location.origin}})}>Logout</Button>
             </Group>
         } else {
             return <Button key="login" onClick={() => loginWithRedirect()}>Login</Button>
         }
     }
     return (
-        <Group bg="#000" justify="center">
-            <Group justify="left" p={22}>
-                Cyber SHIELD
-            </Group>
-            <Group justify="right" p={22}>
-                {topNaveItems}
-                {userDisplay()}
-            </Group>
-        </Group>
+        <>
+        <Grid  bg="#000">
+                <Grid.Col span={8}>
+                    <Group>
+                        SHIELD
+                        {topNaveItems}
+                    </Group>
+                </Grid.Col>
+                <Grid.Col span={4}>
+                    <Group justify="flex-end">
+                        {userDisplay()}
+                    </Group>
+                </Grid.Col>
+        </Grid>
+        </>
     )
 }

@@ -16,7 +16,7 @@ export default function ComponentPage() {
 
     return <MantineProvider defaultColorScheme="dark" theme={theme}>
         <AppShell
-            header={{height: 80}}
+            header={{height: 44}}
             navbar={{width: 190}}
             padding="md">
             <AppShell.Header bg={rgba('#FFF',.1)}>

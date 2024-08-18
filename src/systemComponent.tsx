@@ -1,16 +1,30 @@
 import {Card, Group, Select, TextInput} from '@mantine/core';
-import {useDoc, usePouch} from "use-pouchdb";
+import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {Platform} from "./platform.tsx";
 import DeleteButton from "./components/deleteButton.tsx";
-import {useDebouncedCallback, useThrottledCallback} from "@mantine/hooks";
-import {useState} from "react";
 
 
-export function SystemComponent(data) {
-    const db = usePouch('components');
 
-    const selectedComponent = data.selectedComponent;
-    const {doc, loading, state, error} = useDoc(selectedComponent || '');
+export function SystemComponent({selectedComponent}) {
+    const db = usePouch();
+    const {doc, loading, state, error} = useDoc(selectedComponent);
+    const CONNECTION_QUERY = {
+        index: {
+            fields: ['type', 'components']
+        },
+        selector: {
+            type: 'connection',
+            components: {
+                $elemMatch: {
+                    id: {
+                        $eq: selectedComponent
+                    }
+                }
+            }
+        }
+    };
+
+    const {docs: connections, state: connectionState} = useFind(CONNECTION_QUERY);
 
     const updateDoc =async (doc) => {
         await db.put(doc);
@@ -58,8 +72,8 @@ export function SystemComponent(data) {
                         id={selectedComponent + '-name'}
                         withAsterisk
                         label="Name"
-                        value={doc.name || ''}
-                        onChange={(e) => {
+                        defaultValue={doc.name || ''}
+                        onBlur={(e) => {
                             doc.name = e.currentTarget.value;
                             updateDoc(doc);
                         }}
@@ -67,22 +81,24 @@ export function SystemComponent(data) {
                         size='sm'/>
                     <TextInput label="Network Location"
                                placeholder="IP Address, hostname, container name"
-                               value={doc.network_location || ''}
+                               defaultValue={doc.network_location || ''}
                                size='sm'
-                               onChange={(e) => {
+                               onBlur={(e) => {
                                    doc.network_location = e.currentTarget.value;
                                    updateDoc(doc);
                                }}/>
                     <Select searchable={true} label="Type" placeholder="Select type"
                             data={options}
-                            value={doc.component_type || ''}
-                            onChange={(e) => {
-                                doc.component_type = e;
+                            defaultValue={doc.component_type || ''}
+                            onChange={(e, option) => {
+                                doc.component_type = option.value;
                                 updateDoc(doc);
                             }}/>
                     <DeleteButton onClick={deleteDoc} id={selectedComponent}/>
                 </Group>
-                {Platform(doc)}
+                <Platform component={doc} connections={connections}/>
+
+
             </Card>
         );
     }
