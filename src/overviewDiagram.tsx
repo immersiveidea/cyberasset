@@ -12,7 +12,7 @@ import {CanvasWidget} from '@projectstorm/react-canvas-core';
 import {Affix, Box, Button} from "@mantine/core";
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {useEffect, useState} from "react";
-
+type Rankable = { rank: number };
 
 export default function OverviewDiagram() {
     const [update, setUpdate] = useState(0);
@@ -97,7 +97,7 @@ export default function OverviewDiagram() {
 
     if (connections && connections.length > 0) {
         const conns = connections.toSorted((a, b) => {
-            return a.rank - b.rank
+            return ((a as unknown) as  Rankable).rank - ((b as unknown) as Rankable).rank;
         });
         conns.forEach((conn) => {
             const connection = (conn as unknown) as { source: string, destination: string, _id: string, rank: number };
@@ -127,12 +127,12 @@ export default function OverviewDiagram() {
             layoutEngine.redistribute(model);
 
             const obj = {}
-            const positions = model.getNodes().map((node) => {obj[node.getOptions().id] = {position: node.getPosition()}});
+            model.getNodes().forEach((node) => {obj[node.getOptions().id] = {position: node.getPosition()}});
             db.post({_id: 'layout', ...obj});
         }
         const saveLayout = () => {
             const obj = {}
-            const positions = model.getNodes().map((node) => {obj[node.getOptions().id] = {position: node.getPosition()}});
+            model.getNodes().forEach((node) => {obj[node.getOptions().id] = {position: node.getPosition()}});
             db.put({...layoutDoc, ...obj});
         }
         return (<>
