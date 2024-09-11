@@ -11,7 +11,7 @@ import createEngine, {
 import {CanvasWidget} from '@projectstorm/react-canvas-core';
 import {Affix, Box, Button} from "@mantine/core";
 import {useDoc, useFind, usePouch} from "use-pouchdb";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 type Rankable = { rank: number };
 
 export default function OverviewDiagram() {
