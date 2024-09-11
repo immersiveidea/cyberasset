@@ -1,16 +1,15 @@
 import {useFind, usePouch} from "use-pouchdb";
-import {Button, NavLink} from "@mantine/core";
+import {Button, Card, Group, SimpleGrid} from "@mantine/core";
+import SolutionsListTemplate from "./templates/SolutionsListTemplate.tsx";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {IconStar, IconStarFilled} from "@tabler/icons-react";
 
-
-export function SolutionList({selectedSolution, setSelectedSolution}) {
-    const navigate = useNavigate();
-
+export function SolutionList() {
     const db = usePouch();
-    const [solutionValue, setSolutionValue] = useState('');
-    const {docs, state, loading, error} = useFind({
+    const navigate = useNavigate();
+    const [solution, setSolution] = useState({id: '', name: '', description: ''});
+
+    const {docs: solutions, state, loading, error} = useFind({
         index: {
             fields: ['type', 'name']
         },
@@ -18,56 +17,52 @@ export function SolutionList({selectedSolution, setSelectedSolution}) {
             type: 'solution'
         }
     });
-
-    const createSolution = () => {
-        db.post({
-            name: solutionValue,
-            type: 'solution'
-        }).then((response) => {
-            setSelectedSolution(response.id);
-            setSolutionValue('');
-            const el = document.getElementById(response.id + '-name');
-            if (el) {
-                el.focus();
-            } else {
-                window.setTimeout(() => {
-                    const el2 = document.getElementById(response.id + '-name');
-                    if (el2) {
-                        el2.focus();
-                    }
-                }, 500);
-            }
-
-        });
+    const createSolution = async () => {
+        const newSolution = {
+            type: 'solution',
+            name: '',
+            description: ''
+        }
+        const response = await db.post(newSolution);
+        navigate(`/solution/${response.id}`);
     }
-
-    const selectSolution = (event) => {
-        setSelectedSolution(event.currentTarget.id);
-        navigate('/solution/' + event.currentTarget.id )
+    const solutionCard = (solution) => {
+        return (
+            <Card w={256} h={256} key={solution._id}>
+                <Card.Section key="header">
+                    {solution.name}
+                </Card.Section>
+                <Card.Section h={190} key="description">
+                    {solution.description}
+                </Card.Section>
+                <Card.Section key="actions">
+                    <Group justify="space-evenly">
+                        <Button key="use" onClick={
+                            () => {
+                                navigate(`/solution/${solution._id}`);
+                            }
+                        }>Select</Button>
+                        <Button key="delete">Delete</Button>
+                    </Group>
+                </Card.Section>
+            </Card>
+        )
     }
+    if (state === 'loading') {
+        return <div>Loading</div>
+    } else {
 
-    if (loading && docs && docs.length === 0) return <div>Loading...</div>
-
-    if (state === 'error' && error) {
-        return <div>Error: {error.message}</div>
+        return (<SolutionsListTemplate>
+                <Button onClick={createSolution}>Create New Solution</Button>
+                <SimpleGrid cols={3}>
+                    {solutions.map((solution) => {
+                        console.log(solution);
+                        return (
+                            solutionCard(solution)
+                        )
+                    })}
+                </SimpleGrid>
+            </SolutionsListTemplate>
+        )
     }
-
-    const rowRender =
-        docs.map((row) => {
-            if (selectedSolution == row._id) {
-                return <NavLink leftSection={<IconStarFilled color="#FF0"/>} size="compact-md" id={row._id} key={row._id}
-                                onClick={selectSolution} label={row.name || row._id}/>
-            } else {
-                return <NavLink leftSection={<IconStar color="#00F"/>} size="compact-md" id={row._id} key={row._id}
-                                onClick={selectSolution} label={row.name || row._id}/>
-            }
-
-        })
-
-    return (<>
-            <Button onClick={() => {createSolution()}} fullWidth={true}>Create</Button>
-            {rowRender}
-        </>
-    )
-
 }

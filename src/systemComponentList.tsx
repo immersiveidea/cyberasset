@@ -3,9 +3,12 @@ import {Button, NavLink} from "@mantine/core";
 import {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {IconStar, IconStarFilled} from "@tabler/icons-react";
+type NameId = {
+    _id: string;
+    name: string;
+}
 
-
-export function SystemComponentList({selectedComponent, setSelectedComponent}) {
+export function SystemComponentList() {
     const params = useParams();
     const navigate = useNavigate();
     const db = usePouch();
@@ -24,7 +27,6 @@ export function SystemComponentList({selectedComponent, setSelectedComponent}) {
             name: componentValue,
             type: 'component'
         }).then((response) => {
-            setSelectedComponent(response.id);
             setComponentValue('');
             const el = document.getElementById(response.id + '-name');
             if (el) {
@@ -42,7 +44,6 @@ export function SystemComponentList({selectedComponent, setSelectedComponent}) {
     }
 
     const selectComponent = (event) => {
-        setSelectedComponent(event.currentTarget.id);
         navigate('/solution/' + params.solutionId + '/component/' + event.currentTarget.id );
     }
 
@@ -51,15 +52,16 @@ export function SystemComponentList({selectedComponent, setSelectedComponent}) {
     if (state === 'error' && error) {
         return <div>Error: {error.message}</div>
     }
-
+    console.log(params.componentId);
     const rowRender =
-        docs.map((row, index) => {
-            if (selectedComponent == row._id) {
-                return <NavLink leftSection={<IconStarFilled color="#FF0"/>} size="compact-md" id={row._id} key={row._id}
-                                onClick={selectComponent} label={row.name || row._id}/>
+        docs.map((row) => {
+            const data = (row as unknown) as NameId;
+            if (params.componentId == data._id) {
+                return <NavLink leftSection={<IconStarFilled color="#FF0"/>} id={data._id} key={data._id}
+                                onClick={selectComponent} label={data.name || data._id}/>
             } else {
-                return <NavLink leftSection={<IconStar color="#00F"/>} size="compact-md" id={row._id} key={row._id}
-                                onClick={selectComponent} label={row.name || row._id}/>
+                return <NavLink leftSection={<IconStar color="#00F"/>} id={data._id} key={data._id}
+                                onClick={selectComponent} label={data.name || data._id}/>
             }
 
         })

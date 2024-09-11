@@ -1,7 +1,12 @@
-import {Box, Button, NumberInput, Select, Table} from "@mantine/core";
-import {IconArrowLeftFromArc, IconArrowRightToArc, IconTrash} from "@tabler/icons-react";
-import DeleteButton from "../components/deleteButton.tsx";
-
+import {ActionIcon, Box, Button, NumberInput, Select, Table} from "@mantine/core";
+import {
+    IconArrowDown,
+    IconArrowLeftFromArc,
+    IconArrowRightToArc,
+    IconArrowUp, IconBoxAlignBottomFilled, IconBoxAlignTopFilled,
+    IconCircle,
+    IconTrash
+} from "@tabler/icons-react";
 const protocols = [
     {value: 'ftp', label: 'FTP', defaultPort: 21},
     {value: 'ssh', label: 'SSH', defaultPort: 44},
@@ -10,29 +15,26 @@ const protocols = [
     {value: 'tcp', label: 'TCP', defaultPort: null},
     {value: 'udp', label: 'UDP', defaultPort: null},
 ]
-export default function NetworkConnection({componentId, connection, db, components}) {
-
+export default function NetworkConnection({componentId, connection, db, components, index, last}) {
+    console.log(connection);
     const addMoreOptions = (id) => {
         console.log(id);
     }
-    const removeConnection = async (connectionId) => {
-        const doc = await db.get(connectionId);
-        await db.remove(doc);
+    const removeConnection = async () => {
+        console.log('remove', connection._id);
+        await db.remove(connection);
     }
-    const updateSource = async (connectionId, value) => {
-        const doc = await db.get(connectionId)
-        doc.source = value;
-        doc.components = [{id: doc.source}, {id: doc.destination}];
-        await db.put(doc);
-
+    const updateSource = async (value) => {
+        connection.source = value;
+        connection.components = [{id: connection.source}, {id: connection.destination}];
+        await db.put(connection);
     }
-    const updateDestination = async (connectionId, value) => {
-        const doc = await db.get(connectionId)
-        doc.destination = value;
-        doc.components = [{id: doc.source}, {id: doc.destination}];
-        await db.put(doc);
+    const updateDestination = async (value) => {
+        connection.destination = value;
+        connection.components = [{id: connection.source}, {id: connection.destination}];
+        await db.put(connection);
     }
-    const selectConnection = (connection, direction) => {
+    const selectConnection = (direction) => {
         const highlight = !(connection.source && connection.destination);
         if (direction === 'source' && connection.source === componentId) {
             return <>This Component</>
@@ -48,9 +50,9 @@ export default function NetworkConnection({componentId, connection, db, componen
             key={'external-' + connection._id}
             onChange={(source) => {
                 if (direction === 'source') {
-                    updateSource(connection._id, source)
+                    updateSource(source)
                 } else {
-                    updateDestination(connection._id, source)
+                    updateDestination(source)
                 }
             }}
             data={components && components.length > 0 ? components.map((doc) => {
@@ -72,12 +74,25 @@ export default function NetworkConnection({componentId, connection, db, componen
         }
         return <></>
     }
+    const moveUp= () => {
+        connection.rank = connection.prev;
+        db.put(connection);
+
+    }
+    const moveDown= () => {
+        connection.rank = connection.next;
+        db.put(connection);
+    }
     return (<Table.Tr key={'group-' + connection._id}>
         <Table.Td>{rowIcon(connection)}
             </Table.Td>
-            <Table.Td>{selectConnection(connection, 'source')}
+        <Table.Td>
+            {index>0?<ActionIcon onClick={moveUp}><IconArrowUp/></ActionIcon>:<IconBoxAlignTopFilled/>}
+            {!last?<ActionIcon onClick={moveDown}><IconArrowDown/></ActionIcon>:<IconBoxAlignBottomFilled/>}
+        </Table.Td>
+            <Table.Td>{selectConnection( 'source')}
             </Table.Td>
-            <Table.Td>{selectConnection(connection, 'destination')}
+            <Table.Td>{selectConnection('destination')}
             </Table.Td>
 
             <Table.Td><Select
@@ -108,11 +123,9 @@ export default function NetworkConnection({componentId, connection, db, componen
             </Table.Td>
             <Table.Td>
                 <Button color="#f00" size="xs" key={'delete-' + connection._id} id={connection._id}
-                              onClick={(e) => {removeConnection(connection._id)}}>
+                              onClick={removeConnection}>
                     <IconTrash/>
                 </Button>
             </Table.Td>
-
-
     </Table.Tr>)
 }

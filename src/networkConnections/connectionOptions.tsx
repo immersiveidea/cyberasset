@@ -5,7 +5,7 @@ export default function ConnectionOptions() {
         console.log('closed');
     }
     return (
-        <Modal opened='true' centered onClose={closed} widthCloseButton={true}>
+        <Modal opened={true} centered onClose={closed} withCloseButton={true}>
             Test
         </Modal>
     )

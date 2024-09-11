@@ -2,14 +2,13 @@ import {Button, SimpleGrid} from "@mantine/core";
 import {usePouch} from "use-pouchdb";
 
 export default function AdminActions() {
-    const connectionDb = usePouch('connections');
-    const componentDb = usePouch('components');
+    const data = usePouch();
     const clearComponents = () => {
-        componentDb.destroy();
+        data.destroy();
 
     }
     const clearConnections = () => {
-        connectionDb.destroy();
+        data.destroy();
     }
     return (
         <SimpleGrid>

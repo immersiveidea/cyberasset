@@ -2,33 +2,29 @@ import {Card, Group, Select, TextInput} from '@mantine/core';
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {Platform} from "./platform.tsx";
 import DeleteButton from "./components/deleteButton.tsx";
+import {useParams} from "react-router-dom";
 
 
+type ComponentType = {
+    _id: string;
+    _rev: string;
+    type: string;
+    name: string;
+    network_location: string;
+    component_type: string;
+    connections: string[];
+}
 
-export function SystemComponent({selectedComponent}) {
+export function SystemComponent() {
     const db = usePouch();
-    const {doc, loading, state, error} = useDoc(selectedComponent);
-    const CONNECTION_QUERY = {
-        index: {
-            fields: ['type', 'components']
-        },
-        selector: {
-            type: 'connection',
-            components: {
-                $elemMatch: {
-                    id: {
-                        $eq: selectedComponent
-                    }
-                }
-            }
-        }
-    };
+    const params = useParams();
+    const {doc, loading, state, error} = useDoc(params.componentId);
 
-    const {docs: connections, state: connectionState} = useFind(CONNECTION_QUERY);
 
     const updateDoc =async (doc) => {
         await db.put(doc);
     };
+
     const deleteDoc = async (doc) => {
         try {
             const existing = await db.get(doc);
@@ -50,7 +46,7 @@ export function SystemComponent({selectedComponent}) {
         'Virtual Machine'
     ]
 
-    if (!selectedComponent) return <h1>Empty</h1>;
+    if (!params.componentId) return <h1>Empty</h1>;
 
 
     if (loading) return <div>Loading...</div>
@@ -66,37 +62,42 @@ export function SystemComponent({selectedComponent}) {
     if (!doc) {
         return <div>Empty</div>
     } else {
+        const renderDoc: ComponentType= doc as ComponentType;
         return (<Card withBorder={true} m={10} bg="rgba(0,0,0,.3)">
                 <Group>
                     <TextInput
-                        id={selectedComponent + '-name'}
+                        id={params.componentId + '-name'}
                         withAsterisk
                         label="Name"
-                        defaultValue={doc.name || ''}
+                        defaultValue={renderDoc.name || ''}
                         onBlur={(e) => {
-                            doc.name = e.currentTarget.value;
-                            updateDoc(doc);
+                            if (renderDoc.name != e.currentTarget.value) {
+                                renderDoc.name = e.currentTarget.value;
+                                updateDoc(doc);
+                            }
                         }}
                         placeholder="Name of Component"
                         size='sm'/>
                     <TextInput label="Network Location"
                                placeholder="IP Address, hostname, container name"
-                               defaultValue={doc.network_location || ''}
+                               defaultValue={renderDoc.network_location || ''}
                                size='sm'
                                onBlur={(e) => {
-                                   doc.network_location = e.currentTarget.value;
-                                   updateDoc(doc);
+                                   if (renderDoc.network_location != e.currentTarget.value) {
+                                       renderDoc.network_location = e.currentTarget.value;
+                                       updateDoc(doc);
+                                   }
                                }}/>
                     <Select searchable={true} label="Type" placeholder="Select type"
                             data={options}
-                            defaultValue={doc.component_type || ''}
+                            defaultValue={renderDoc.component_type || ''}
                             onChange={(e, option) => {
-                                doc.component_type = option.value;
+                                renderDoc.component_type = option.value;
                                 updateDoc(doc);
                             }}/>
-                    <DeleteButton onClick={deleteDoc} id={selectedComponent}/>
+                    <DeleteButton onClick={deleteDoc} id={params.componentId}/>
                 </Group>
-                <Platform component={doc} connections={connections}/>
+                <Platform/>
 
 
             </Card>

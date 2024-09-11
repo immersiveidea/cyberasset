@@ -1,47 +1,23 @@
 import "@mantine/core/styles.css";
-import {AppShell, Button, MantineProvider, rgba, TextInput} from "@mantine/core";
-import {theme} from "../theme.ts";
-import {useState} from "react";
-
-import Navigation from "../navigation.tsx";
-import Header from "../header.tsx";
 import {useParams} from "react-router-dom";
+import SolutionTemplate from "../templates/SolutionTemplate.tsx";
+import {SystemComponentList} from "../systemComponentList.tsx";
+import React, {useState} from "react";
+import {SystemComponent} from "../systemComponent.tsx";
 
 
 export default function SolutionPage() {
     const params = useParams();
-    const [selectedComponent, setSelectedComponent] = useState(params.componentId || '');
-    const [selectedSolution, setSelectedSolution] = useState(params.solutionId ||'');
-    const renderSolution = () => {
-        if (selectedSolution === '') {
-            return <h1>Choose a solution</h1>
+
+    const main = () => {
+        if (params.componentId) {
+            return <SystemComponent />
+        } else {
+            return <h1>Nothing Selected</h1>
         }
-        return (<>
-            <h1>{selectedSolution} a</h1>
-        <Button component="a" href={selectedSolution + '/diagram'} onClick={(e) => {
-            e.preventDefault();
-            window.open(selectedSolution + '/diagram', 'solution' + selectedSolution);
-
-        }}>View Diagram</Button>
-        <TextInput label="Solution Name" value={selectedSolution}  onChange={(e) => {
-
-        }}/>
-            </>
-    )}
-    return <MantineProvider defaultColorScheme="dark" theme={theme}>
-    <AppShell
-            header={{height: 44}}
-            navbar={{width: 190}}
-            padding="md">
-            <AppShell.Header bg={rgba('#FFF',.1)}>
-                <Header/>
-            </AppShell.Header>
-            <Navigation selectedComponent={selectedComponent} setSelectedComponent={setSelectedComponent}
-                        selectedSolution={selectedSolution} setSelectedSolution={setSelectedSolution}/>
-            <AppShell.Main bg="none">
-                {renderSolution()}
-            </AppShell.Main>
-        </AppShell>
-
-    </MantineProvider>;
+    }
+    const navbar = <SystemComponentList />
+    return (
+        <SolutionTemplate navbar={navbar} main={main()}/>
+    )
 }
