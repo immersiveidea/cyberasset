@@ -72,13 +72,15 @@ export default function SolutionTemplate({navbar, main}) {
             return (
                 <Stack>
                 <Title>
+                    <Group>
+
                     <Anchor href={`/solution/${params.solutionId}`}
                         onClick={
                             (e) => {
                                 e.preventDefault();
                                 toggle();
                         }}
-                    >{solution.name}</Anchor>
+                    >{solution.name || solution._id}</Anchor>
 
                     <Anchor href={`/solution/${params.solutionId}/diagram`}
                             onClick={
@@ -87,9 +89,12 @@ export default function SolutionTemplate({navbar, main}) {
                                     window.open(`/solution/${params.solutionId}/diagram`,
                                         `/solution/${params.solutionId}/diagram`,
                                         'popup, width=800, height=600,location=false');
-                                }}>show a diagram</Anchor>
+                                }}>network connections</Anchor>
+                    </Group>
                 </Title>
+
                     <QuickText/>
+
                 </Stack>
 
 
