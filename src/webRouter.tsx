@@ -8,6 +8,7 @@ import FeaturesPage from "./pages/featuresPage.tsx";
 import PricingPage from "./pages/pricingPage.tsx";
 import SolutionPage from "./pages/solutionPage.tsx";
 import DiagramPage from "./pages/diagramPage.tsx";
+import ComponentsPage from "./pages/componentsPage.tsx";
 
 export const webRouter = createBrowserRouter([
     {
@@ -19,6 +20,11 @@ export const webRouter = createBrowserRouter([
         element: (<Suspense fallback={<div>Loading</div>}>
             <SolutionPage/>
             </Suspense>),
+    },
+    {   path: "/components", element: (<Suspense fallback={<div>Loading</div>}>
+            <ComponentsPage/>
+        </Suspense>)
+
     },
     { path: "/solutions", element: (<Suspense fallback={<div>Loading</div>}>
             <SolutionList/>

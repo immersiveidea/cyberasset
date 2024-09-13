@@ -1,8 +1,8 @@
-import {Card, Group, Select, TextInput} from '@mantine/core';
+import {Card, Group, Modal, Select, TextInput} from '@mantine/core';
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {Platform} from "./platform.tsx";
 import DeleteButton from "./components/deleteButton.tsx";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 
 type ComponentType = {
@@ -19,6 +19,7 @@ export function SystemComponent() {
     const db = usePouch();
     const params = useParams();
     const {doc, loading, state, error} = useDoc(params.componentId);
+
 
 
     const updateDoc =async (doc) => {
@@ -60,10 +61,11 @@ export function SystemComponent() {
 
     }
     if (!doc) {
-        return <div>Empty</div>
+        return <></>
     } else {
         const renderDoc: ComponentType= doc as ComponentType;
-        return (<Card withBorder={true} m={10} bg="rgba(0,0,0,.3)">
+        return (
+            <Modal w="xl" opened={true} onClose={() => {history.back()}}>
                 <Group>
                     <TextInput
                         id={params.componentId + '-name'}
@@ -98,9 +100,7 @@ export function SystemComponent() {
                     <DeleteButton onClick={deleteDoc} id={params.componentId}/>
                 </Group>
                 <Platform/>
-
-
-            </Card>
+            </Modal>
         );
     }
 }

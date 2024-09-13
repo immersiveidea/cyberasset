@@ -9,6 +9,7 @@ export default function Header() {
     }
     const topNavData = [
         {url: '/solutions', name: 'Solutions', auth: true},
+        {url: '/components', name: 'Components', auth: true},
         {url: '/pricing', name: 'Pricing', auth: false},
         {url: '/features', name: 'Features', auth: false},
         {url: '/admin', name: 'Admin', auth: true},

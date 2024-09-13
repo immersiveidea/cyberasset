@@ -9,7 +9,7 @@ import createEngine, {
 } from '@projectstorm/react-diagrams';
 
 import {CanvasWidget} from '@projectstorm/react-canvas-core';
-import {Affix, Box, Button} from "@mantine/core";
+import {Box, Button, Group} from "@mantine/core";
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {useState} from "react";
 type Rankable = { rank: number };
@@ -135,14 +135,15 @@ export default function OverviewDiagram() {
             model.getNodes().forEach((node) => {obj[node.getOptions().id] = {position: node.getPosition()}});
             db.put({...layoutDoc, ...obj});
         }
-        return (<>
-            <Affix position={{top: 20, left: 20}}><Button
+        return (
+            <Group>
+                <Button
                 onClick={() =>{ layoutEngine.redistribute(model); setUpdate(update)}}>Auto Layout</Button>
                 <Button
                     onClick={saveLayout}>Save Layout</Button>
+                <CanvasWidget className="diagramcanvas" engine={engine}/>
+            </Group>
 
-            </Affix>
-            <CanvasWidget className="diagramcanvas" engine={engine}/>
-        </>)
+        )
     }
 }

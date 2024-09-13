@@ -58,10 +58,7 @@ export default function QuickText() {
     return (
         <Stack>
         <TextInput  value={text} onChange={(e) => {
-
                 setText(e.currentTarget.value)}
-
-
         } onKeyPress={(e) => {
             if (e.key === 'Enter') {
                 console.log('enter');
