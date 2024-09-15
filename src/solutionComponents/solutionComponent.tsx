@@ -1,7 +1,7 @@
 import {Card, Group, Modal, Select, TextInput} from '@mantine/core';
 import {useDoc, useFind, usePouch} from "use-pouchdb";
-import {Platform} from "./platform.tsx";
-import DeleteButton from "./components/deleteButton.tsx";
+import {Platform} from "../platform.tsx";
+import DeleteButton from "../components/deleteButton.tsx";
 import {useNavigate, useParams} from "react-router-dom";
 
 
@@ -15,7 +15,7 @@ type ComponentType = {
     connections: string[];
 }
 
-export function SystemComponent() {
+export function SolutionComponent() {
     const db = usePouch();
     const params = useParams();
     const {doc, loading, state, error} = useDoc(params.componentId);

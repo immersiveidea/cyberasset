@@ -1,13 +1,13 @@
 import {createBrowserRouter} from "react-router-dom";
 import HomePage from "./pages/homePage.tsx";
 import React, {Suspense} from "react";
-import {SolutionList} from "./solutionList.tsx";
+import {SolutionList} from "./solutions/solutionList.tsx";
 import AdminPage from "./pages/adminPage.tsx";
 import Demopage from "./pages/demopage.tsx";
 import FeaturesPage from "./pages/featuresPage.tsx";
 import PricingPage from "./pages/pricingPage.tsx";
-import SolutionPage from "./pages/solutionPage.tsx";
-import DiagramPage from "./pages/diagramPage.tsx";
+import SolutionPage from "./solutions/solutionPage.tsx";
+import SolutionDiagramPopoutPage from "./solutions/solutionDiagramPopoutPage.tsx";
 import ComponentsPage from "./pages/componentsPage.tsx";
 
 export const webRouter = createBrowserRouter([
@@ -38,7 +38,7 @@ export const webRouter = createBrowserRouter([
     },
     {
         path: "/solution/:solutionId/diagram",
-        element: (<DiagramPage/>)
+        element: (<SolutionDiagramPopoutPage/>)
     },
     {
         path: "/admin",

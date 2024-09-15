@@ -3,13 +3,10 @@ import {MultiSelect, SimpleGrid, Stack} from "@mantine/core";
 import {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 
-import SystemComponentCard from "./systemComponentCard.tsx";
-type NameId = {
-    _id: string;
-    name: string;
-}
+import SolutionComponentCard from "./solutionComponentCard.tsx";
+import {NameId} from "../types/nameId.ts";
 
-export function SystemComponentList() {
+export function SolutionComponentList() {
     const params = useParams();
     const navigate = useNavigate();
     const db = usePouch();
@@ -45,8 +42,10 @@ export function SystemComponentList() {
         const text = searchText.toLowerCase().trim().replace(/[^\p{L}\d]/gu, '');
 
         if (text.length > 0) {
+            // @ts-expect-error - this is a hack to get around the fact that the list is not typed
             const existing = components.list.find((component) => {return component.name.toLowerCase() === text});
             if (!existing) {
+                // @ts-expect-error - this is a hack to get around the fact that the list is not typed
                 const newList = [...components.list, {_id: text.replace(/[^\p{L}\d]/gu, ''), name: searchText}];
                 newList.sort((a, b) => {
                     return (a?._id<b?._id?-1:(a?._id>b?._id?1:0));
@@ -67,13 +66,13 @@ export function SystemComponentList() {
         }
             setSearchText('');
     }
-
+    // @ts-expect-error - this is a hack to get around the fact that the list is not typed
     const renderData = params.solutionId ? solutionComponents : components.list;
 
     const renderOut =
         renderData.map((row) => {
             const data = (row as unknown) as NameId;
-            return <SystemComponentCard key={data._id} data={data} selectComponent={selectComponent}/>
+            return <SolutionComponentCard key={data._id} data={data} selectComponent={selectComponent}/>
         })
 
     /*
@@ -101,6 +100,7 @@ export function SystemComponentList() {
                                  }
                              }}
                              onSearchChange={setSearchText}
+                            // @ts-expect-error - this is a hack to get around the fact that the list is not typed
                              data={components.list.map((x) => x.name)}/>
                 <SimpleGrid cols={6}>
                     {renderOut}

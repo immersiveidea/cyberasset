@@ -14,7 +14,7 @@ import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {useState} from "react";
 type Rankable = { rank: number };
 
-export default function OverviewDiagram() {
+export default function SolutionNetworkConnectionDiagram() {
     const [update, setUpdate] = useState(0);
     const COMPONENTS_QUERY = {
         index: {

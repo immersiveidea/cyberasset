@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {useDoc, usePouch} from "use-pouchdb";
 import log from "loglevel";
 import {useParams} from "react-router-dom";
+import {NameIdList} from "../types/nameIdlist.ts";
 
 export default function QuickText() {
     const logger = log.getLogger('QuickText');
@@ -36,7 +37,7 @@ export default function QuickText() {
     const upsertMasterComponent = async (components: Array<{ name: string; }>) => {
         const missingList = [];
         components.forEach((component) => {
-            const existing = componentsMaster.list.find((c) => {
+            const existing = (componentsMaster as NameIdList).list.find((c) => {
                 return c.name.toLowerCase() === component.name.toLowerCase();
             });
             if (!existing) {
@@ -46,7 +47,7 @@ export default function QuickText() {
 
         logger.debug('missingList', missingList);
         if (missingList.length > 0) {
-            const newList = [...componentsMaster.list, ...missingList];
+            const newList = [...(componentsMaster as NameIdList).list, ...missingList];
             logger.debug('newList', newList);
             newList.sort((a, b) => {
                 return (a?._id<b?._id?-1:(a?._id>b?._id?1:0));

@@ -19,7 +19,11 @@ export default function Header() {
 
     const TopNavItems = topNavData.map((item) => {
         if (show(item)) {
-            return <Container size="sm" display="inline-flex" component={Link} key={item.name} to={item.url}>{item.name}</Container>
+            return <Container size="sm"
+                              display="inline-flex"
+                              component={Link}
+                              key={item.name}
+                              to={item.url}>{item.name}</Container>
         } else {
             return <></>
         }

@@ -1,8 +1,9 @@
 import {useFind, usePouch} from "use-pouchdb";
-import {Button, Card, Group, SimpleGrid} from "@mantine/core";
-import SolutionsListTemplate from "./templates/SolutionsListTemplate.tsx";
+import {AppShell, Button, Card, Group, MantineProvider, rgba, SimpleGrid} from "@mantine/core";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {theme} from "../theme.ts";
+import Header from "../header.tsx";
 
 export function SolutionList() {
     const db = usePouch();
@@ -52,17 +53,29 @@ export function SolutionList() {
         return <div>Loading</div>
     } else {
 
-        return (<SolutionsListTemplate>
-                <Button onClick={createSolution}>Create New Solution</Button>
-                <SimpleGrid cols={3}>
-                    {solutions.map((solution) => {
-                        console.log(solution);
-                        return (
-                            solutionCard(solution)
-                        )
-                    })}
-                </SimpleGrid>
-            </SolutionsListTemplate>
+        return (
+            <>
+                <MantineProvider defaultColorScheme="dark" theme={theme}>
+                    <AppShell
+                        header={{height: 44}}
+                        padding="md">
+                        <AppShell.Header bg={rgba('#FFF', .1)}>
+                            <Header/>
+                        </AppShell.Header>
+                        <AppShell.Main bg="none">
+                            <Button onClick={createSolution}>Create New Solution</Button>
+                            <SimpleGrid cols={3}>
+                                {solutions.map((solution) => {
+                                    console.log(solution);
+                                    return (
+                                        solutionCard(solution)
+                                    )
+                                })}
+                            </SimpleGrid>
+                        </AppShell.Main>
+                    </AppShell>
+                </MantineProvider>
+            </>
         )
     }
 }

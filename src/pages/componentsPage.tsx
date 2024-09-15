@@ -1,7 +1,7 @@
 import {theme} from "../theme.ts";
 import {AppShell, MantineProvider, rgba} from "@mantine/core";
 import Header from "../header.tsx";
-import {SystemComponentList} from "../systemComponentList.tsx";
+import {SolutionComponentList} from "../solutionComponents/solutionComponentList.tsx";
 
 export default function ComponentsPage() {
 
@@ -13,7 +13,7 @@ export default function ComponentsPage() {
                 <Header/>
             </AppShell.Header>
             <AppShell.Main>
-                <SystemComponentList/>
+                <SolutionComponentList/>
             </AppShell.Main>
         </AppShell>
         </MantineProvider>

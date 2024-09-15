@@ -8,7 +8,7 @@ type MasterComponents = {
     _rev: string
     list: { _id: string, name: string }[];
 }
-export default function SystemComponentCard({data, selectComponent}) {
+export default function SolutionComponentCard({data, selectComponent}) {
     const logger = log.getLogger('SystemComponentCard');
     const params = useParams();
     const db = usePouch();

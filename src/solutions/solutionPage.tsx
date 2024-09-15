@@ -7,11 +7,11 @@ import {useDisclosure} from "@mantine/hooks";
 import {AppShell, MantineProvider, rgba, Stack, Tabs} from "@mantine/core";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";
-import SolutionHeader from "../components/solutionHeader.tsx";
+import SolutionHeader from "./solutionHeader.tsx";
 import QuickText from "../components/quickText.tsx";
-import {SystemComponentList} from "../systemComponentList.tsx";
-import {SystemComponent} from "../systemComponent.tsx";
-import OverviewDiagram from "../overviewDiagram.tsx";
+import {SolutionComponentList} from "../solutionComponents/solutionComponentList.tsx";
+import {SolutionComponent} from "../solutionComponents/solutionComponent.tsx";
+import SolutionNetworkConnectionDiagram from "./solutionNetworkConnectionDiagram.tsx";
 export default function SolutionPage() {
     const params = useParams();
     const db = usePouch();
@@ -70,12 +70,12 @@ export default function SolutionPage() {
                         <Tabs.Panel value="components">
                             <Stack>
                                 <QuickText/>
-                                <SystemComponentList/>
-                                <SystemComponent/>
+                                <SolutionComponentList/>
+                                <SolutionComponent/>
                             </Stack>
                         </Tabs.Panel>
                         <Tabs.Panel value="connections">
-                            <OverviewDiagram/>
+                            <SolutionNetworkConnectionDiagram/>
                         </Tabs.Panel>
                     </Tabs>
                 </AppShell.Main>
