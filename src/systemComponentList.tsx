@@ -1,8 +1,8 @@
 import {useDoc, useFind, usePouch} from "use-pouchdb";
-import {Button, Grid, MultiSelect, NavLink, SimpleGrid, Stack, TextInput, Title} from "@mantine/core";
-import {useEffect, useState} from "react";
+import {MultiSelect, SimpleGrid, Stack} from "@mantine/core";
+import {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {IconStar, IconStarFilled} from "@tabler/icons-react";
+
 import SystemComponentCard from "./systemComponentCard.tsx";
 type NameId = {
     _id: string;
@@ -15,7 +15,7 @@ export function SystemComponentList() {
     const db = usePouch();
     const [searchText, setSearchText] = useState('');
 
-    const {docs, state, loading, error} = useFind({
+    const {docs: solutionComponents,  loading: solutionComponentsLoading} = useFind({
         index: {
             fields: ['type', 'solution_id', 'name']
         },
@@ -34,11 +34,9 @@ export function SystemComponentList() {
             });
         }
     }
-    if (loading && docs && docs.length === 0) return <div>Loading...</div>
-
-    if (state === 'error' && error) {
-        return <div>Error: {error.message}</div>
-    }
+    if (solutionComponentsLoading &&
+        solutionComponents &&
+        solutionComponents.length === 0) return <div>Loading...</div>
 
     const selectComponent = (event) => {
         navigate('/solution/' + params.solutionId + '/component/' + event.currentTarget.id );
@@ -70,7 +68,7 @@ export function SystemComponentList() {
             setSearchText('');
     }
 
-    const renderData = params.solutionId ? docs : components.list;
+    const renderData = params.solutionId ? solutionComponents : components.list;
 
     const renderOut =
         renderData.map((row) => {

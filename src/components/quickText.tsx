@@ -1,14 +1,18 @@
 import {Card, Stack, TextInput} from "@mantine/core";
 import {useEffect, useState} from "react";
-import {usePouch} from "use-pouchdb";
+import {useDoc, usePouch} from "use-pouchdb";
+import log from "loglevel";
+import {useParams} from "react-router-dom";
 
 export default function QuickText() {
+    const logger = log.getLogger('QuickText');
+    const params = useParams();
     const db = usePouch();
+    const {doc: componentsMaster} = useDoc('components')
     const [text, setText] = useState('');
-    const [components, setComponents] = useState([]);
+    const [quickSetComponents, setQuickSetComponents] = useState([]);
     useEffect(() => {
        if (text.length > 0) {
-
           if (text.indexOf('->')>-1) {
                 const parts = text.split('->');
                 const c = [];
@@ -22,36 +26,69 @@ export default function QuickText() {
                             c.push({name: part.trim(), componentType: null})
                         }
                     });
-                setComponents(c);
+                setQuickSetComponents(c);
           } else {
-                setComponents([{name: text.trim()}]);
+                setQuickSetComponents([{name: text.trim()}]);
           }
        }
 
     }, [text]);
+    const upsertMasterComponent = async (components: Array<{ name: string; }>) => {
+        const missingList = [];
+        components.forEach((component) => {
+            const existing = componentsMaster.list.find((c) => {
+                return c.name.toLowerCase() === component.name.toLowerCase();
+            });
+            if (!existing) {
+                missingList.push({_id: component.name.replace(/[^\p{L}\d]/gu, ''), name: component.name});
+            }
+        })
+
+        logger.debug('missingList', missingList);
+        if (missingList.length > 0) {
+            const newList = [...componentsMaster.list, ...missingList];
+            logger.debug('newList', newList);
+            newList.sort((a, b) => {
+                return (a?._id<b?._id?-1:(a?._id>b?._id?1:0));
+            });
+            logger.debug('newList sorted', newList);
+            await db.put({...componentsMaster, list: newList});
+        }
+    }
     const saveData = async () => {
-        console.log('saving', components);
-        const {docs: data} = await db.allDocs({include_docs: true});
-
-
-        if (components.length == 0) {
+        logger.debug('saving', quickSetComponents);
+        if (quickSetComponents.length == 0 || !componentsMaster) {
             return;
         }
 
-        let source = await db.post({...components[0], type: 'component'});
+        let source = null;
+        if (params.solutionId) {
+            source = await db.post({...quickSetComponents[0], solution_id: params.solutionId, type: 'component'});
+        }
 
-        if (components.length > 1) {
-            for (let i = 1; i < components.length; i++) {
-                const dest = await db.post({...components[i], type: 'component'});
-                const conn = await db.post({type: 'connection', rank: 1, source: source.id, destination: dest.id, components: [{id: source.id}, {id: dest.id}]});
-                source = dest;
+        logger.debug('source', source);
+        logger.debug('params', params);
+        logger.debug('quickSetComponents', quickSetComponents);
+        await upsertMasterComponent(quickSetComponents);
+        if (quickSetComponents.length > 1) {
+            for (let i = 1; i < quickSetComponents.length; i++) {
+                if (params.solutionId) {
+                    const dest = await db.post({...quickSetComponents[i], solution_id: params.solutionId, type: 'component'});
+                    logger.debug('dest', dest);
+                    if (source) {
+                        const conn = await db.post({type: 'connection', rank: 1, source: source.id, solution_id: params.solutionId, destination: dest.id, components: [{id: source.id}, {id: dest.id}]});
+                        logger.debug('connection created', conn);
+                    }
+                    source = dest;
+                }
+
             }
         }
         setText('');
-        setComponents([])
+        setQuickSetComponents([])
     }
     const displayComponents = () => {
-        return components.map((component) => {
+        return quickSetComponents.map((component) => {
             return <Card>{component.name}</Card>
         })
     }
@@ -61,7 +98,7 @@ export default function QuickText() {
                 setText(e.currentTarget.value)}
         } onKeyPress={(e) => {
             if (e.key === 'Enter') {
-                console.log('enter');
+                logger.debug('enter key pressed');
                 saveData();
             }
         }} label="Quick Entry"/>

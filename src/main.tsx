@@ -12,7 +12,8 @@ import {webRouter} from "./webRouter.tsx";
 
 
 const components = data();
-
+import log from "loglevel";
+log.default.setLevel('debug', false);
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
         <Provider
