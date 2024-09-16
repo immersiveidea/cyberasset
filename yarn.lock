@@ -815,6 +815,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@joint/core@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "@joint/core@npm:4.0.4"
+  checksum: 10c0/82cab61469cccc6b555b69b85eb906f02a875457aa7b7e238d6cef4361bffa64eb7d061ff88e6e7c17bf621f6d0f9b1c95a2e8e4df53fb5397e223cbbbaa4e36
+  languageName: node
+  linkType: hard
+
 "@jridgewell/gen-mapping@npm:^0.3.0":
   version: 0.3.3
   resolution: "@jridgewell/gen-mapping@npm:0.3.3"
@@ -921,6 +928,13 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
   checksum: 10c0/f6004a2cb78c82d4cce2a576430021cd4caa84709714fa3e4aac35250aa61953ca65de0a72b6489665688a2731b2b052b1fb3dc872d592d7ec84c22d6e1d6fea
+  languageName: node
+  linkType: hard
+
+"@maxgraph/core@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "@maxgraph/core@npm:0.13.0"
+  checksum: 10c0/9c8aa11fc64c2d5ad598ff3e0ff8f0a444425bbd541517b68bac23a5a9345c87e66786e5fa00d3b51edbe99bd3ecea055e9fbe77c3fcb2ca6d9e8f2b6a430b22
   languageName: node
   linkType: hard
 
@@ -5749,9 +5763,11 @@ __metadata:
   dependencies:
     "@auth0/auth0-react": "npm:^2.2.4"
     "@emotion/react": "npm:^11.13.0"
+    "@joint/core": "npm:^4.0.4"
     "@mantine/core": "npm:7.12.0"
     "@mantine/form": "npm:7.12.0"
     "@mantine/hooks": "npm:7.12.0"
+    "@maxgraph/core": "npm:^0.13.0"
     "@projectstorm/react-diagrams": "npm:^7.0.4"
     "@stripe/stripe-js": "npm:^4.3.0"
     "@tabler/icons-react": "npm:^3.14.0"

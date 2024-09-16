@@ -1,4 +1,4 @@
-import {Box, Burger, Button, Container, Grid, Group, Image, Popover, Stack} from "@mantine/core";
+import {Box, Burger, Button, Container, Grid, Group, Text, Image, Popover, Stack} from "@mantine/core";
 import {useAuth0} from "@auth0/auth0-react";
 import {Link} from "react-router-dom";
 
@@ -25,7 +25,11 @@ export default function Header() {
                               key={item.name}
                               to={item.url}>{item.name}</Container>
         } else {
-            return <></>
+            return <Container size="sm"
+                              display="none"
+                              component={Link}
+                              key={item.name}
+                              to={item.url}>{item.name}</Container>
         }
     });
 
@@ -50,25 +54,24 @@ export default function Header() {
     return (
         <>
         <Grid  bg="#000" p="sm" justify="space-evenly">
-                <Grid.Col key="left" span={8}>
-                        <Group visibleFrom="xs" justify="left" w={512}>
-                            SHIELD
-                            {TopNavItems}
-                        </Group>
-                        <Group hiddenFrom="xs">
-                            SHIELD
-                            <Popover position="bottom">
-                                <Popover.Target>
-                                    <Burger  hiddenFrom="sm"/>
-                                </Popover.Target>
-                                <Popover.Dropdown>
-                                    <Stack>
-                                        {TopNavItems}
-                                    </Stack>
-                                </Popover.Dropdown>
-                            </Popover>
-                        </Group>
-
+                <Grid.Col key="left-grid" span={8}>
+                    <Group key="left-group" visibleFrom="xs" justify="left" w={512}>
+                        <Text key="shield">SHIELD</Text>
+                        {TopNavItems}
+                    </Group>
+                    <Group key="right-group" hiddenFrom="xs">
+                        <Text key="shield">SHIELD</Text>
+                        <Popover key="popover" position="bottom">
+                            <Popover.Target>
+                                <Burger  hiddenFrom="sm"/>
+                            </Popover.Target>
+                            <Popover.Dropdown>
+                                <Stack>
+                                    {TopNavItems}
+                                </Stack>
+                            </Popover.Dropdown>
+                        </Popover>
+                    </Group>
                 </Grid.Col>
                 <Grid.Col key="right" span={4}>
                     <Group justify="right">{userDisplay()}</Group>

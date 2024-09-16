@@ -133,7 +133,10 @@ export default function SolutionNetworkConnectionDiagram() {
         const saveLayout = () => {
             const obj = {}
             model.getNodes().forEach((node) => {obj[node.getOptions().id] = {position: node.getPosition()}});
-            db.put({...layoutDoc, ...obj});
+
+            const newObj = {...layoutDoc, ...obj}
+            console.log(newObj);
+            db.put(newObj);
         }
         return (
             <Group>
