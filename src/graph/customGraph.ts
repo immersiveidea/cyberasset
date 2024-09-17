@@ -2,6 +2,7 @@ import {dia, highlighters, shapes} from "@joint/core";
 import log from "loglevel";
 import Graph = dia.Graph;
 import Paper = dia.Paper;
+import {defaultLink, defaultNode} from "../solutionComponents/defaultNodes.ts";
 
 export default class CustomGraph {
     private _logger = log.getLogger('CustomGraph');
@@ -35,7 +36,7 @@ export default class CustomGraph {
         });
         this._paper.on('cell:pointerup', (cellView, evt, x, y) => {
             if (this._drop) {
-                evt.preventDefault();
+                //evt.preventDefault();
                 this._logger.debug(this._drop);
                 if (this._on['drop']) {
                     this._on['drop']({id: this._drop.id, x: this._drop.x, y: this._drop.y});
@@ -69,6 +70,8 @@ export default class CustomGraph {
                 this._lastClicked = {id: cell.model.id as string, type: 'element'};
             }
         });
+
+
     }
 
     public on(name, callback: (event: any) => void) {
@@ -87,10 +90,13 @@ export default class CustomGraph {
             }*/
         })
         connections.forEach((connection) => {
-            const comp = connection as unknown as { _id: string, source: string, destination: string };
+            const comp = connection as unknown as { _id: string, sequence: number, source: string, destination: string };
             try {
                 this._logger.debug('createEdge', comp);
-                this.createEdge(comp._id, comp.source, comp.destination);
+                if (comp.sequence != null) {
+                    this._logger.debug('sequence', comp.sequence);
+                }
+                this.createEdge(comp.sequence, comp._id, comp.source, comp.destination);
                 /*if (cells.find((cell) => cell.id == comp._id)) {
                     cells.find((cell) => cell.id == comp._id).present = true;
                 }*/
@@ -99,13 +105,6 @@ export default class CustomGraph {
                 this._on['delete']({id: comp._id});
             }
         })
-        /*this._logger.debug('cells', cells);
-        cells.forEach((cell) => {
-            if (!cell.present) {
-                this._logger.debug('delete', cell.id);
-            }});
-
-         */
     }
 
     public createNode(id: string, x: number, y: number, name: string) {
@@ -113,27 +112,7 @@ export default class CustomGraph {
         if (exists) {
             return exists;
         }
-        const rect = new shapes.standard.Rectangle(
-            {
-                id: id,
-                position: {x: x, y: y},
-                size: {width: 100, height: 40},
-                attrs: {
-                    body: {
-                        fill: '#00f',
-                        rx: 10,
-                        ry: 10,
-                        strokeWidth: 2,
-                        stroke: '#00c'
-                    },
-                    label: {
-                        text: name,
-                        fill: 'white'
-                    }
-                }
-            }
-        );
-
+        const rect = defaultNode(id, x, y, name);
         const cell = this._graph.addCell(rect);
         cell.on('change:position', (cell, position) => {
             this._drop = {id: cell.id, x: position.x, y: position.y};
@@ -142,7 +121,7 @@ export default class CustomGraph {
         return rect;
     }
 
-    public createEdge(id: string, source: string, target: string, color: string = '#fff') {
+    public createEdge(sequence: number, id: string, source: string, target: string) {
         const exists = this._graph.getLinks().find((link) => {
             return link.source.id == source && link.target.id == target;
         }) != null;
@@ -150,21 +129,7 @@ export default class CustomGraph {
             return exists;
         }
         this._logger.debug('createEdge', source, target, exists);
-
-        const link = new shapes.standard.Link({
-            id: id,
-            source: {id: source},
-            target: {id: target},
-            attrs: {
-                line: {
-                    stroke: color,
-                    strokeWidth: 1,
-                    targetMarker: {
-                        name: 'classic'
-                    }
-                }
-            }
-        });
+        const link = defaultLink(sequence, id, source, target);
         try {
             const s = this._graph.getCell(source);
             const d = this._graph.getCell(target);
@@ -179,5 +144,8 @@ export default class CustomGraph {
             this._logger.error(err);
             throw new Error('missing connection');
         }
+    }
+    public destroy() {
+        this._paper.remove();
     }
 }

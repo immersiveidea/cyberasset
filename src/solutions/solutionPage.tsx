@@ -11,7 +11,7 @@ import QuickText from "../components/quickText.tsx";
 import {SolutionComponentList} from "../solutionComponents/solutionComponentList.tsx";
 import {SolutionComponent} from "../solutionComponents/solutionComponent.tsx";
 
-import SolutionSequenceDiagram from "./solutionSequenceDiagram.tsx";
+import SolutionFlowDiagram from "./solutionFlowDiagram.tsx";
 import log from "loglevel";
 import { lazy } from 'react';
 const SolutionNetworkConnectionDiagram = lazy(() => import("./solutionNetworkConnectionDiagram.tsx"));
@@ -46,7 +46,7 @@ export default function SolutionPage() {
             case 'components':
                 return <SolutionComponentList/>
             case 'flow':
-                return <SolutionSequenceDiagram/>
+                return <SolutionFlowDiagram/>
             case 'connections':
                 return <SolutionNetworkConnectionDiagram/>
             case 'security':
