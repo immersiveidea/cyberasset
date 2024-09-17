@@ -32,12 +32,13 @@ export function defaultLink(sequence: number, id: string, source: string, target
             {
                 attrs: {
                     text: {
-                        text: sequence.toString()
+                        text: sequence.toString(),
+                        fontSize: 16,
                     }
 
                 },
                 position: {
-                    distance: 0.8,
+                    distance: 0.1,
                     offset: 16
                 }
 
