@@ -8,7 +8,7 @@ type MasterComponents = {
     _rev: string
     list: { _id: string, name: string }[];
 }
-export default function SolutionComponentCard({data, selectComponent}) {
+export default function SolutionComponentCard({data}) {
     const logger = log.getLogger('SystemComponentCard');
     const params = useParams();
     const db = usePouch();
@@ -47,10 +47,6 @@ export default function SolutionComponentCard({data, selectComponent}) {
 
     }
     logger.debug(data);
-    const selected = params.componentId && (params.componentId == data._id);
-    /* <NavLink leftSection={<IconStar color={selected? '#FF0': '#00F'}/>} id={data._id} key={data._id}
-                        onClick={selectComponent} label={data.name || data._id}/>
-    */
     const editComponent = () => {
         if (params.solutionId) {
             navigate('/solution/' + params.solutionId + '/component/' + data._id);

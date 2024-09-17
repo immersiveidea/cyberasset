@@ -51,6 +51,8 @@ export default function SolutionPage() {
                 return <SolutionNetworkConnectionDiagram/>
             case 'security':
                 return <QuickText/>
+            case 'component':
+                return <SolutionComponent/>
             default:
                 return <></>
     }}

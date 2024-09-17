@@ -1,8 +1,9 @@
-import {Card, Group, Modal, Select, TextInput} from '@mantine/core';
+import {Card, Group, Modal, Select, TextInput, Title} from '@mantine/core';
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {Platform} from "../platform.tsx";
 import DeleteButton from "../components/deleteButton.tsx";
 import {useNavigate, useParams} from "react-router-dom";
+import log from "loglevel";
 
 
 type ComponentType = {
@@ -16,13 +17,11 @@ type ComponentType = {
 }
 
 export function SolutionComponent() {
+    const logger = log.getLogger('SolutionComponent');
     const db = usePouch();
     const params = useParams();
     const {doc, loading, state, error} = useDoc(params.componentId);
-
-
-
-    const updateDoc =async (doc) => {
+    const updateDoc = async (doc) => {
         await db.put(doc);
     };
 
@@ -31,9 +30,8 @@ export function SolutionComponent() {
             const existing = await db.get(doc);
             await db.remove(existing);
         } catch (err) {
-            console.log(err);
+            logger.error(err);
         }
-
     }
 
     const options = [
@@ -48,8 +46,6 @@ export function SolutionComponent() {
     ]
 
     if (!params.componentId) return <h1>Empty</h1>;
-
-
     if (loading) return <div>Loading...</div>
     if (state === 'error' && error) {
         switch (error.status) {
@@ -61,7 +57,8 @@ export function SolutionComponent() {
 
     }
     if (!doc) {
-        return <></>
+        logger.warn('doc not found', params);
+        return <Title>Component not found</Title>
     } else {
         const renderDoc: ComponentType= doc as ComponentType;
         return (
@@ -80,26 +77,9 @@ export function SolutionComponent() {
                         }}
                         placeholder="Name of Component"
                         size='sm'/>
-                    <TextInput label="Network Location"
-                               placeholder="IP Address, hostname, container name"
-                               defaultValue={renderDoc.network_location || ''}
-                               size='sm'
-                               onBlur={(e) => {
-                                   if (renderDoc.network_location != e.currentTarget.value) {
-                                       renderDoc.network_location = e.currentTarget.value;
-                                       updateDoc(doc);
-                                   }
-                               }}/>
-                    <Select searchable={true} label="Type" placeholder="Select type"
-                            data={options}
-                            defaultValue={renderDoc.component_type || ''}
-                            onChange={(e, option) => {
-                                renderDoc.component_type = option.value;
-                                updateDoc(doc);
-                            }}/>
                     <DeleteButton onClick={deleteDoc} id={params.componentId}/>
                 </Group>
-                <Platform/>
+
             </Modal>
         );
     }

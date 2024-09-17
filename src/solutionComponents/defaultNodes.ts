@@ -35,7 +35,6 @@ export function defaultLink(sequence: number, id: string, source: string, target
                         text: sequence.toString(),
                         fontSize: 16,
                     }
-
                 },
                 position: {
                     distance: 0.1,

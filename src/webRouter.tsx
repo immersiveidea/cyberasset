@@ -9,6 +9,7 @@ import PricingPage from "./pages/pricingPage.tsx";
 import SolutionPage from "./solutions/solutionPage.tsx";
 import SolutionDiagramPopoutPage from "./solutions/solutionDiagramPopoutPage.tsx";
 import ComponentsPage from "./pages/componentsPage.tsx";
+import {SolutionComponent} from "./solutionComponents/solutionComponent.tsx";
 
 export const webRouter = createBrowserRouter([
     {
@@ -22,7 +23,7 @@ export const webRouter = createBrowserRouter([
             </Suspense>),
     },
     {
-        path: "/solution/:solutionId/:tab",
+        path: "/solution/:solutionId/:tab/:componentId?",
         element: (<Suspense fallback={<div>Loading</div>}>
             <SolutionPage/>
         </Suspense>),
@@ -37,10 +38,10 @@ export const webRouter = createBrowserRouter([
             </Suspense>) },
 
     {
-        path: "/solution/:solutionId/component/:componentId",
+        path: "/component/:componentId",
         element: (<Suspense fallback={<div>Loading</div>}>
-            <SolutionPage/>
-            </Suspense>),
+            <SolutionComponent/>
+        </Suspense>),
     },
     {
         path: "/solution/:solutionId/diagram",
