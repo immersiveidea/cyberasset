@@ -1,9 +1,10 @@
-import {Card, Group, Modal, Select, TextInput, Title} from '@mantine/core';
+import {Card, Group, Modal, Select, Stack, Textarea, TextInput, Title} from '@mantine/core';
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {Platform} from "../platform.tsx";
 import DeleteButton from "../components/deleteButton.tsx";
 import {useNavigate, useParams} from "react-router-dom";
 import log from "loglevel";
+import {deleteComponent} from "../dbUtils.ts";
 
 
 type ComponentType = {
@@ -18,6 +19,7 @@ type ComponentType = {
 
 export function SolutionComponent() {
     const logger = log.getLogger('SolutionComponent');
+
     const db = usePouch();
     const params = useParams();
     const {doc, loading, state, error} = useDoc(params.componentId);
@@ -27,8 +29,7 @@ export function SolutionComponent() {
 
     const deleteDoc = async (doc) => {
         try {
-            const existing = await db.get(doc);
-            await db.remove(existing);
+            await deleteComponent(db, doc);
         } catch (err) {
             logger.error(err);
         }
@@ -63,7 +64,7 @@ export function SolutionComponent() {
         const renderDoc: ComponentType= doc as ComponentType;
         return (
             <Modal w="xl" opened={true} onClose={() => {history.back()}}>
-                <Group>
+                <Stack>
                     <TextInput
                         id={params.componentId + '-name'}
                         withAsterisk
@@ -76,9 +77,11 @@ export function SolutionComponent() {
                             }
                         }}
                         placeholder="Name of Component"
-                        size='sm'/>
+                        />
+                    <Textarea rows={10} label="Description" description="Enter details describing what this component does"
+                        placeholder="(i.e.) Web service that does something useful"></Textarea>
                     <DeleteButton onClick={deleteDoc} id={params.componentId}/>
-                </Group>
+                </Stack>
 
             </Modal>
         );

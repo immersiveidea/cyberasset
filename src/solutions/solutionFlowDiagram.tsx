@@ -4,8 +4,11 @@ import log from "loglevel";
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import CustomGraph from "../graph/customGraph.ts";
 import {Box, Center} from "@mantine/core";
+import {useParams} from "react-router-dom";
+import {deleteComponent, deleteFlowstep} from "../dbUtils.ts";
 
 export default function SolutionFlowDiagram() {
+    const params = useParams();
     const logger = log.getLogger('SolutionFlowDiagram');
     const canvas = useRef(null);
     const COMPONENTS_QUERY = {
@@ -19,15 +22,16 @@ export default function SolutionFlowDiagram() {
     const {docs: components, state: componentsState} = useFind(COMPONENTS_QUERY);
     const [loaded, setLoaded] = useState(false);
     const [customGraph, setCustomGraph] = useState(null as CustomGraph);
-    const CONNECTION_QUERY = {
+    const FLOW_QUERY = {
         index: {
-            fields: ['type', 'components']
+            fields: ['solution_id', 'type', 'components']
         },
         selector: {
-            type: 'connection',
+            solution_id: params.solutionId,
+            type: 'flowstep',
         }
     };
-    const {docs: connections, state: connectionsState} = useFind(CONNECTION_QUERY);
+    const {docs: flowSteps, state: connectionsState} = useFind(FLOW_QUERY);
     const {doc: layoutDoc, state: layoutDocState, error: layoutDocError} = useDoc('layout');
     const db = usePouch();
     const [working, setWorking] = useState(false);
@@ -47,11 +51,9 @@ export default function SolutionFlowDiagram() {
             logger.debug(c);
             if (!c) {
                 logger.error('canvas not found');
-
             } else {
                 setCustomGraph(new CustomGraph(c));
             }
-
         }
     }, [loaded]);
     useEffect(() => {
@@ -63,32 +65,72 @@ export default function SolutionFlowDiagram() {
 
         customGraph.on('drop', (event) => {
             logger.debug(event);
-            const doc = {...layoutDoc};
-
-            doc[event.id] = {position: {x: event.x, y: event.y}};
-            logger.debug('layout doc', doc);
-            db.put(doc);
+            const newLayout = {...layoutDoc};
+            newLayout[event.id] = {position: {x: event.x, y: event.y}};
+            logger.debug('layout doc', newLayout);
+            db.put(newLayout);
         })
-        customGraph.on('connect', (event) => {
-            const sequence = connections?.length || 0;
-            db.post({type: 'connection', sequence: sequence, source: event.source, destination: event.destination});
+        customGraph.on('connect',async (event) => {
+            logger.debug(components);
+            logger.debug(event);
+            const sequence = flowSteps?.length || 0;
+            const sourceComponent = components.find((comp)=>{
+                return comp._id === event.source;
+            });
+            logger.debug(sourceComponent);
+            const destComponent = components.find((comp)=>{
+                return comp._id === event.destination;
+            });
+            logger.debug(destComponent);
+            const flowStep = await db.post({type: 'flowstep', solution_id: params.solutionId,
+                sequence: sequence,
+                source: event.source,
+                destination: event.destination});
+
+            if (!sourceComponent.connections) {
+                sourceComponent.connections = [];
+            }
+
+            if (!sourceComponent.connections.find((c) => {return c.id === event.destination})) {
+                sourceComponent.connections.push({id: event.destination, direction: 'out'});
+            }
+            await db.put(sourceComponent);
+            logger.debug('sourceComponent', sourceComponent);
+            if (!destComponent.connections) {
+                destComponent.connections = [];
+            }
+            if (!destComponent.connections.find((c) => {return c.id === event.source})) {
+                destComponent.connections.push({id: event.source, direction: 'in'});
+            }
+            await db.put(destComponent);
+            logger.debug('destComponent', destComponent);
+
+            logger.debug('flowStep', flowStep);
         });
         customGraph.on('delete', async (event) => {
             logger.debug('delete', event);
             try {
                 const doc = await db.get(event.id);
-                await db.remove(doc);
+                logger.debug('deleting', doc);
+                switch (doc.type) {
+                    case 'component':
+                        deleteComponent(db, doc)
+                        break;
+                    case 'flowstep':
+                        deleteFlowstep(db, doc)
+                        break;
+                }
+                //await db.remove(doc);
             } catch (err) {
                 logger.error(err);
             }
         });
         setWorking(true);
-        customGraph.updateGraph(components, connections, layoutDoc);
-
+        customGraph.updateGraph(components, flowSteps, layoutDoc);
         logger.debug('layoutDoc', layoutDoc);
-        logger.debug('connections', connections);
+        logger.debug('flowSteps', flowSteps);
         setWorking(false);
-    }, [customGraph, connections, components, layoutDoc])
+    }, [customGraph, flowSteps, components, layoutDoc])
     useEffect(() => {
         if (componentsState === 'done' && connectionsState === 'done' && !loaded) {
             logger.debug('loaded');

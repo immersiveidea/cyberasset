@@ -1,19 +1,59 @@
-import {Button, SimpleGrid} from "@mantine/core";
+import {Button, Card, Code, Group, SimpleGrid, Table} from "@mantine/core";
 import {usePouch} from "use-pouchdb";
+import log from "loglevel";
+import {useEffect, useState} from "react";
 
 export default function AdminActions() {
-    const data = usePouch();
-    const clearComponents = () => {
-        data.destroy();
+    const logger = log.getLogger('AdminActions');
+    const db = usePouch();
+    const [rows, setRows] = useState([]);
+    useEffect(()=> {
+        db.allDocs({include_docs: true})
+            .then((allDocs) => {
+                setRows(allDocs.rows);
+            });
 
+    },[]);
+    const clearAllData = () => {
+        db.destroy();
     }
-    const clearConnections = () => {
-        data.destroy();
+    const renderAllData = () => {
+
+        logger.debug('rows', rows);
+
+        if (!rows || rows.length === 0) {
+            return <div>No data</div>
+        } else {
+            return (
+                <>
+                    {
+                        rows.map((row) => {
+                            return (
+                                    <Card key={row.id}>
+                                        <Card.Section>
+                                            {row.id}
+                                        </Card.Section>
+                                        <Card.Section>
+                                            <Code block>
+                                                {JSON.stringify(row.doc, null, 2)}
+                                            </Code>
+
+                                        </Card.Section>
+                                    </Card>
+                                    )
+                        })
+                    }
+                </>
+            )
+        }
     }
     return (
-        <SimpleGrid>
-            <Button onClick={clearComponents} fullWidth>Clear Components</Button>
-            <Button onClick={clearConnections} fullWidth>Clear Connections</Button>
-        </SimpleGrid>
+       <>
+
+        <Group>
+            <Button onClick={clearAllData} fullWidth>Remove All Data</Button>
+        </Group>
+           {renderAllData()}
+       </>
     );
 }

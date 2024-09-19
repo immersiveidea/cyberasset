@@ -14,6 +14,8 @@ import {SolutionComponent} from "../solutionComponents/solutionComponent.tsx";
 import SolutionFlowDiagram from "./solutionFlowDiagram.tsx";
 import log from "loglevel";
 import { lazy } from 'react';
+import {SolutionConnections} from "../networkConnections/solutionConnections.tsx";
+import {SequenceDiagramView} from "./sequenceDiagramView.tsx";
 const SolutionNetworkConnectionDiagram = lazy(() => import("./solutionNetworkConnectionDiagram.tsx"));
 export default function SolutionPage() {
     const logger = log.getLogger('SolutionPage');
@@ -48,7 +50,9 @@ export default function SolutionPage() {
             case 'flow':
                 return <SolutionFlowDiagram/>
             case 'connections':
-                return <SolutionNetworkConnectionDiagram/>
+                return <SolutionConnections/>
+            case 'sequence':
+                return <SequenceDiagramView/>
             case 'security':
                 return <QuickText/>
             case 'component':
@@ -77,10 +81,13 @@ export default function SolutionPage() {
                                 Components
                             </Tabs.Tab>
                             <Tabs.Tab value="flow">
-                                Flow
+                                Flow Diagram
                             </Tabs.Tab>
                             <Tabs.Tab value="connections">
                                 Connections
+                            </Tabs.Tab>
+                            <Tabs.Tab value="sequence">
+                                Sequence Diagram
                             </Tabs.Tab>
                             <Tabs.Tab value="security">
                                 Security
