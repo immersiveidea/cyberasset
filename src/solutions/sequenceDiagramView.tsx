@@ -46,6 +46,29 @@ export function SequenceDiagramView() {
                 logger.debug('flowSteps', tmpFlowSteps);
                 setComponents(tmpComponents);
 
+                const swimlanes = [];
+                for (const flowStep of tmpFlowSteps) {
+                    const component = tmpComponents.find((comp) => {return comp._id == flowStep.source});
+                    const lane = swimlanes.find((lane) => {
+                        return lane.id === flowStep.source;
+                    });
+                    if (lane) {
+                        lane.interactions.push({sequence: flowStep.sequence, destination: flowStep.destination});
+                    } else {
+                        swimlanes.push({id: flowStep.source, name: component.name, interactions: [{sequence: flowStep.sequence, destination: flowStep.destination}]});
+                    }
+                }
+                logger.debug('swimlanes', swimlanes);
+                const c = canvas.current;
+                logger.debug(c);
+                if (!c) {
+                    logger.error('canvas not found');
+                } else {
+                    const diagram = new SequenceDiagram(c);
+                    setSequenceDiagram(diagram);
+                    diagram.updateDiagram(tmpFlowSteps, swimlanes);
+                }
+
             }
         }, [state]);
         return (
