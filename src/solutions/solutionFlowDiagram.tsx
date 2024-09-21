@@ -13,9 +13,10 @@ export default function SolutionFlowDiagram() {
     const canvas = useRef(null);
     const COMPONENTS_QUERY = {
         index: {
-            fields: ['type']
+            fields: ['type', 'solution_id']
         },
         selector: {
+            solution_id: params.solutionId,
             type: 'component',
         }
     };
@@ -84,6 +85,8 @@ export default function SolutionFlowDiagram() {
             logger.debug(destComponent);
             const flowStep = await db.post({type: 'flowstep', solution_id: params.solutionId,
                 sequence: sequence,
+                protocol: 'https',
+                port: '443',
                 source: event.source,
                 destination: event.destination});
 
@@ -92,7 +95,7 @@ export default function SolutionFlowDiagram() {
             }
 
             if (!sourceComponent.connections.find((c) => {return c.id === event.destination})) {
-                sourceComponent.connections.push({id: event.destination, direction: 'out'});
+                sourceComponent.connections.push({id: event.destination, direction: 'out', protocol: 'https', port: '443'});
             }
             await db.put(sourceComponent);
             logger.debug('sourceComponent', sourceComponent);
@@ -100,7 +103,7 @@ export default function SolutionFlowDiagram() {
                 destComponent.connections = [];
             }
             if (!destComponent.connections.find((c) => {return c.id === event.source})) {
-                destComponent.connections.push({id: event.source, direction: 'in'});
+                destComponent.connections.push({id: event.source, direction: 'in', protocol: 'https', port: '443'});
             }
             await db.put(destComponent);
             logger.debug('destComponent', destComponent);

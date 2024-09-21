@@ -24,10 +24,15 @@ export function SolutionConnections() {
             for(const row of all)  {
                 switch (row.doc.type) {
                     case 'component':
-                        components.push(row.doc);
+                        if (row.doc.solution_id === params.solutionId) {
+                            components.push(row.doc);
+                        }
                         break;
                     case 'flowstep':
-                        flowSteps.push(row.doc);
+                        if (row.doc.solution_id === params.solutionId) {
+                            flowSteps.push(row.doc);
+                        }
+
                         break;
                     case 'solution':
                         if (row.doc._id === params.solutionId) {
@@ -102,7 +107,7 @@ export function SolutionConnections() {
                     <Box w={90}>
                         {component.name}
                     </Box>
-                    <Select w={90} data={['http', 'tcp', 'udp', 'ftp', 'sftp']}
+                    <Select w={90} data={['http', 'https', 'tcp', 'udp', 'ftp', 'sftp']}
                             defaultValue={step.protocol}
                             label="protocol"
                             onChange={(value) => {

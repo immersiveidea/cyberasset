@@ -3,8 +3,6 @@ import log, {Logger} from "loglevel";
 import Graph = dia.Graph;
 import Rectangle = shapes.standard.Rectangle;
 import Link = shapes.standard.Link;
-import connectionRatio = linkAnchors.connectionRatio;
-
 
 export default class SequenceDiagram {
     private _graph: Graph;
@@ -24,104 +22,106 @@ export default class SequenceDiagram {
             cellViewNamespace: shapes,
             drawGrid: {name: "fixedDot"},
             background: {
-                color: 'rgba(0, 0, 0, 0.1)'
+                color: 'rgba(20, 20, 40, 0.9)'
             }
         });
 
     }
 
     public updateDiagram(flowsteps, swimlanes) {
-        let i = 100;
-        let seq = 75;
+        let x = 100;
         const bottoms = [];
         for (const swimlane of swimlanes) {
             const role = new Rectangle(
                 {
                     id: 'lifestart' + swimlane.id,
                     size: {width: 100, height: 50},
-                    position: {x: i, y: 10}
+                    position: {x: x, y: 10}
                 });
             role.attr({label: {text: util.breakText(swimlane.name, {width: 100})}});
+            role.prop('attrs/body', {fill: '#404090'});
+            role.prop('attrs/label', {fill: '#FFFFFF'});
             this._graph.addCell(role);
             const role2 = role.clone();
-        //    role2.id = 'lifeend' + swimlane.id;
-            role2.position(i, 400);
+            role2.position(x, 400);
             bottoms.push(role2);
             this._graph.addCell(role2);
             const lifeline = new Link({
                 id: 'lifeline' + swimlane.id,
-                attrs: {line: {stroke: 'white',}}
             });
             lifeline.prop('source', {id: role.id});
             lifeline.prop('target', {id: role2.id});
-            //lifeline.attr('line/stroke', 'black');
-            //lifeline.attr('body/fill', 'black');
-            //lifeline.attr('body/refPoints', '-1,-1 -1,1 1,1 1,-1');
+            lifeline.prop('attrs/line', {stroke: '#3030F0', strokeDasharray: '5 10'});
+
             this._logger.debug('lifeline', lifeline);
             this._graph.addCell(lifeline);
-            i = i + 150;
+            x = x + 120;
         }
-        const factor = 50;
-        let next = 1;
+        const factor = 25;
         const data = []
         for (const flowstep of flowsteps) {
             this._logger.debug('flowstep', flowstep);
-            const resp = flowsteps.find((step) => {
+            const resp = flowsteps.filter((step) => {
                 return step.source === flowstep.destination &&
                     step.destination === flowstep.source &&
                     step.sequence > flowstep.sequence
             });
-            if (resp) {
+            if (resp && resp.length >0) {
                 this._logger.debug('resp', resp);
+                const maxResp = resp.sort((a, b) => {return a.sequence - b.sequence})[0];
                 const reqres = {
                     request: {sequence: flowstep.sequence, stepid: flowstep.source},
-                    response: {sequence: resp.sequence, stepid: flowstep.destination},
+                    response: {sequence: maxResp.sequence, stepid: flowstep.destination},
                 }
                 data.push(reqres);
             }
 
         }
-        i=2;
+        let y=3;
         for (const activation of data) {
             const requestCell = this._graph.getCell('lifestart' + activation.request.stepid);
             const responseCell = this._graph.getCell('lifestart' + activation.response.stepid);
-
-
             const life = new Rectangle(
                 {
-                    id: 'life' + activation.response.stepid+'b'+i,
+                    id: 'life' + activation.response.stepid+'b'+y,
                     size: {width: 10, height: activation.response.sequence*factor - activation.request.sequence*factor},
-                    position: {x: requestCell.position().x+45, y: factor*i}
+                    position: {x: requestCell.position().x+45, y: factor*y}
                 });
             const life2 = new Rectangle(
                 {
-                    id: 'life' + activation.request.stepid+'a'+i,
+                    id: 'life' + activation.request.stepid+'a'+y,
                     size: {width: 10, height: activation.response.sequence*factor - activation.request.sequence*factor},
-                    position: {x: responseCell.position().x+45, y: factor*i}
+                    position: {x: responseCell.position().x+45, y: factor*y}
                 });
+            life.attr('body/fill', '#8888DD');
+            life2.attr('body/fill', '#00AACC');
             this._graph.addCell(life);
             this._graph.addCell(life2);
-            const link = new Link({
-                id: 'link' + i,
-                attrs: {line: {stroke: 'white'}}
-            });
-            link.source(life, {anchor: {name: 'top'}});
-            link.target(life2, {anchor: {name: 'top'}});
-            this._graph.addCell(link)
-            const linkReturn = new Link({
-                id: 'linkReturn' + i,
-                attrs: {line: {stroke: 'white'}}
-            });
-            linkReturn.source(life2, {anchor: {name: 'bottom'}});
-            linkReturn.target(life, {anchor: {name: 'bottom'}});
-            this._graph.addCell(linkReturn)
-            i+=1.5;
+            buildLinks(life, life2,y, this._graph);
+            y+=1.5;
         }
         this._logger.debug('data', data);
 
         bottoms.forEach((bottom) => {
-            bottom.position(bottom.position().x, (i+3)*factor);
+            bottom.position(bottom.position().x, (y+10)*factor);
         })
 
     }
+}
+
+function buildLinks(source, target, i, graph) {
+    const link = buildLink(source, target, i, 'top');
+    graph.addCell(link);
+    const linkReturn = buildLink(target, source, i, 'bottom');
+    graph.addCell(linkReturn);
+}
+
+function buildLink(source, target, i, position) {
+    const link = new Link({
+        id: 'link' + source.id + target.id + i,
+    });
+    link.source(source, {anchor: {name: position}});
+    link.target(target, {anchor: {name: position}});
+    link.prop('attrs/line', {stroke: '#8888FF'});
+    return link;
 }
