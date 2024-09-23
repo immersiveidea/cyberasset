@@ -35,17 +35,6 @@ export function SolutionComponent() {
         }
     }
 
-    const options = [
-        'Function App',
-        'Microservice API',
-        'SaaS Platform',
-        'Web App',
-        'Hosted Platform',
-        'Network Device',
-        'Platform Process',
-        'Virtual Machine'
-    ]
-
     if (!params.componentId) return <h1>Empty</h1>;
     if (loading) return <div>Loading...</div>
     if (state === 'error' && error) {

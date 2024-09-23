@@ -34,7 +34,7 @@ export default class FlowDiagram {
                 color: 'rgba(0, 0, 0, 0.1)'
             }
         });
-        this._paper.on('cell:pointerup', (cellView, evt, x, y) => {
+        this._paper.on('cell:pointerup', () => {
             if (this._drop) {
                 //evt.preventDefault();
                 this._logger.debug(this._drop);
