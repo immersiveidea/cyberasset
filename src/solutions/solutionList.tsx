@@ -1,6 +1,5 @@
 import {useFind, usePouch} from "use-pouchdb";
 import {AppShell, Button, Card, Group, MantineProvider, rgba, SimpleGrid} from "@mantine/core";
-import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";

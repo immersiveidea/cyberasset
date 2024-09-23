@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDoc, usePouch} from "use-pouchdb";
 import {useDisclosure} from "@mantine/hooks";
-import {AppShell, MantineProvider, rgba, Stack, Tabs} from "@mantine/core";
+import {AppShell, MantineProvider, rgba, Tabs} from "@mantine/core";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";
 import SolutionHeader from "./solutionHeader.tsx";
