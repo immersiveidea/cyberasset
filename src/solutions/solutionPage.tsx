@@ -31,7 +31,6 @@ export default function SolutionPage() {
         } else {
             logger.debug('not editing', solution);
         }
-
     }, [editing, solution]);
 
     const saveSolution = () => {

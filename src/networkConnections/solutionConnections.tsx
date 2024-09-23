@@ -14,8 +14,7 @@ export function SolutionConnections() {
     const [flowSteps, setFlowSteps] = useState([]);
     useEffect(() => {
         if (state === 'done') {
-            logger.debug('params', params);
-            logger.debug('all', all);
+            logger.info('params', params);
             setSolution(all.find((doc) => {
                 return doc.id === params.solutionId
             }).doc);
@@ -40,7 +39,6 @@ export function SolutionConnections() {
                         }
                         break;
                     default:
-                        logger.debug(row.doc);
                         break;
                 }
             }
@@ -92,11 +90,11 @@ export function SolutionConnections() {
             return <div>No connections</div>
         }
         return baseComponent.connections.map((step, index) => {
-            logger.debug('step', step);
+
             const component = components.find((comp) => {
                 return comp._id === step.id
             });
-            logger.debug('component', component);
+
             if (!component) {
                 return <div>{JSON.stringify(components)}</div>
             } else {

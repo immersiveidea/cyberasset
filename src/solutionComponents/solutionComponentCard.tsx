@@ -47,7 +47,7 @@ export default function SolutionComponentCard({data}) {
         }
 
     }
-    logger.debug(data);
+
     const editComponent = () => {
         if (params.solutionId) {
             navigate('/solution/' + params.solutionId + '/component/' + data._id);

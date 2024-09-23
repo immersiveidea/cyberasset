@@ -8,22 +8,24 @@ export default function AdminActions() {
     const db = usePouch();
     const [rows, setRows] = useState([]);
     useEffect(() => {
-        db.allDocs({include_docs: true})
-            .then((allDocs) => {
-                setRows(allDocs.rows);
-            });
+        logger.debug(db);
+        if (db) {
+            db.allDocs({include_docs: true})
+                .then((allDocs) => {
+                    setRows(allDocs.rows);
+                });
+
+        }
 
     }, []);
     const clearAllData = () => {
         db.destroy();
     }
     const renderAllData = () => {
-
-        logger.debug('rows', rows);
-
         if (!rows || rows.length === 0) {
             return <div>No data</div>
         } else {
+            logger.debug('rows', rows);
             return (
                 <>
                     {
