@@ -12,6 +12,7 @@ import {CanvasWidget} from '@projectstorm/react-canvas-core';
 import {Box, Button, Group} from "@mantine/core";
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {useState} from "react";
+
 type Rankable = { rank: number };
 
 export default function SolutionFlowDiagramView() {
@@ -64,7 +65,6 @@ export default function SolutionFlowDiagramView() {
     engine.setModel(model);
 
 
-
     const upsert = (id) => {
         const existing = model.getNodes().find((node) => node.getOptions().id === id);
         if (!existing) {
@@ -97,7 +97,7 @@ export default function SolutionFlowDiagramView() {
 
     if (connections && connections.length > 0) {
         const conns = connections.toSorted((a, b) => {
-            return ((a as unknown) as  Rankable).rank - ((b as unknown) as Rankable).rank;
+            return ((a as unknown) as Rankable).rank - ((b as unknown) as Rankable).rank;
         });
         conns.forEach((conn) => {
             const connection = (conn as unknown) as { source: string, destination: string, _id: string, rank: number };
@@ -127,12 +127,16 @@ export default function SolutionFlowDiagramView() {
             layoutEngine.redistribute(model);
 
             const obj = {}
-            model.getNodes().forEach((node) => {obj[node.getOptions().id] = {position: node.getPosition()}});
+            model.getNodes().forEach((node) => {
+                obj[node.getOptions().id] = {position: node.getPosition()}
+            });
             db.post({_id: 'layout', ...obj});
         }
         const saveLayout = () => {
             const obj = {}
-            model.getNodes().forEach((node) => {obj[node.getOptions().id] = {position: node.getPosition()}});
+            model.getNodes().forEach((node) => {
+                obj[node.getOptions().id] = {position: node.getPosition()}
+            });
 
             const newObj = {...layoutDoc, ...obj}
             console.log(newObj);
@@ -141,7 +145,10 @@ export default function SolutionFlowDiagramView() {
         return (
             <Group>
                 <Button
-                onClick={() =>{ layoutEngine.redistribute(model); setUpdate(update)}}>Auto Layout</Button>
+                    onClick={() => {
+                        layoutEngine.redistribute(model);
+                        setUpdate(update)
+                    }}>Auto Layout</Button>
                 <Button
                     onClick={saveLayout}>Save Layout</Button>
                 <CanvasWidget className="diagramcanvas" engine={engine}/>

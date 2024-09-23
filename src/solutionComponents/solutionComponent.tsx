@@ -1,4 +1,4 @@
-import {Modal,Stack, Textarea, TextInput, Title} from '@mantine/core';
+import {Modal, Stack, Textarea, TextInput, Title} from '@mantine/core';
 import {useDoc, usePouch} from "use-pouchdb";
 
 import DeleteButton from "../components/deleteButton.tsx";
@@ -50,9 +50,11 @@ export function SolutionComponent() {
         logger.warn('doc not found', params);
         return <Title>Component not found</Title>
     } else {
-        const renderDoc: ComponentType= doc as ComponentType;
+        const renderDoc: ComponentType = doc as ComponentType;
         return (
-            <Modal w="xl" opened={true} onClose={() => {history.back()}}>
+            <Modal w="xl" opened={true} onClose={() => {
+                history.back()
+            }}>
                 <Stack>
                     <TextInput
                         id={params.componentId + '-name'}
@@ -66,9 +68,10 @@ export function SolutionComponent() {
                             }
                         }}
                         placeholder="Name of Component"
-                        />
-                    <Textarea rows={10} label="Description" description="Enter details describing what this component does"
-                        placeholder="(i.e.) Web service that does something useful"></Textarea>
+                    />
+                    <Textarea rows={10} label="Description"
+                              description="Enter details describing what this component does"
+                              placeholder="(i.e.) Web service that does something useful"></Textarea>
                     <DeleteButton onClick={deleteDoc} id={params.componentId}/>
                 </Stack>
 

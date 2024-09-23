@@ -65,9 +65,9 @@ export default function SolutionFlowDiagram() {
                         logger.error(err);
                     }
                 });
-                cgraph.on('connect',async (event) => {
+                cgraph.on('connect', async (event) => {
                     try {
-                        logger.debug('connect' , 'components', components);
+                        logger.debug('connect', 'components', components);
                         logger.debug('connect', 'event', event);
                         const all = await db.allDocs({include_docs: true});
                         logger.debug('all', all);
@@ -97,7 +97,6 @@ export default function SolutionFlowDiagram() {
                         logger.debug('sourceComponent', sourceComponent);
 
                         await updateComponent(destComponent, event.source, 'in', db);
-
 
 
                         logger.debug('destComponent', destComponent);
@@ -158,13 +157,16 @@ export default function SolutionFlowDiagram() {
         </>
     )
 }
+
 async function updateComponent(component, destination: string, inout: string, db) {
     const dbComp = await db.get(component._id);
     const logger = log.getLogger('updateComponent');
     if (dbComp.connections === undefined || dbComp.connections === null) {
         dbComp.connections = [];
     }
-    if (!dbComp.connections.find((c) => {return c.id === destination})) {
+    if (!dbComp.connections.find((c) => {
+        return c.id === destination
+    })) {
         dbComp.connections.push({id: destination, direction: inout, protocol: 'https', port: '443'});
     }
     logger.debug('component connections', component.connections);

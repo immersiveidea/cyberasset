@@ -1,8 +1,8 @@
 import {dia, highlighters, shapes} from "@joint/core";
 import log from "loglevel";
+import {defaultLink, defaultNode} from "../solutionComponents/defaultNodes.ts";
 import Graph = dia.Graph;
 import Paper = dia.Paper;
-import {defaultLink, defaultNode} from "../solutionComponents/defaultNodes.ts";
 
 export default class FlowDiagram {
     private _logger = log.getLogger('FlowDiagram');
@@ -45,7 +45,7 @@ export default class FlowDiagram {
             }
             // this._logger.debug('cell:pointerup', cellView.data.model.id, x, y);
         });
-        this._paper.on('link:pointerclick', (cell, evt) => {
+        this._paper.on('link:pointerclick', (cell) => {
             this._logger.debug('link:pointerclick', cell.model.id);
             highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
             this._lastClicked = {id: cell.model.id as string, type: 'edge'};
@@ -90,7 +90,12 @@ export default class FlowDiagram {
             }*/
         })
         connections.forEach((connection) => {
-            const comp = connection as unknown as { _id: string, sequence: number, source: string, destination: string };
+            const comp = connection as unknown as {
+                _id: string,
+                sequence: number,
+                source: string,
+                destination: string
+            };
             try {
                 this._logger.debug('createEdge', comp);
                 if (comp.sequence != null) {
@@ -145,6 +150,7 @@ export default class FlowDiagram {
             throw new Error('missing connection');
         }
     }
+
     public destroy() {
         this._paper.remove();
     }

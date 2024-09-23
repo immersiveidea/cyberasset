@@ -1,11 +1,11 @@
-import {Box, Burger, Button, Container, Grid, Group, Text, Image, Popover, Stack} from "@mantine/core";
+import {Box, Burger, Button, Container, Grid, Group, Image, Popover, Stack, Text} from "@mantine/core";
 import {useAuth0} from "@auth0/auth0-react";
 import {Link} from "react-router-dom";
 
 export default function Header() {
     const {user, isAuthenticated, loginWithRedirect, logout} = useAuth0();
     const show = (item) => {
-        return item.auth ===null || item.auth === isAuthenticated;
+        return item.auth === null || item.auth === isAuthenticated;
     }
     const topNavData = [
         {url: '/solutions', name: 'Solutions', auth: true},
@@ -45,7 +45,8 @@ export default function Header() {
         if (isAuthenticated) {
             return <Group key="user">
                 <Box key="picture" visibleFrom="sm" component="span">{picture()}</Box>
-                <Button  key="button" onClick={() => logout({logoutParams: {returnTo: window.location.origin}})}>Logout</Button>
+                <Button key="button"
+                        onClick={() => logout({logoutParams: {returnTo: window.location.origin}})}>Logout</Button>
             </Group>
         } else {
             return <Button key="login" onClick={() => loginWithRedirect()}>Login</Button>
@@ -53,7 +54,7 @@ export default function Header() {
     }
     return (
         <>
-        <Grid  bg="#000" p="sm" justify="space-evenly">
+            <Grid bg="#000" p="sm" justify="space-evenly">
                 <Grid.Col key="left-grid" span={8}>
                     <Group key="left-group" visibleFrom="xs" justify="left" w={512}>
                         <Text key="shield">SHIELD</Text>
@@ -63,7 +64,7 @@ export default function Header() {
                         <Text key="shield">SHIELD</Text>
                         <Popover key="popover" position="bottom">
                             <Popover.Target>
-                                <Burger  hiddenFrom="sm"/>
+                                <Burger hiddenFrom="sm"/>
                             </Popover.Target>
                             <Popover.Dropdown>
                                 <Stack>
@@ -76,7 +77,7 @@ export default function Header() {
                 <Grid.Col key="right" span={4}>
                     <Group justify="right">{userDisplay()}</Group>
                 </Grid.Col>
-        </Grid>
+            </Grid>
         </>
     )
 }

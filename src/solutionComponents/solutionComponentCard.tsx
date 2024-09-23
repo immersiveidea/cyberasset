@@ -1,8 +1,9 @@
-import {ActionIcon, Button, Card} from "@mantine/core";
+import {ActionIcon, Card} from "@mantine/core";
 import {IconPencil, IconTrashX} from "@tabler/icons-react";
 import {useNavigate, useParams} from "react-router-dom";
 import {usePouch} from "use-pouchdb";
 import log from "loglevel";
+
 type MasterComponents = {
     _id: string;
     _rev: string
@@ -29,7 +30,7 @@ export default function SolutionComponentCard({data}) {
         } else {
             db.get('components').then((doc) => {
                 logger.debug('grabbing master doc', doc);
-                const masterDoc = (doc as unknown) as  MasterComponents;
+                const masterDoc = (doc as unknown) as MasterComponents;
                 masterDoc.list = masterDoc.list.filter((component) => {
                     return component._id !== id;
                 });
@@ -38,7 +39,7 @@ export default function SolutionComponentCard({data}) {
                     .then(() => {
                         logger.debug('master doc updated');
                     }).catch((err) => {
-                        logger.error(err);
+                    logger.error(err);
                 });
             }).catch((err) => {
                 logger.error(err);

@@ -100,26 +100,26 @@ export function SolutionComponentList() {
         db.post({type: 'component', name: e, solution_id: params.solutionId});
     }
     return (
-            <Stack>
-                <Group>
-                    <MultiSelect searchable
-                                 key="select"
-                                 searchValue={searchText}
-                                 value={componentValues}
-                                 onChange={setComponentValues}
-                                 onOptionSubmit={onOptionSubmit}
-                                 onKeyDown={(e) => {
-                                     if (e.key === 'Enter') {
-                                         saveComponent();
-                                     }
-                                 }}
-                                 onSearchChange={setSearchText}
-                        // @ts-expect-error - this is a hack to get around the fact that the list is not typed
-                                 data={masterComponents.list.map((x) => x.name)}/>
-                </Group>
-                <SimpleGrid cols={6}>
-                    {renderOut}
-                </SimpleGrid>
-            </Stack>
+        <Stack>
+            <Group>
+                <MultiSelect searchable
+                             key="select"
+                             searchValue={searchText}
+                             value={componentValues}
+                             onChange={setComponentValues}
+                             onOptionSubmit={onOptionSubmit}
+                             onKeyDown={(e) => {
+                                 if (e.key === 'Enter') {
+                                     saveComponent();
+                                 }
+                             }}
+                             onSearchChange={setSearchText}
+                    // @ts-expect-error - this is a hack to get around the fact that the list is not typed
+                             data={masterComponents.list.map((x) => x.name)}/>
+            </Group>
+            <SimpleGrid cols={6}>
+                {renderOut}
+            </SimpleGrid>
+        </Stack>
     )
 }

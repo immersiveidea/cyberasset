@@ -1,5 +1,5 @@
 import {theme} from "../theme.ts";
-import {AppShell, Box, Button, Card, Center, Group, MantineProvider, rgba, Stack} from "@mantine/core";
+import {AppShell, Box, Button, Card, Center, MantineProvider, rgba, Stack} from "@mantine/core";
 import Header from "../header.tsx";
 
 import {ContentfulClientApi, createClient} from 'contentful';
@@ -74,7 +74,9 @@ export default function OldPricingPage() {
                         <Card key={card.id} w={cardSize.w} h={cardSize.h} p={30}>
                             <Card.Section>
                                 <Center>
-                                    {user?.metadata?.tier!=card?.tier?<Button onClick={() => loginWithRedirect()}>Change to This</Button>:'Current Level'}
+                                    {user?.metadata?.tier != card?.tier ?
+                                        <Button onClick={() => loginWithRedirect()}>Change to
+                                            This</Button> : 'Current Level'}
                                 </Center>
                             </Card.Section>
                             <Card.Section p={10}>

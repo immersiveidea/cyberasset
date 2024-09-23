@@ -1,18 +1,19 @@
 import "@mantine/core/styles.css";
 import "./global.css";
-import React, {lazy, Suspense} from "react";
+import React from "react";
 
 import ReactDOM from "react-dom/client";
 
 import {Provider} from "use-pouchdb";
 import {data} from "./data.ts";
 import {RouterProvider} from "react-router-dom";
-import {Auth0Provider}  from "@auth0/auth0-react";
+import {Auth0Provider} from "@auth0/auth0-react";
 import {webRouter} from "./webRouter.tsx";
+import log from "loglevel";
 
 
 const components = data();
-import log from "loglevel";
+
 log.default.setLevel('debug', false);
 //log.getLogger('SolutionFlowDiagram').setLevel('debug', false);
 //log.getLogger('deleteFlowstep').setLevel('debug', false);

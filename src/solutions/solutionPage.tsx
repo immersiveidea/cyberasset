@@ -57,7 +57,8 @@ export default function SolutionPage() {
                 return <SolutionComponent/>
             default:
                 return <></>
-    }}
+        }
+    }
     return (
         <MantineProvider defaultColorScheme="dark" theme={theme}>
             <AppShell

@@ -2,7 +2,7 @@ import {Anchor, Button, Group, Modal, Paper, Stack, Textarea, TextInput, Title} 
 import React from "react";
 import {useParams} from "react-router-dom";
 
-export default function SolutionHeader ({editing, toggle, solutionData, setSolutionData, saveSolution, solution}) {
+export default function SolutionHeader({editing, toggle, solutionData, setSolutionData, saveSolution, solution}) {
     const params = useParams();
     if (editing) {
         return (

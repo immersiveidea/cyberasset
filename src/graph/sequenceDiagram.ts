@@ -99,7 +99,7 @@ export default class SequenceDiagram {
             const responseCell = this._graph.getCell('lifestart' + activation.response.stepid);
             const xOffset = 0;
             if (requestCell.position().x < responseCell.position().x) {
-                y-=.2;
+                y -= .2;
 
 
             }
@@ -110,7 +110,7 @@ export default class SequenceDiagram {
                         width: 10,
                         height: activation.response.sequence * factor - activation.request.sequence * factor
                     },
-                    position: {x: requestCell.position().x + 45 + xOffset+2, y: factor * y}
+                    position: {x: requestCell.position().x + 45 + xOffset + 2, y: factor * y}
                 });
 
             const life2 = new Rectangle(
@@ -120,7 +120,7 @@ export default class SequenceDiagram {
                         width: 8,
                         height: activation.response.sequence * factor - activation.request.sequence * factor
                     },
-                    position: {x: responseCell.position().x + 45 + xOffset -2, y: factor * y}
+                    position: {x: responseCell.position().x + 45 + xOffset - 2, y: factor * y}
                 });
             life.attr('body/fill', '#8888DD');
             life2.attr('body/fill', '#00AACC');
@@ -143,12 +143,11 @@ function buildLinks(source, sourceSequence, target, targetSequence, i, graph) {
     const link = buildLink(source, target, i, 'top');
     link.attr('label/text', sourceSequence);
     link.labels([
-        {attrs: {
+        {
+            attrs: {
 
 
-
-
-                text   : {
+                text: {
                     text: sourceSequence.toString(),
                     fontSize: 16,
                 }
@@ -158,12 +157,11 @@ function buildLinks(source, sourceSequence, target, targetSequence, i, graph) {
     graph.addCell(link);
     const linkReturn = buildLink(target, source, i, 'bottom');
     linkReturn.labels([
-        {attrs: {
+        {
+            attrs: {
 
 
-
-
-                text   : {
+                text: {
                     text: targetSequence.toString(),
                     fontSize: 16,
                 }

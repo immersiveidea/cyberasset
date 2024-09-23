@@ -21,7 +21,7 @@ export function SolutionConnections() {
             }).doc);
             const components = [];
             const flowSteps = [];
-            for(const row of all)  {
+            for (const row of all) {
                 switch (row.doc.type) {
                     case 'component':
                         if (row.doc.solution_id === params.solutionId) {
@@ -55,12 +55,12 @@ export function SolutionConnections() {
         const otherComponents = components.filter((comp) => {
             logger.debug('comp', comp)
             return comp.connections.find((conn) => {
-                logger.debug ('conn', conn);
+                logger.debug('conn', conn);
                 return conn.id === component._id;
             })
         });
-        logger.debug('component' , component);
-        logger.debug('otherComponents' , otherComponents);
+        logger.debug('component', component);
+        logger.debug('otherComponents', otherComponents);
 
         for (const otherComponent of otherComponents) {
             const otherConnection = otherComponent.connections.find((conn) => {
@@ -136,15 +136,15 @@ export function SolutionConnections() {
         })
     }
     const connectionTable = () => {
-        if (state!=='done') {
+        if (state !== 'done') {
             return <></>
         }
         return components.map((step, index) => {
             return (
-                    <Table.Tr key={index}>
-                        <Table.Td key={index + 'left'}>{step.name}</Table.Td>
-                        <Table.Td key={index + 'right'}>{connectionView(step)}</Table.Td>
-                    </Table.Tr>
+                <Table.Tr key={index}>
+                    <Table.Td key={index + 'left'}>{step.name}</Table.Td>
+                    <Table.Td key={index + 'right'}>{connectionView(step)}</Table.Td>
+                </Table.Tr>
 
 
             )

@@ -13,8 +13,8 @@ export default function QuickText() {
     const [text, setText] = useState('');
     const [quickSetComponents, setQuickSetComponents] = useState([]);
     useEffect(() => {
-       if (text.length > 0) {
-          if (text.indexOf('->')>-1) {
+        if (text.length > 0) {
+            if (text.indexOf('->') > -1) {
                 const parts = text.split('->');
                 const c = [];
                 parts.forEach(
@@ -28,10 +28,10 @@ export default function QuickText() {
                         }
                     });
                 setQuickSetComponents(c);
-          } else {
+            } else {
                 setQuickSetComponents([{name: text.trim()}]);
-          }
-       }
+            }
+        }
 
     }, [text]);
     const upsertMasterComponent = async (components: Array<{ name: string; }>) => {
@@ -50,7 +50,7 @@ export default function QuickText() {
             const newList = [...(componentsMaster as NameIdList).list, ...missingList];
             logger.debug('newList', newList);
             newList.sort((a, b) => {
-                return (a?._id<b?._id?-1:(a?._id>b?._id?1:0));
+                return (a?._id < b?._id ? -1 : (a?._id > b?._id ? 1 : 0));
             });
             logger.debug('newList sorted', newList);
             await db.put({...componentsMaster, list: newList});
@@ -74,10 +74,21 @@ export default function QuickText() {
         if (quickSetComponents.length > 1) {
             for (let i = 1; i < quickSetComponents.length; i++) {
                 if (params.solutionId) {
-                    const dest = await db.post({...quickSetComponents[i], solution_id: params.solutionId, type: 'component'});
+                    const dest = await db.post({
+                        ...quickSetComponents[i],
+                        solution_id: params.solutionId,
+                        type: 'component'
+                    });
                     logger.debug('dest', dest);
                     if (source) {
-                        const conn = await db.post({type: 'connection', rank: 1, source: source.id, solution_id: params.solutionId, destination: dest.id, components: [{id: source.id}, {id: dest.id}]});
+                        const conn = await db.post({
+                            type: 'connection',
+                            rank: 1,
+                            source: source.id,
+                            solution_id: params.solutionId,
+                            destination: dest.id,
+                            components: [{id: source.id}, {id: dest.id}]
+                        });
                         logger.debug('connection created', conn);
                     }
                     source = dest;
@@ -95,15 +106,16 @@ export default function QuickText() {
     }
     return (
         <Stack>
-        <TextInput  value={text} onChange={(e) => {
-                setText(e.currentTarget.value)}
-        } onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-                logger.debug('enter key pressed');
-                saveData();
+            <TextInput value={text} onChange={(e) => {
+                setText(e.currentTarget.value)
             }
-        }} label="Quick Entry"/>
-        {displayComponents()}
+            } onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                    logger.debug('enter key pressed');
+                    saveData();
+                }
+            }} label="Quick Entry"/>
+            {displayComponents()}
         </Stack>
     )
 }

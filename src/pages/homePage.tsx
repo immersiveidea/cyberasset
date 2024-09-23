@@ -1,4 +1,4 @@
-import {AppShell, Card, Center, Image, MantineProvider, Modal, rgba, SimpleGrid, Title} from "@mantine/core";
+import {AppShell, Card, Center, Image, MantineProvider, Modal, rgba, SimpleGrid} from "@mantine/core";
 import {theme} from "../theme.ts";
 import {useDisclosure} from "@mantine/hooks";
 import {useNavigate} from "react-router-dom";
@@ -16,8 +16,8 @@ export default function HomePage() {
     //image.alt = 'Cyber Security';
     return <MantineProvider defaultColorScheme="dark" theme={theme}>
         <AppShell
-            header={{height:44}}>
-            <AppShell.Header bg={rgba('#FFF',.1)}>
+            header={{height: 44}}>
+            <AppShell.Header bg={rgba('#FFF', .1)}>
                 <Header/>
             </AppShell.Header>
             <AppShell.Main>
@@ -29,8 +29,8 @@ export default function HomePage() {
                                 referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                     </Center>
                 </Modal>
-                <SimpleGrid cols={{xs:1, sm: 2, lg: 3}} >
-                    <Card m="md" w={400} styles={{root:{ cursor: "pointer"}}} component="a" onClick={open}>
+                <SimpleGrid cols={{xs: 1, sm: 2, lg: 3}}>
+                    <Card m="md" w={400} styles={{root: {cursor: "pointer"}}} component="a" onClick={open}>
                         <Card.Section>
                             <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
 
@@ -44,7 +44,9 @@ export default function HomePage() {
                     </Card>
 
 
-                    <Card m="md" w={400} styles={{root:{ cursor: "pointer"}}} component="a" onClick={() => {changeTab('/inventory')}}>
+                    <Card m="md" w={400} styles={{root: {cursor: "pointer"}}} component="a" onClick={() => {
+                        changeTab('/inventory')
+                    }}>
                         <Card.Section>
                             <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
 
@@ -56,7 +58,7 @@ export default function HomePage() {
                         </Card.Section>
 
                     </Card>
-                    <Card m="md" w={400} styles={{root:{ cursor: "pointer"}}} component="a" onClick={open}>
+                    <Card m="md" w={400} styles={{root: {cursor: "pointer"}}} component="a" onClick={open}>
                         <Card.Section>
                             <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
 

@@ -20,7 +20,7 @@ export const webRouter = createBrowserRouter([
         path: "/solution/:solutionId",
         element: (<Suspense fallback={<div>Loading</div>}>
             <SolutionPage/>
-            </Suspense>),
+        </Suspense>),
     },
     {
         path: "/solution/:solutionId/:tab/:componentId?",
@@ -28,14 +28,17 @@ export const webRouter = createBrowserRouter([
             <SolutionPage/>
         </Suspense>),
     },
-    {   path: "/components", element: (<Suspense fallback={<div>Loading</div>}>
+    {
+        path: "/components", element: (<Suspense fallback={<div>Loading</div>}>
             <ComponentsPage/>
         </Suspense>)
 
     },
-    { path: "/solutions", element: (<Suspense fallback={<div>Loading</div>}>
+    {
+        path: "/solutions", element: (<Suspense fallback={<div>Loading</div>}>
             <SolutionList/>
-            </Suspense>) },
+        </Suspense>)
+    },
 
     {
         path: "/component/:componentId",
@@ -55,8 +58,12 @@ export const webRouter = createBrowserRouter([
         path: "/demo",
         element: <Demopage/>,
     },
-    { path: "/features",
-        element: <FeaturesPage/>},
-    {path: "/pricing",
-        element: <PricingPage/>}
+    {
+        path: "/features",
+        element: <FeaturesPage/>
+    },
+    {
+        path: "/pricing",
+        element: <PricingPage/>
+    }
 ]);

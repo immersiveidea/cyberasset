@@ -82,7 +82,9 @@ export function SolutionList() {
                             }
                         }>Select</Button>
                         <Button key="delete">Delete</Button>
-                        <Button key="clone" onClick={() => {cloneSolution(solution._id)}}>Clone</Button>
+                        <Button key="clone" onClick={() => {
+                            cloneSolution(solution._id)
+                        }}>Clone</Button>
                     </Group>
                 </Card.Section>
             </Card>
