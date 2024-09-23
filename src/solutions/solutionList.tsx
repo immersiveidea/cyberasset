@@ -4,8 +4,10 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";
+import log from "loglevel";
 
 export function SolutionList() {
+    const logger = log.getLogger('SolutionList');
     const db = usePouch();
     const navigate = useNavigate();
     const [solution, setSolution] = useState({id: '', name: '', description: ''});
@@ -27,6 +29,45 @@ export function SolutionList() {
         const response = await db.post(newSolution);
         navigate(`/solution/${response.id}`);
     }
+    const cloneSolution = async (event) => {
+        logger.debug('cloning', event);
+        try {
+            const oldSolution = await db.get(event);
+            logger.debug('oldSolution', oldSolution);
+            const all = await db.allDocs({include_docs: true});
+            const clonedData = [];
+            const components = [];
+            const flowsteps = [];
+            const newSolution = await db.post({name: oldSolution.name, type: 'solution'});
+            logger.debug(newSolution);
+            for (const row of all.rows) {
+                if (row.doc.solution_id === event) {
+                    const clonedDoc = {...row.doc};
+                    delete clonedDoc._id;
+                    delete clonedDoc._rev;
+                    delete clonedDoc._conflicts;
+                    delete clonedDoc.connections;
+                    clonedDoc.solution_id = newSolution.id;
+                    switch (clonedDoc.type) {
+                        case 'component':
+                            components.push(clonedDoc);
+                            break;
+                        case 'flowstep':
+                            //don't clone these yet
+                            break;
+                        default:
+                            break;
+                    }
+                    clonedData.push(clonedDoc);
+                }
+            }
+            if (components?.length > 0) {
+                await db.bulkDocs(components);
+            }
+        } catch (err) {
+            logger.error(err);
+        }
+    }
     const solutionCard = (solution) => {
         return (
             <Card w={256} h={256} key={solution._id}>
@@ -44,6 +85,7 @@ export function SolutionList() {
                             }
                         }>Select</Button>
                         <Button key="delete">Delete</Button>
+                        <Button key="clone" onClick={() => {cloneSolution(solution._id)}}>Clone</Button>
                     </Group>
                 </Card.Section>
             </Card>

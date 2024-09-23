@@ -1,16 +1,17 @@
 import log from "loglevel";
+
 export const updateComponent = async (db, component) => {
-    const logger= log.getLogger('updateComponent');
+    const logger = log.getLogger('updateComponent');
     try {
         logger.debug('updating', component);
-
     } catch (err) {
         logger.error(err);
     }
 }
+
 export const deleteComponent = async (db, component) => {
-    const logger= log.getLogger('deleteComponent');
-    if (component.type!='component') {
+    const logger = log.getLogger('deleteComponent');
+    if (component.type != 'component') {
         logger.warn('deleteComponent called with non-component', component);
     }
     try {
@@ -24,49 +25,104 @@ export const deleteComponent = async (db, component) => {
                         row.doc.source === connection.id ||
                         row.doc.destination === connection.id;
                 });
-                if (data.type=='flowstep') {
-                    logger.debug('removing', data);
-                    await db.remove(data);
-                }
-                if (data.type=='component') {
-                    if (data.connections) {
-                        data.connections = data.connections.filter((c) => {
-                            return c.id !== component._id;
-                        });
-                        logger.debug('updating', data);
-                        await db.put(data);
+                logger.debug('flowstep data', data);
+                for (const row of data) {
+                    if (row.type == 'flowstep') {
+                        logger.debug('removing', row);
+                        await db.remove(row);
+                    }
+                    if (row.type == 'component') {
+                        if (row.connections) {
+                            row.connections = row.connections.filter((c) => {
+                                return c.id !== component._id;
+                            });
+                            logger.debug('updating', row);
+                            await db.put(row);
+                        }
                     }
                 }
-
             }
         }
         logger.debug('deleting', component);
         db.remove(component);
-
     } catch (err) {
         logger.error(err);
     }
 }
 export const deleteFlowstep = async (db, flowstep) => {
-    const logger= log.getLogger('deleteFlowstep');
+    const logger = log.getLogger('deleteFlowstep');
     try {
         const all = await db.allDocs({include_docs: true});
-        logger.debug('all', all);
-        all.rows.forEach((row) => {
-            logger.debug('row', row);
-            if (row.doc.connections) {
-                logger.debug('doc with connections', row.doc);
-                row.doc.connections = row.doc.connections.filter((c) => {
-                    return c.id !== flowstep.source && c.id !== flowstep.destination;
-                });
-                logger.debug('updating', row.doc);
-                db.put(row.doc);
+        const remainingFlowsteps = [];
+        const componentsConnected = new Set([]);
+
+        for (const row of all.rows) {
+            switch (row.doc.type) {
+                case 'component':
+                    if (row.doc.solution_id === flowstep.solution_id) {
+                        if (row.doc.connections &&
+                            row.doc.connections.length > 0) {
+                            for (const connection of row.doc.connections) {
+                                if (connection.id == flowstep.source ||
+                                    connection.id == flowstep.destination) {
+                                    logger.debug('found connection', connection);
+                                    componentsConnected.add(connection.id);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'flowstep':
+                    if (row.doc.solution_id === flowstep.solution_id &&
+                        row.doc._id !== flowstep._id) {
+                        remainingFlowsteps.push(row.doc);
+                    }
+                    break;
             }
-        })
+        }
+        logger.debug('componentsConnected', componentsConnected);
+        for (const componentId of componentsConnected) {
+            try {
+                const otherSteps = remainingFlowsteps.find((step) => {
+                    return (step._id !== flowstep._id &&
+                        (step.source === componentId || step.destination === componentId))
+                });
+                if (!otherSteps) {
+                    logger.debug('getting', componentId);
+                    const component = await db.get(componentId);
+                    logger.debug('updating', component);
+                    component.connections = component.connections.filter((c) => {
+                        return (c.id !== flowstep.source && flowstep.direction == 'in') ||
+                            (c.id !== flowstep.destination && flowstep.direction == 'out')
+                    });
+                    logger.debug('updated', component);
+                    await db.put(component);
+                }
+
+            } catch (err) {
+                logger.error('components connected', err);
+            }
+        }
+        remainingFlowsteps.sort((a, b) => {
+            return a.sequence - b.sequence
+        });
+        for (const [index, step] of remainingFlowsteps.entries()) {
+            if (step.sequence != index) {
+                step.sequence = index;
+                logger.debug('updating', step);
+                try {
+                    await db.put(step);
+                } catch (err) {
+                    logger.error(err);
+                }
+            }
+        }
+        logger.debug('remaining', remainingFlowsteps);
         logger.debug('deleting', flowstep);
-        db.remove(flowstep);
+        await db.remove(flowstep);
 
     } catch (err) {
         logger.error(err);
     }
 }
+

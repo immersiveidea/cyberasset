@@ -14,6 +14,8 @@ import {webRouter} from "./webRouter.tsx";
 const components = data();
 import log from "loglevel";
 log.default.setLevel('debug', false);
+//log.getLogger('SolutionFlowDiagram').setLevel('debug', false);
+//log.getLogger('deleteFlowstep').setLevel('debug', false);
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
         <Provider

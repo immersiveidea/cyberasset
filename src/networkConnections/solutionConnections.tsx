@@ -100,14 +100,14 @@ export function SolutionConnections() {
             if (!component) {
                 return <div>{JSON.stringify(components)}</div>
             } else {
-                return (<><Group bg="#000">
-                    <Box w={50}>
+                return (<Group key={component._id} bg="#000">
+                    <Box key="direction" w={50}>
                         {step.direction === 'in' ? 'In From ' : 'Out To '}
                     </Box>
-                    <Box w={90}>
+                    <Box key="name" w={90}>
                         {component.name}
                     </Box>
-                    <Select w={90} data={['http', 'https', 'tcp', 'udp', 'ftp', 'sftp']}
+                    <Select key="protocol" w={90} data={['http', 'https', 'tcp', 'udp', 'ftp', 'sftp']}
                             defaultValue={step.protocol}
                             label="protocol"
                             onChange={(value) => {
@@ -115,22 +115,22 @@ export function SolutionConnections() {
                                 newComp.connections[index].protocol = value;
                                 saveComponent(newComp, index);
                             }}/>
-                    <TextInput w={256} label="url/host"
+                    <TextInput key="host" w={256} label="url/host"
                                defaultValue={step.url} onBlur={(event) => {
                         const newComp = {...baseComponent};
                         newComp.connections[index].url = event.target.value;
                         saveComponent(newComp, index);
                     }}/>
-                    <TextInput w={90} label="port"
+                    <TextInput key="port" w={90} label="port"
                                defaultValue={step.port} onBlur={(event) => {
                         const newComp = {...baseComponent};
                         newComp.connections[index].port = event.target.value;
                         saveComponent(newComp, index);
                     }}/>
-                    <Button>Payload</Button>
-                    <Button>Notes</Button>
+                    <Button key="payload">Payload</Button>
+                    <Button key="notes">Notes</Button>
 
-                </Group></>)
+                </Group>)
             }
 
         })
@@ -140,31 +140,35 @@ export function SolutionConnections() {
             return <></>
         }
         return components.map((step, index) => {
-            return (<>
-                    <Table.Tr>
-                        <Table.Td>{step.name}</Table.Td>
-                        <Table.Td>{connectionView(step)}</Table.Td>
+            return (
+                    <Table.Tr key={index}>
+                        <Table.Td key={index + 'left'}>{step.name}</Table.Td>
+                        <Table.Td key={index + 'right'}>{connectionView(step)}</Table.Td>
                     </Table.Tr>
 
-                </>
+
             )
 
         })
     }
     return (
-        <>
-            <Title order={1}>Connections</Title>
-            <Table>
-                <Table.Th>
-                    Component
-                </Table.Th>
-                <Table.Th>
-                    Connections
-                </Table.Th>
+        <Group key="group">
+            <Title key="connections" order={1}>Connections</Title>
+            <Table key="table">
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>
+                            Component
+                        </Table.Th>
+                        <Table.Th>
+                            Connections
+                        </Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
                 <Table.Tbody>
                     {connectionTable()}
                 </Table.Tbody>
             </Table>
-        </>
+        </Group>
     )
 }

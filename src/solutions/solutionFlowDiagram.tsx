@@ -53,7 +53,78 @@ export default function SolutionFlowDiagram() {
             if (!c) {
                 logger.error('canvas not found');
             } else {
-                setCustomGraph(new CustomGraph(c));
+                const cgraph = new CustomGraph(c);
+                cgraph.on('drop', async (event) => {
+                    try {
+                        logger.debug(event);
+                        const newLayout = await db.get(layoutDoc._id);
+                        newLayout[event.id] = {position: {x: event.x, y: event.y}};
+                        logger.debug('layout doc', newLayout);
+                        await db.put(newLayout);
+                    } catch (err) {
+                        logger.error(err);
+                    }
+                });
+                cgraph.on('connect',async (event) => {
+                    try {
+                        logger.debug('connect' , 'components', components);
+                        logger.debug('connect', 'event', event);
+                        const all = await db.allDocs({include_docs: true});
+                        logger.debug('all', all);
+                        const count = all.rows.filter((row) => {
+                            return row.doc.type === 'flowstep' && row.doc.solution_id === params.solutionId;
+                        });
+                        logger.debug('count', count);
+                        const sequence = count.length;
+                        const sourceComponent = components.find((comp) => {
+                            return comp._id === event.source;
+                        });
+                        logger.debug(sourceComponent);
+                        const destComponent = components.find((comp) => {
+                            return comp._id === event.destination;
+                        });
+                        logger.debug(destComponent);
+                        const flowStep = await db.post({
+                            type: 'flowstep', solution_id: params.solutionId,
+                            sequence: sequence,
+                            protocol: 'https',
+                            port: '443',
+                            source: event.source,
+                            destination: event.destination
+                        });
+                        await updateComponent(sourceComponent, event.destination, 'out', db);
+
+                        logger.debug('sourceComponent', sourceComponent);
+
+                        await updateComponent(destComponent, event.source, 'in', db);
+
+
+
+                        logger.debug('destComponent', destComponent);
+                        logger.debug('flowStep', flowStep);
+                    } catch (err) {
+                        logger.error(err);
+                    }
+                });
+                cgraph.on('delete', async (event) => {
+                    logger.debug('delete', event);
+                    try {
+                        const doc = await db.get(event.id);
+                        logger.debug('deleting', doc);
+                        switch (doc.type) {
+                            case 'component':
+                                deleteComponent(db, doc)
+                                break;
+                            case 'flowstep':
+                                deleteFlowstep(db, doc)
+                                break;
+                        }
+                    } catch (err) {
+                        logger.error(err);
+                    }
+                });
+                setCustomGraph(cgraph);
+
             }
         }
     }, [loaded]);
@@ -64,70 +135,6 @@ export default function SolutionFlowDiagram() {
         }
         logger.debug('customGraph', customGraph);
 
-        customGraph.on('drop', (event) => {
-            logger.debug(event);
-            const newLayout = {...layoutDoc};
-            newLayout[event.id] = {position: {x: event.x, y: event.y}};
-            logger.debug('layout doc', newLayout);
-            db.put(newLayout);
-        })
-        customGraph.on('connect',async (event) => {
-            logger.debug(components);
-            logger.debug(event);
-            const sequence = flowSteps?.length || 0;
-            const sourceComponent = components.find((comp)=>{
-                return comp._id === event.source;
-            });
-            logger.debug(sourceComponent);
-            const destComponent = components.find((comp)=>{
-                return comp._id === event.destination;
-            });
-            logger.debug(destComponent);
-            const flowStep = await db.post({type: 'flowstep', solution_id: params.solutionId,
-                sequence: sequence,
-                protocol: 'https',
-                port: '443',
-                source: event.source,
-                destination: event.destination});
-
-            if (!sourceComponent.connections) {
-                sourceComponent.connections = [];
-            }
-
-            if (!sourceComponent.connections.find((c) => {return c.id === event.destination})) {
-                sourceComponent.connections.push({id: event.destination, direction: 'out', protocol: 'https', port: '443'});
-            }
-            await db.put(sourceComponent);
-            logger.debug('sourceComponent', sourceComponent);
-            if (!destComponent.connections) {
-                destComponent.connections = [];
-            }
-            if (!destComponent.connections.find((c) => {return c.id === event.source})) {
-                destComponent.connections.push({id: event.source, direction: 'in', protocol: 'https', port: '443'});
-            }
-            await db.put(destComponent);
-            logger.debug('destComponent', destComponent);
-
-            logger.debug('flowStep', flowStep);
-        });
-        customGraph.on('delete', async (event) => {
-            logger.debug('delete', event);
-            try {
-                const doc = await db.get(event.id);
-                logger.debug('deleting', doc);
-                switch (doc.type) {
-                    case 'component':
-                        deleteComponent(db, doc)
-                        break;
-                    case 'flowstep':
-                        deleteFlowstep(db, doc)
-                        break;
-                }
-                //await db.remove(doc);
-            } catch (err) {
-                logger.error(err);
-            }
-        });
         setWorking(true);
         customGraph.updateGraph(components, flowSteps, layoutDoc);
         logger.debug('layoutDoc', layoutDoc);
@@ -150,4 +157,20 @@ export default function SolutionFlowDiagram() {
             </Center>
         </>
     )
+}
+async function updateComponent(component, destination: string, inout: string, db) {
+    const dbComp = await db.get(component._id);
+    const logger = log.getLogger('updateComponent');
+    if (dbComp.connections === undefined || dbComp.connections === null) {
+        dbComp.connections = [];
+    }
+    if (!dbComp.connections.find((c) => {return c.id === destination})) {
+        dbComp.connections.push({id: destination, direction: inout, protocol: 'https', port: '443'});
+    }
+    logger.debug('component connections', component.connections);
+    try {
+        await db.put(dbComp);
+    } catch (err) {
+        logger.error('updateComponent', err);
+    }
 }
