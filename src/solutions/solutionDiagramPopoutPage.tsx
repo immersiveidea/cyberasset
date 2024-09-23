@@ -1,10 +1,10 @@
-import {Affix, Button, MantineProvider, Portal} from "@mantine/core";
+import {MantineProvider} from "@mantine/core";
 import {theme} from "../theme.ts";
 
-import SolutionNetworkConnectionDiagram from "./solutionNetworkConnectionDiagram.tsx";
+import SolutionFlowDiagramView from "./solutionFlowDiagramView.tsx";
 
 export default function SolutionDiagramPopoutPage() {
     return (<MantineProvider defaultColorScheme="dark" theme={theme}>
-        <SolutionNetworkConnectionDiagram/>
+        <SolutionFlowDiagramView/>
     </MantineProvider>);
 }

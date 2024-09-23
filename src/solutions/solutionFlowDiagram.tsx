@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import log from "loglevel";
 
 import {useDoc, useFind, usePouch} from "use-pouchdb";
-import CustomGraph from "../graph/customGraph.ts";
+import FlowDiagram from "../graph/flowDiagram.ts";
 import {Box, Center} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {deleteComponent, deleteFlowstep} from "../dbUtils.ts";
@@ -22,7 +22,7 @@ export default function SolutionFlowDiagram() {
     };
     const {docs: components, state: componentsState} = useFind(COMPONENTS_QUERY);
     const [loaded, setLoaded] = useState(false);
-    const [customGraph, setCustomGraph] = useState(null as CustomGraph);
+    const [customGraph, setCustomGraph] = useState(null as FlowDiagram);
     const FLOW_QUERY = {
         index: {
             fields: ['solution_id', 'type', 'components']
@@ -53,7 +53,7 @@ export default function SolutionFlowDiagram() {
             if (!c) {
                 logger.error('canvas not found');
             } else {
-                const cgraph = new CustomGraph(c);
+                const cgraph = new FlowDiagram(c);
                 cgraph.on('drop', async (event) => {
                     try {
                         logger.debug(event);

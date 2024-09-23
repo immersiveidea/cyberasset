@@ -1,23 +1,17 @@
 import {useEffect, useRef, useState} from "react";
 import log from "loglevel";
 
-import {useAllDocs, useDoc, useFind, usePouch} from "use-pouchdb";
-import CustomGraph from "../graph/customGraph.ts";
+import {useAllDocs} from "use-pouchdb";
 import {Box, Center} from "@mantine/core";
 import {useParams} from "react-router-dom";
-
-import {deleteComponent, deleteFlowstep} from "../dbUtils.ts";
 import SequenceDiagram from "../graph/sequenceDiagram.ts";
 
 
-export function SequenceDiagramView() {
-        const logger = log.getLogger('SequenceDiagramView');
+export function SolutionSequenceDiagramView() {
+        const logger = log.getLogger('SolutionSequenceDiagramView');
         const params = useParams();
         const canvas = useRef(null);
         const {rows: all, state} = useAllDocs({include_docs: true});
-        const [flowSteps, setFlowSteps] = useState([]);
-        const [components, setComponents] = useState([]);
-        const [sequenceDiagram, setSequenceDiagram] = useState(null as SequenceDiagram);
         useEffect(() => {
             if (state === 'done') {
                 const tmpFlowSteps = [];
@@ -42,9 +36,9 @@ export function SequenceDiagramView() {
                 tmpFlowSteps.sort((a, b) => {
                     return a.sequence - b.sequence
                 })
-                setFlowSteps(tmpFlowSteps);
+                //setFlowSteps(tmpFlowSteps);
                 logger.debug('flowSteps', tmpFlowSteps);
-                setComponents(tmpComponents);
+                //setComponents(tmpComponents);
 
                 const swimlanes = [];
                 for (const flowStep of tmpFlowSteps) {
@@ -65,7 +59,6 @@ export function SequenceDiagramView() {
                     logger.error('canvas not found');
                 } else {
                     const diagram = new SequenceDiagram(c);
-                    setSequenceDiagram(diagram);
                     diagram.updateDiagram(tmpFlowSteps, swimlanes);
                 }
 

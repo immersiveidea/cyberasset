@@ -10,9 +10,8 @@ export function SolutionList() {
     const logger = log.getLogger('SolutionList');
     const db = usePouch();
     const navigate = useNavigate();
-    const [solution, setSolution] = useState({id: '', name: '', description: ''});
 
-    const {docs: solutions, state, loading, error} = useFind({
+    const {docs: solutions, state} = useFind({
         index: {
             fields: ['type', 'name']
         },
@@ -37,7 +36,6 @@ export function SolutionList() {
             const all = await db.allDocs({include_docs: true});
             const clonedData = [];
             const components = [];
-            const flowsteps = [];
             const newSolution = await db.post({name: oldSolution.name, type: 'solution'});
             logger.debug(newSolution);
             for (const row of all.rows) {

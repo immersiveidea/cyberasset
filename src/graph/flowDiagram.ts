@@ -4,8 +4,8 @@ import Graph = dia.Graph;
 import Paper = dia.Paper;
 import {defaultLink, defaultNode} from "../solutionComponents/defaultNodes.ts";
 
-export default class CustomGraph {
-    private _logger = log.getLogger('CustomGraph');
+export default class FlowDiagram {
+    private _logger = log.getLogger('FlowDiagram');
     private _graph: Graph;
     private _paper: Paper;
     private _drop: { id: string, x: number, y: number };

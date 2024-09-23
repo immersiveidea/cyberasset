@@ -1,6 +1,6 @@
-import {Card, Group, Modal, Select, Stack, Textarea, TextInput, Title} from '@mantine/core';
-import {useDoc, useFind, usePouch} from "use-pouchdb";
-import {Platform} from "../platform.tsx";
+import {Modal,Stack, Textarea, TextInput, Title} from '@mantine/core';
+import {useDoc, usePouch} from "use-pouchdb";
+
 import DeleteButton from "../components/deleteButton.tsx";
 import {useNavigate, useParams} from "react-router-dom";
 import log from "loglevel";

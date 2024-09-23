@@ -10,13 +10,11 @@ import SolutionHeader from "./solutionHeader.tsx";
 import QuickText from "../components/quickText.tsx";
 import {SolutionComponentList} from "../solutionComponents/solutionComponentList.tsx";
 import {SolutionComponent} from "../solutionComponents/solutionComponent.tsx";
-
 import SolutionFlowDiagram from "./solutionFlowDiagram.tsx";
 import log from "loglevel";
-import { lazy } from 'react';
 import {SolutionConnections} from "../networkConnections/solutionConnections.tsx";
-import {SequenceDiagramView} from "./sequenceDiagramView.tsx";
-const SolutionNetworkConnectionDiagram = lazy(() => import("./solutionNetworkConnectionDiagram.tsx"));
+import {SolutionSequenceDiagramView} from "./solutionSequenceDiagramView.tsx";
+
 export default function SolutionPage() {
     const logger = log.getLogger('SolutionPage');
     const params = useParams();
@@ -52,7 +50,7 @@ export default function SolutionPage() {
             case 'connections':
                 return <SolutionConnections/>
             case 'sequence':
-                return <SequenceDiagramView/>
+                return <SolutionSequenceDiagramView/>
             case 'security':
                 return <QuickText/>
             case 'component':
