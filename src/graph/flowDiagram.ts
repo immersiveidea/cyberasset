@@ -5,9 +5,9 @@ import Graph = dia.Graph;
 import Paper = dia.Paper;
 
 export default class FlowDiagram {
-    private _logger = log.getLogger('FlowDiagram');
-    private _graph: Graph;
-    private _paper: Paper;
+    private readonly _logger = log.getLogger('FlowDiagram');
+    private readonly _graph: Graph;
+    private readonly _paper: Paper;
     private _drop: { id: string, x: number, y: number };
     private _on = [];
     private _lastClicked: { id: string, type: 'element' | 'edge' };
@@ -70,8 +70,6 @@ export default class FlowDiagram {
                 this._lastClicked = {id: cell.model.id as string, type: 'element'};
             }
         });
-
-
     }
 
     public on(name, callback: (event: any) => void) {
@@ -97,7 +95,7 @@ export default class FlowDiagram {
                 destination: string
             };
             try {
-                this._logger.debug('createEdge', comp);
+                //this._logger.debug('createEdge', comp);
                 if (comp.sequence != null) {
                     this._logger.debug('sequence', comp.sequence);
                 }
