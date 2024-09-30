@@ -12,6 +12,7 @@ export default class SequenceDiagram {
     constructor(el: HTMLElement) {
         this._logger = log.getLogger('SequenceDiagram');
         this._graph = new Graph({}, {cellNamespace: shapes});
+        el.style.pointerEvents = 'none';
         this._paper = new dia.Paper({
             el: el,
             width: 1000,
@@ -21,6 +22,7 @@ export default class SequenceDiagram {
             gridSize: 10,
             cellViewNamespace: shapes,
             drawGrid: {name: "fixedDot"},
+            interactive: false,
             background: {
                 color: 'rgba(20, 20, 40, 0.9)'
             }

@@ -1,9 +1,15 @@
 import {Box, Burger, Button, Container, Grid, Group, Image, Popover, Stack, Text} from "@mantine/core";
-import {useAuth0} from "@auth0/auth0-react";
+import {AppState, LogoutOptions, RedirectLoginOptions, useAuth0} from "@auth0/auth0-react";
 import {Link} from "react-router-dom";
-
+const local = false;
 export default function Header() {
-    const {user, isAuthenticated, loginWithRedirect, logout} = useAuth0();
+
+    let {user, isAuthenticated, loginWithRedirect, logout} = useAuth0();
+    if (local) {
+        user = {};
+        isAuthenticated = true;
+    }
+
     const show = (item) => {
         return item.auth === null || item.auth === isAuthenticated;
     }

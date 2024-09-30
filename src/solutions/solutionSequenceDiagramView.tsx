@@ -2,7 +2,7 @@ import {useEffect, useRef} from "react";
 import log from "loglevel";
 
 import {useAllDocs} from "use-pouchdb";
-import {Box, Center} from "@mantine/core";
+import {Box, Center, ScrollArea} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import SequenceDiagram from "../graph/sequenceDiagram.ts";
 
@@ -71,12 +71,14 @@ export function SolutionSequenceDiagramView() {
         }
     }, [state]);
     return (
-        <>
-            <Center>
+
+            <ScrollArea type="always" scrollbarSize={18} scrollHideDelay={4000}>
+                <Center>
                 <Box style={{width: 800, height: 800}} id="sequencecanvas" ref={canvas}>
 
                 </Box>
             </Center>
-        </>
+            </ScrollArea>
+
     )
 }

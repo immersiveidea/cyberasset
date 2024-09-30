@@ -12,6 +12,7 @@ export default class FlowDiagram {
     private _on = [];
     private _lastClicked: { id: string, type: 'element' | 'edge' };
 
+
     constructor(el: HTMLElement) {
         document.addEventListener('keydown', (evt) => {
             if (this._lastClicked && evt.key === 'Backspace') {
@@ -51,6 +52,12 @@ export default class FlowDiagram {
             this._lastClicked = {id: cell.model.id as string, type: 'edge'};
 
         });
+        this._paper.on('link:pointerdblclick', (cell) => {
+            highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
+            this._logger.debug('dblclick', cell);
+            this._lastClicked = {id: cell.model.id as string, type: 'edge'};
+            this._on['delete']({id: this._lastClicked.id});
+        })
         this._paper.on('element:pointerclick', (cell, evt) => {
             this._logger.debug(evt);
             this._logger.debug('pointerclick', cell.model.id);
