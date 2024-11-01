@@ -1,4 +1,5 @@
 import {createBrowserRouter} from "react-router-dom";
+import { lazy } from "react";
 import HomePage from "./pages/homePage.tsx";
 import React, {Suspense} from "react";
 import {SolutionList} from "./solutions/solutionList.tsx";
@@ -6,11 +7,10 @@ import AdminPage from "./pages/adminPage.tsx";
 import Demopage from "./pages/demopage.tsx";
 import FeaturesPage from "./pages/featuresPage.tsx";
 import PricingPage from "./pages/pricingPage.tsx";
-import SolutionPage from "./solutions/solutionPage.tsx";
 import SolutionDiagramPopoutPage from "./solutions/solutionDiagramPopoutPage.tsx";
-import ComponentsPage from "./pages/componentsPage.tsx";
+const ComponentsPage = lazy(() => import("./pages/componentsPage.tsx"));
 import {SolutionComponent} from "./solutionComponents/solutionComponent.tsx";
-
+const SolutionPage = lazy(() => import("./solutions/solutionPage.tsx"));
 export const webRouter = createBrowserRouter([
     {
         path: "/",

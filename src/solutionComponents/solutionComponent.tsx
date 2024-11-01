@@ -1,11 +1,10 @@
-import {Modal, Stack, Textarea, TextInput, Title} from '@mantine/core';
+import {Modal, MultiSelect, Stack, Textarea, TextInput, Title} from '@mantine/core';
 import {useDoc, usePouch} from "use-pouchdb";
 
 import DeleteButton from "../components/deleteButton.tsx";
 import {useParams} from "react-router-dom";
 import log from "loglevel";
 import {deleteComponent} from "../dbUtils.ts";
-
 
 type ComponentType = {
     _id: string;
@@ -72,9 +71,9 @@ export function SolutionComponent() {
                     <Textarea rows={10} label="Description"
                               description="Enter details describing what this component does"
                               placeholder="(i.e.) Web service that does something useful"></Textarea>
+                    <MultiSelect label="component type" data={['web', 'database', 'service', 'other']}></MultiSelect>
                     <DeleteButton onClick={deleteDoc} id={params.componentId}/>
                 </Stack>
-
             </Modal>
         );
     }
