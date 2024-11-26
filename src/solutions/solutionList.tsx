@@ -27,6 +27,16 @@ export function SolutionList() {
         const response = await db.post(newSolution);
         navigate(`/solution/${response.id}`);
     }
+    const deleteSolution = async(event) => {
+        logger.debug('deleting', event);
+        try {
+            const solution = await db.get(event);
+            await db.remove(solution);
+        } catch (err) {
+            logger.error(err);
+        }
+    }
+
     const cloneSolution = async (event) => {
         logger.debug('cloning', event);
         try {
@@ -35,7 +45,7 @@ export function SolutionList() {
             const all = await db.allDocs({include_docs: true});
             const clonedData = [];
             const components = [];
-            const newSolution = await db.post({name: oldSolution.name, type: 'solution'});
+            const newSolution = await db.post({name: oldSolution.name + ' (clone)', type: 'solution'});
             logger.debug(newSolution);
             for (const row of all.rows) {
                 if (row.doc.solution_id === event) {
@@ -81,7 +91,9 @@ export function SolutionList() {
                                 navigate(`/solution/${solution._id}`);
                             }
                         }>Select</Button>
-                        <Button key="delete">Delete</Button>
+                        <Button key="delete" onClick={() => {
+                            deleteSolution(solution._id);
+                        }}>Delete</Button>
                         <Button key="clone" onClick={() => {
                             cloneSolution(solution._id)
                         }}>Clone</Button>
