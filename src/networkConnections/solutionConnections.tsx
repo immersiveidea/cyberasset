@@ -18,18 +18,18 @@ export function SolutionConnections() {
             setSolution(all.find((doc) => {
                 return doc.id === params.solutionId
             }).doc);
-            const components = [];
-            const flowSteps = [];
+            const components2 = [];
+            const flowSteps2 = [];
             for (const row of all) {
                 switch (row.doc.type) {
                     case 'component':
                         if (row.doc.solution_id === params.solutionId) {
-                            components.push(row.doc);
+                            components2.push(row.doc);
                         }
                         break;
                     case 'flowstep':
                         if (row.doc.solution_id === params.solutionId) {
-                            flowSteps.push(row.doc);
+                            flowSteps2.push(row.doc);
                         }
 
                         break;
@@ -42,8 +42,18 @@ export function SolutionConnections() {
                         break;
                 }
             }
-            setComponents(components);
-            setFlowSteps(flowSteps);
+            flowSteps2.sort((a, b) => {return a.sequence - b.sequence});
+            const components3 = [];
+            for (const step of flowSteps2) {
+                const comp2 = components2.find((comp) => {
+                    return comp._id === step.source
+                });
+                if (comp2) {
+                    components3.push(comp2);
+                }
+            }
+            setComponents(components3);
+            setFlowSteps(flowSteps2);
             logger.debug('solution', solution);
         }
     }, [state])
