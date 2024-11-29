@@ -3,7 +3,6 @@ import log from "loglevel";
 import {defaultLink, defaultNode} from "../solutionComponents/defaultNodes.ts";
 import Graph = dia.Graph;
 import Paper = dia.Paper;
-
 export default class FlowDiagram {
     private readonly _logger = log.getLogger('FlowDiagram');
     private readonly _graph: Graph;
@@ -47,9 +46,16 @@ export default class FlowDiagram {
             // this._logger.debug('cell:pointerup', cellView.data.model.id, x, y);
         });
         this._paper.on('link:pointerclick', (cell) => {
-            this._logger.debug('link:pointerclick', cell.model.id);
-            highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
-            this._lastClicked = {id: cell.model.id as string, type: 'edge'};
+            this._logger.debug('here');
+            this._logger.debug('link:pointerclick', this._lastClicked?.id, cell.model.id);
+            if (this._lastClicked?.id == cell.model.id) {
+                highlighters.mask.removeAll(this._paper);
+                this._lastClicked = null;
+            } else {
+                highlighters.mask.removeAll(this._paper);
+                highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
+                this._lastClicked = {id: cell.model.id as string, type: 'edge'};
+            }
 
         });
         this._paper.on('link:pointerdblclick', (cell) => {
@@ -60,7 +66,7 @@ export default class FlowDiagram {
         })
         this._paper.on('element:pointerclick', (cell, evt) => {
             this._logger.debug(evt);
-            this._logger.debug('pointerclick', cell.model.id);
+            this._logger.debug('pointerclick', cell.model);
             if (this._lastClicked) {
                 if (this._lastClicked?.id != cell.model.id) {
                     if (this._lastClicked.type == 'element') {
@@ -68,18 +74,28 @@ export default class FlowDiagram {
                         if (this._on['connect']) {
                             this._on['connect']({source: this._lastClicked.id, destination: cell.model.id});
                         }
+                        highlighters.mask.removeAll(this._paper);
+                        this._lastClicked = null;
+                    } else {
+                        this._logger.debug('unclick', this._lastClicked.id, cell.model);
+                        highlighters.mask.removeAll(this._paper);
+                        highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
+                        this._lastClicked = {id: cell.model.id as string, type: 'element'};
                     }
+                } else {
+                    highlighters.mask.removeAll(this._paper);
+                    this._lastClicked = null;
                 }
-                highlighters.mask.removeAll(this._paper);
-                this._lastClicked = null;
+
             } else {
+                this._logger.debug(cell.model)
                 highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
                 this._lastClicked = {id: cell.model.id as string, type: 'element'};
             }
         });
     }
 
-    public on(name, callback: (event: any) => void) {
+    public on(name, callback: (event) => void) {
         this._on[name] = callback;
     }
 
@@ -133,7 +149,8 @@ export default class FlowDiagram {
 
     public createEdge(sequence: number, id: string, source: string, target: string) {
         const exists = this._graph.getLinks().find((link) => {
-            return link.source.id == source && link.target.id == target;
+            const lnk = link as unknown as { source: { id: string }, target: { id: string } };
+            return lnk.source.id == source && lnk.target.id == target;
         }) != null;
         if (exists) {
             return exists;

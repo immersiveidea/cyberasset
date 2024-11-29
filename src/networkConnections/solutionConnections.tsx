@@ -3,6 +3,7 @@ import {useParams} from "react-router-dom";
 import {useAllDocs, usePouch} from "use-pouchdb";
 import {useEffect, useState} from "react";
 import {Box, Button, Group, Select, Table, TextInput, Title} from "@mantine/core";
+import {SolutionEntity} from "../solutions/solutionType.ts";
 
 export function SolutionConnections() {
     const logger = log.getLogger('SolutionConnections');
@@ -21,14 +22,15 @@ export function SolutionConnections() {
             const components2 = [];
             const flowSteps2 = [];
             for (const row of all) {
-                switch (row.doc.type) {
+                const solutionEntity = row.doc as SolutionEntity;
+                switch (solutionEntity.type) {
                     case 'component':
-                        if (row.doc.solution_id === params.solutionId) {
+                        if (solutionEntity.solution_id === params.solutionId) {
                             components2.push(row.doc);
                         }
                         break;
                     case 'flowstep':
-                        if (row.doc.solution_id === params.solutionId) {
+                        if (solutionEntity.solution_id === params.solutionId) {
                             flowSteps2.push(row.doc);
                         }
 
@@ -49,7 +51,13 @@ export function SolutionConnections() {
                     return comp._id === step.source
                 });
                 if (comp2) {
-                    components3.push(comp2);
+
+                    const exists = components3.find((comp) => {return comp._id == comp2._id});
+                    logger.debug('comp2', comp2._id, exists?comp2._id:'');
+                    if (!exists) {
+                        components3.push(comp2);
+                    }
+                    //components3.push(comp2);
                 }
             }
             setComponents(components3);
@@ -89,7 +97,6 @@ export function SolutionConnections() {
                 const newComp = {...otherComponent};
                 db.put(newComp);
             }
-
         }
         db.put(component);
     }
@@ -121,19 +128,19 @@ export function SolutionConnections() {
                             onChange={(value) => {
                                 const newComp = {...baseComponent};
                                 newComp.connections[index].protocol = value;
-                                saveComponent(newComp, index);
+                                saveComponent(newComp);
                             }}/>
                     <TextInput key="host" w={256} label="url/host"
                                defaultValue={step.url} onBlur={(event) => {
                         const newComp = {...baseComponent};
                         newComp.connections[index].url = event.target.value;
-                        saveComponent(newComp, index);
+                        saveComponent(newComp);
                     }}/>
                     <TextInput key="port" w={90} label="port"
                                defaultValue={step.port} onBlur={(event) => {
                         const newComp = {...baseComponent};
                         newComp.connections[index].port = event.target.value;
-                        saveComponent(newComp, index);
+                        saveComponent(newComp);
                     }}/>
                     <Button key="payload">Payload</Button>
                     <Button key="notes">Notes</Button>
