@@ -1,5 +1,5 @@
 import FlowDiagram from "../graph/flowDiagram.ts";
-import {SolutionEntity} from "./solutionType.ts";
+import {SolutionEntity} from "../types/solutionType.ts";
 import {deleteComponent, deleteFlowstep} from "../dbUtils.ts";
 import log from "loglevel";
 import {RowType} from "../types/rowType.ts";

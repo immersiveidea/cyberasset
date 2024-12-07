@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";
 import log from "loglevel";
-import {SolutionEntity} from "./solutionType.ts";
+import {SolutionEntity} from "../types/solutionType.ts";
 
 export function SolutionList() {
     const logger = log.getLogger('SolutionList');
