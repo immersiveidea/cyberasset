@@ -17,13 +17,7 @@ export const webRouter = createBrowserRouter([
         element: (<HomePage/>),
     },
     {
-        path: "/solution/:solutionId",
-        element: (<Suspense fallback={<div>Loading</div>}>
-            <SolutionPage/>
-        </Suspense>),
-    },
-    {
-        path: "/solution/:solutionId/:tab/:componentId?",
+        path: "/solution/:solutionId/:tab?/:componentId?",
         element: (<Suspense fallback={<div>Loading</div>}>
             <SolutionPage/>
         </Suspense>),

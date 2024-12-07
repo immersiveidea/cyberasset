@@ -4,4 +4,5 @@ export enum RowType {
     SolutionFlow = "SolutionFlow",
     SolutionFlowStep = "SolutionFlowStep",
     SolutionFlowLayout = "SolutionFlowLayout",
+    Solution = "Solution",
 }

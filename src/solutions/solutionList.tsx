@@ -5,6 +5,7 @@ import {theme} from "../theme.ts";
 import Header from "../header.tsx";
 import log from "loglevel";
 import {SolutionType} from "../types/solutionType.ts";
+import {RowType} from "../types/rowType.ts";
 
 export function SolutionList() {
     const logger = log.getLogger('SolutionList');
@@ -16,17 +17,17 @@ export function SolutionList() {
             fields: ['type', 'name']
         },
         selector: {
-            type: 'solution'
+            type: RowType.Solution
         }
     });
     const createSolution = async () => {
         const newSolution = {
-            type: 'solution',
+            type: RowType.Solution,
             name: '',
             description: ''
         }
         const response = await db.post(newSolution);
-        navigate(`/solution/${response.id}`);
+        navigate(`/solution/${response.id}/edit`);
     }
     const deleteSolution = async(event) => {
         logger.debug('deleting', event);
@@ -46,7 +47,7 @@ export function SolutionList() {
             const all = await db.allDocs({include_docs: true});
             const clonedData = [];
             const components = [];
-            const newSolution = await db.post({name: oldSolution.name + ' (clone)', type: 'solution'});
+            const newSolution = await db.post({name: oldSolution.name + ' (clone)', type: RowType.Solution});
             logger.debug(newSolution);
             for (const row of all.rows) {
                 const solutionEntity = row.doc as SolutionType;
@@ -58,10 +59,10 @@ export function SolutionList() {
                     delete clonedDoc.connections;
                     clonedDoc.solution_id = newSolution.id;
                     switch (clonedDoc.type) {
-                        case 'component':
+                        case RowType.SolutionComponent:
                             components.push(clonedDoc);
                             break;
-                        case 'flowstep':
+                        case RowType.SolutionFlowStep:
                             //don't clone these yet
                             break;
                         default:
