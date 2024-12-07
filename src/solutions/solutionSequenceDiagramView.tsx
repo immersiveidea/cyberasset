@@ -5,7 +5,8 @@ import {useAllDocs} from "use-pouchdb";
 import {Box, Center, ScrollArea} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import SequenceDiagram from "../graph/sequenceDiagram.ts";
-import {RowType} from "../types/dbTypes.ts";
+import {RowType} from "../types/rowType.ts";
+
 
 
 export function SolutionSequenceDiagramView() {

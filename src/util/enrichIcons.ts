@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-const openai = new OpenAI({apiKey: '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'});
+const openai = new OpenAI({apiKey: 'sk'});
 
 async function enrichIcons() {
     const completion= await openai.chat.completions.create({

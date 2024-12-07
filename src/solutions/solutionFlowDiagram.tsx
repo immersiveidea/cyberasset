@@ -6,7 +6,7 @@ import FlowDiagram from "../graph/flowDiagram.ts";
 import {Box, Center, Grid, Stack} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {solutionGraphSetup, solutionEffect} from "./solutionEffects.ts";
-import {RowType} from "../types/dbTypes.ts";
+import {RowType} from "../types/rowType.ts";
 
 export default function SolutionFlowDiagram() {
     const params = useParams();

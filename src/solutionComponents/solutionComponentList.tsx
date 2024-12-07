@@ -6,7 +6,7 @@ import {useParams} from "react-router-dom";
 import SolutionComponentCard from "./solutionComponentCard.tsx";
 import {NameId} from "../types/nameId.ts";
 import log from "loglevel";
-import {RowType} from "../types/dbTypes.ts";
+import {RowType} from "../types/rowType.ts";
 
 export function SolutionComponentList() {
     const logger = log.getLogger('SolutionComponentList');

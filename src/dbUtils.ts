@@ -1,5 +1,5 @@
 import log from "loglevel";
-import {RowType} from "./types/dbTypes.ts";
+import {RowType} from "./types/rowType.ts";
 
 export const getFlowsteps = async (db, solutionId) => {
     const logger = log.getLogger('getFlowsteps');

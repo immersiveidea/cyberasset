@@ -17,7 +17,7 @@ export default function AdminActions() {
 
         }
 
-    }, []);
+    }, [db, logger]);
     const clearAllData = async () => {
         await db.destroy();
         window.location.reload();

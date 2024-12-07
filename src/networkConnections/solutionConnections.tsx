@@ -38,7 +38,7 @@ export function SolutionConnections() {
         if (solutionFlowsError && solutionFlowsError.status === 404) {
             db.put({_id: 'solutionFLows', solution_id: params.solution_id, list: []});
         }
-    }, [components, flowSteps, solutionFlowsError, solutionFlows]);
+    }, [db, components, flowSteps, solutionFlowsError, solutionFlows]);
     logger.debug('flowSteps', connectionsState);
     if (connectionsState != 'done' && flowSteps?.length &&
         componentsState != 'done' && components?.length) {

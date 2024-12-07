@@ -1,5 +1,5 @@
 import {NameId} from "./nameId.ts";
-import {RowType} from "./dbTypes.ts";
+import {RowType} from "./rowType.ts";
 
 export type TemplateComponent = NameId & {
     _id: string;

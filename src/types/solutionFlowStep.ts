@@ -1,4 +1,4 @@
-import {RowType} from "./dbTypes.ts";
+import {RowType} from "./rowType.ts";
 
 export type SolutionFlowStep = {
     _id: string,
