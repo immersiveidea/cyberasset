@@ -5,6 +5,7 @@ import {useAllDocs} from "use-pouchdb";
 import {Box, Center, ScrollArea} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import SequenceDiagram from "../graph/sequenceDiagram.ts";
+import {RowType} from "../types/dbTypes.ts";
 
 
 export function SolutionSequenceDiagramView() {
@@ -19,12 +20,13 @@ export function SolutionSequenceDiagramView() {
             for (const row of all) {
                 logger.debug(row.doc);
                 logger.debug(params);
-                if (row.doc.solution_id === params.solutionId) {
-                    switch (row.doc.type) {
-                        case 'flowstep':
+                const sol = ((row.doc as unknown) as {solution_id: string, type: string});
+                if (sol.solution_id === params.solutionId) {
+                    switch (sol.type) {
+                        case RowType.SolutionFlowStep:
                             tmpFlowSteps.push(row.doc);
                             break;
-                        case 'component':
+                        case RowType.SolutionComponent:
                             tmpComponents.push(row.doc);
                             break;
                         default:

@@ -90,6 +90,10 @@ export default class FlowDiagram {
             } else {
                 this._logger.debug(cell.model)
                 highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
+                if (this._on['select']) {
+                    this._on['select']({id: cell.model.id});
+                }
+
                 this._lastClicked = {id: cell.model.id as string, type: 'element'};
             }
         });

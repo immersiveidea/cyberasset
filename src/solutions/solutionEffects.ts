@@ -2,6 +2,7 @@ import FlowDiagram from "../graph/flowDiagram.ts";
 import {SolutionEntity} from "./solutionType.ts";
 import {deleteComponent, deleteFlowstep} from "../dbUtils.ts";
 import log from "loglevel";
+import {RowType} from "../types/dbTypes.ts";
 
 export const solutionEffect  = (layoutDocState, componentsState, connectionsState,
                                 customGraph, flowSteps, components,
@@ -22,7 +23,7 @@ export const solutionEffect  = (layoutDocState, componentsState, connectionsStat
 
 export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
                                    layoutDocError, loaded, logger, params,
-                                   canvas, setCustomGraph) => {
+                                   canvas, setCustomGraph, setCurrentComponent) => {
     if (loaded && !customGraph) {
         logger.debug(layoutDocError);
         const c = canvas.current;
@@ -50,7 +51,7 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
                     logger.debug('all', all);
                     const count = all.rows.filter((row) => {
                         const solution = row.doc as SolutionEntity;
-                        return solution.type === 'flowstep' && solution.solution_id === params.solutionId;
+                        return solution.type === RowType.SolutionFlowStep && solution.solution_id === params.solutionId;
                     });
                     logger.debug('count', count);
                     const sequence = count.length;
@@ -63,7 +64,8 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
                     });
                     logger.debug(destComponent);
                     const flowStep = await db.post({
-                        type: 'flowstep', solution_id: params.solutionId,
+                        type: RowType.SolutionFlowStep,
+                        solution_id: params.solutionId,
                         sequence: sequence,
                         protocol: 'https',
                         port: '443',
@@ -85,11 +87,11 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
                     const doc = await db.get(event.id) as SolutionEntity;
                     logger.debug('deleting', doc);
                     switch (doc.type) {
-                        case 'component':
-                            deleteComponent(db, doc)
+                        case RowType.SolutionComponent:
+                            await deleteComponent(db, doc)
                             break;
-                        case 'flowstep':
-                            deleteFlowstep(db, doc)
+                        case RowType.SolutionFlowStep:
+                            await deleteFlowstep(db, doc)
                             break;
                     }
                 } catch (err) {
@@ -99,10 +101,11 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
             cgraph.on('select', async(event) => {
                 logger.debug('select', event);
                 try {
-                    //   const doc = await db.get(event.id);
-                    //   logger.debug('select', doc);
+                    const doc = await db.get(event.id);
+                    logger.debug('select', doc);
+                    setCurrentComponent(doc);
                 } catch (err) {
-                    // logger.error(err);
+                    logger.error(err);
                 }
             })
             setCustomGraph(cgraph);

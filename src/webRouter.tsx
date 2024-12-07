@@ -6,7 +6,7 @@ import {SolutionList} from "./solutions/solutionList.tsx";
 import AdminPage from "./pages/adminPage.tsx";
 import Demopage from "./pages/demopage.tsx";
 import FeaturesPage from "./pages/featuresPage.tsx";
-import PricingPage from "./pages/pricingPage.tsx";
+
 import SolutionDiagramPopoutPage from "./solutions/solutionDiagramPopoutPage.tsx";
 const ComponentsPage = lazy(() => import("./pages/componentsPage.tsx"));
 import {SolutionComponent} from "./solutionComponents/solutionComponent.tsx";
@@ -61,9 +61,5 @@ export const webRouter = createBrowserRouter([
     {
         path: "/features",
         element: <FeaturesPage/>
-    },
-    {
-        path: "/pricing",
-        element: <PricingPage/>
     }
 ]);
