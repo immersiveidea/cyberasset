@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";
 import log from "loglevel";
-import {SolutionEntity} from "../types/solutionType.ts";
+import {SolutionType} from "../types/solutionType.ts";
 
 export function SolutionList() {
     const logger = log.getLogger('SolutionList');
@@ -41,7 +41,7 @@ export function SolutionList() {
     const cloneSolution = async (event) => {
         logger.debug('cloning', event);
         try {
-            const oldSolution = await db.get(event) as SolutionEntity;
+            const oldSolution = await db.get(event) as SolutionType;
             logger.debug('oldSolution', oldSolution);
             const all = await db.allDocs({include_docs: true});
             const clonedData = [];
@@ -49,7 +49,7 @@ export function SolutionList() {
             const newSolution = await db.post({name: oldSolution.name + ' (clone)', type: 'solution'});
             logger.debug(newSolution);
             for (const row of all.rows) {
-                const solutionEntity = row.doc as SolutionEntity;
+                const solutionEntity = row.doc as SolutionType;
                 if (solutionEntity.solution_id === event) {
                     const clonedDoc = {...solutionEntity};
                     delete clonedDoc._id;

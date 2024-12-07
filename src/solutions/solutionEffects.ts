@@ -1,5 +1,5 @@
 import FlowDiagram from "../graph/flowDiagram.ts";
-import {SolutionEntity} from "../types/solutionType.ts";
+import {SolutionType} from "../types/solutionType.ts";
 import {deleteComponent, deleteFlowstep} from "../dbUtils.ts";
 import log from "loglevel";
 import {RowType} from "../types/rowType.ts";
@@ -50,7 +50,7 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
                     const all = await db.allDocs({include_docs: true});
                     logger.debug('all', all);
                     const count = all.rows.filter((row) => {
-                        const solution = row.doc as SolutionEntity;
+                        const solution = row.doc as SolutionType;
                         return solution.type === RowType.SolutionFlowStep && solution.solution_id === params.solutionId;
                     });
                     logger.debug('count', count);
@@ -84,7 +84,7 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
             cgraph.on('delete', async (event) => {
                 logger.debug('delete', event);
                 try {
-                    const doc = await db.get(event.id) as SolutionEntity;
+                    const doc = await db.get(event.id) as SolutionType;
                     logger.debug('deleting', doc);
                     switch (doc.type) {
                         case RowType.SolutionComponent:
