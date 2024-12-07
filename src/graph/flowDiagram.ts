@@ -106,9 +106,15 @@ export default class FlowDiagram {
     public updateGraph(components, connections, layout) {
         this._graph.clear();
         //const cells = this._graph.getCells().map((cell) => {return {id: cell.id, present: false, cell: cell}});
+        let xCurrent = 10;
+        let yCurrent = 10;
         components.forEach((component) => {
             const comp = component as unknown as { _id: string, name: string };
-            const pos = layout[comp._id]?.position || {x: 10, y: 10};
+            if (yCurrent > 500) {
+                yCurrent = 10;
+                xCurrent += 200;
+            }
+            const pos = layout[comp._id]?.position || {x: xCurrent, y: yCurrent += 50};
             this.createNode(comp._id, pos.x, pos.y, comp.name);
             /*if (cells.find((cell) => cell.id == comp._id)) {
                 cells.find((cell) => cell.id == comp._id).present = true;
