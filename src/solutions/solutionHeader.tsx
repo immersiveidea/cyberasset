@@ -17,12 +17,17 @@ export default function SolutionHeader({editing, toggle, solutionData, setSoluti
                     >edit</Anchor>
                 </Paper>
                 <Modal opened={editing} onClose={toggle} title="Edit Solution Information">
-                    <TextInput label="name" value={solutionData?.name} onChange={
+                    <TextInput label="name"
+                               value={solutionData?.name}
+                               placeholder="Solution Name (Must be > 4 characters)"
+                               error={solutionData?.name.length < 4? 'Name must be at least 4 characters': null}
+                               onChange={
                         (e) => {
                             setSolutionData({...solutionData, name: e.currentTarget.value});
                         }
                     }/>
                     <Textarea rows={10} label="description" value={solutionData?.description}
+                              placeholder="Solution Description"
                               onChange={(e) => {
                                   setSolutionData({...solutionData, description: e.currentTarget.value});
                               }}/>
@@ -34,7 +39,6 @@ export default function SolutionHeader({editing, toggle, solutionData, setSoluti
             <Stack>
                 <Title>
                     <Group>
-
                         <Anchor href={`/solution/${params.solutionId}`}
                                 onClick={
                                     (e) => {
@@ -42,15 +46,6 @@ export default function SolutionHeader({editing, toggle, solutionData, setSoluti
                                         toggle();
                                     }}
                         >{solution.name || solution._id}</Anchor>
-
-                        <Anchor href={`/solution/${params.solutionId}/diagram`}
-                                onClick={
-                                    (e) => {
-                                        e.preventDefault();
-                                        window.open(`/solution/${params.solutionId}/diagram`,
-                                            `/solution/${params.solutionId}/diagram`,
-                                            'popup, width=800, height=600,location=false');
-                                    }}>network connections</Anchor>
                     </Group>
                 </Title>
 

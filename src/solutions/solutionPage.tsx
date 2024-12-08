@@ -14,18 +14,19 @@ import SolutionFlowDiagram from "./solutionFlowDiagram.tsx";
 import log from "loglevel";
 import {SolutionConnections} from "../networkConnections/solutionConnections.tsx";
 import {SolutionSequenceDiagramView} from "./solutionSequenceDiagramView.tsx";
+import SolutionOverview from "./solutionOverview.tsx";
 
 export default function SolutionPage() {
     const logger = log.getLogger('SolutionPage');
     const params = useParams();
     const db = usePouch();
     const navigate = useNavigate();
-    const [editing, {toggle}] = useDisclosure(false);
-    const {doc: s} = useDoc(params.solutionId);
+    const [editing, {toggle}] = useDisclosure(params.tab === 'edit');
+    const {doc: s, state} = useDoc(params.solutionId);
     const solution = (s as unknown) as { name: string, description: string, _id: string };
     const [solutionData, setSolutionData] = useState({name: '', description: ''});
     useEffect(() => {
-        if (editing) {
+        if (state === "done" && editing) {
             logger.debug('editing', solution);
             setSolutionData({name: solution.name, description: solution.description});
         } else {
@@ -55,7 +56,7 @@ export default function SolutionPage() {
             case 'component':
                 return <SolutionComponent/>
             default:
-                return <></>
+                return <SolutionOverview/>
         }
     }
     return (
@@ -70,11 +71,14 @@ export default function SolutionPage() {
                     <SolutionHeader editing={editing} toggle={toggle} solutionData={solutionData}
                                     setSolutionData={setSolutionData} solution={solution}
                                     saveSolution={saveSolution}/>
-                    <Tabs value={params.tab}
+                    <Tabs value={params.tab || 'overview'}
                           onChange={(value) => {
                               navigate(`/solution/${params.solutionId}/${value}`)
                           }}>
                         <Tabs.List>
+                            <Tabs.Tab value="overview">
+                                Overview
+                            </Tabs.Tab>
                             <Tabs.Tab value="components">
                                 Components
                             </Tabs.Tab>

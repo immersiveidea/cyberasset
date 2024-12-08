@@ -3,21 +3,25 @@ import log from "loglevel";
 
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import FlowDiagram from "../graph/flowDiagram.ts";
-import {Box, Center} from "@mantine/core";
+import {Box, Center, Grid, Group, Stack} from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {deleteComponent, deleteFlowstep} from "../dbUtils.ts";
+import {solutionGraphSetup, solutionEffect} from "./solutionEffects.ts";
+import {RowType} from "../types/rowType.ts";
+import {SolutionFlowStep} from "../types/solutionFlowStep.ts";
+import {TemplateComponent} from "../types/templateComponent.ts";
 
 export default function SolutionFlowDiagram() {
     const params = useParams();
     const logger = log.getLogger('SolutionFlowDiagram');
     const canvas = useRef(null);
+
     const COMPONENTS_QUERY = {
         index: {
             fields: ['type', 'solution_id']
         },
         selector: {
             solution_id: params.solutionId,
-            type: 'component',
+            type: RowType.SolutionComponent,
         }
     };
     const {docs: components, state: componentsState} = useFind(COMPONENTS_QUERY);
@@ -25,14 +29,16 @@ export default function SolutionFlowDiagram() {
     const [customGraph, setCustomGraph] = useState(null as FlowDiagram);
     const FLOW_QUERY = {
         index: {
-            fields: ['solution_id', 'type', 'components']
+            fields: ['solution_id', 'type', 'sequence', 'components']
         },
         selector: {
             solution_id: params.solutionId,
-            type: 'flowstep',
-        }
+            type: RowType.SolutionFlowStep,
+        },
+        sort : ['solution_id', 'type', 'sequence']
     };
     const {docs: flowSteps, state: connectionsState} = useFind(FLOW_QUERY);
+    const [currentComponent, setCurrentComponent] = useState(null);
     const {doc: layoutDoc, state: layoutDocState, error: layoutDocError} = useDoc('layout');
     const db = usePouch();
     const [working, setWorking] = useState(false);
@@ -44,135 +50,66 @@ export default function SolutionFlowDiagram() {
             });
         }
         logger.debug(layoutDocError);
-    }, [layoutDocError]);
+    }, [logger, db, layoutDocError]);
+
     useEffect(() => {
-        if (loaded && !customGraph) {
-            logger.debug(layoutDocError);
-            const c = canvas.current;
-            logger.debug(c);
-            if (!c) {
-                logger.error('canvas not found');
-            } else {
-                const cgraph = new FlowDiagram(c);
-                cgraph.on('drop', async (event) => {
-                    try {
-                        logger.debug(event);
-                        const newLayout = await db.get(layoutDoc._id);
-                        newLayout[event.id] = {position: {x: event.x, y: event.y}};
-                        logger.debug('layout doc', newLayout);
-                        await db.put(newLayout);
-                    } catch (err) {
-                        logger.error(err);
-                    }
-                });
-                cgraph.on('connect', async (event) => {
-                    try {
-                        logger.debug('connect', 'components', components);
-                        logger.debug('connect', 'event', event);
-                        const all = await db.allDocs({include_docs: true});
-                        logger.debug('all', all);
-                        const count = all.rows.filter((row) => {
-                            return row.doc.type === 'flowstep' && row.doc.solution_id === params.solutionId;
-                        });
-                        logger.debug('count', count);
-                        const sequence = count.length;
-                        const sourceComponent = components.find((comp) => {
-                            return comp._id === event.source;
-                        });
-                        logger.debug(sourceComponent);
-                        const destComponent = components.find((comp) => {
-                            return comp._id === event.destination;
-                        });
-                        logger.debug(destComponent);
-                        const flowStep = await db.post({
-                            type: 'flowstep', solution_id: params.solutionId,
-                            sequence: sequence,
-                            protocol: 'https',
-                            port: '443',
-                            source: event.source,
-                            destination: event.destination
-                        });
-                        await updateComponent(sourceComponent, event.destination, 'out', db);
+       solutionGraphSetup(components, customGraph, db, layoutDoc, layoutDocError,
+           loaded, logger, params, canvas, setCustomGraph, setCurrentComponent);
+    }, [components, customGraph, db, layoutDoc, layoutDocError, loaded, logger, params]);
 
-                        logger.debug('sourceComponent', sourceComponent);
-
-                        await updateComponent(destComponent, event.source, 'in', db);
-
-
-                        logger.debug('destComponent', destComponent);
-                        logger.debug('flowStep', flowStep);
-                    } catch (err) {
-                        logger.error(err);
-                    }
-                });
-                cgraph.on('delete', async (event) => {
-                    logger.debug('delete', event);
-                    try {
-                        const doc = await db.get(event.id);
-                        logger.debug('deleting', doc);
-                        switch (doc.type) {
-                            case 'component':
-                                deleteComponent(db, doc)
-                                break;
-                            case 'flowstep':
-                                deleteFlowstep(db, doc)
-                                break;
-                        }
-                    } catch (err) {
-                        logger.error(err);
-                    }
-                });
-                setCustomGraph(cgraph);
-
-            }
-        }
-    }, [loaded]);
     useEffect(() => {
-        if (layoutDocState !== 'done' || componentsState !== 'done' || connectionsState !== 'done'
-            || !customGraph) {
-            return;
-        }
-        logger.debug('customGraph', customGraph);
+        solutionEffect(layoutDocState, componentsState, connectionsState, customGraph,
+            flowSteps, components, layoutDoc, logger, setWorking);
+    }, [layoutDocState, componentsState, connectionsState, logger, customGraph,
+        flowSteps, components, layoutDoc, setWorking]);
 
-        setWorking(true);
-        customGraph.updateGraph(components, flowSteps, layoutDoc);
-        logger.debug('layoutDoc', layoutDoc);
-        logger.debug('flowSteps', flowSteps);
-        setWorking(false);
-    }, [customGraph, flowSteps, components, layoutDoc])
     useEffect(() => {
         if (componentsState === 'done' && connectionsState === 'done' && !loaded) {
             logger.debug('loaded');
             setLoaded(true);
         }
-    }, [componentsState, connectionsState, layoutDocState]);
+    }, [logger, loaded, componentsState, connectionsState, layoutDocState]);
+    logger.debug(components);
+    const componentName = (flowStep: SolutionFlowStep) => {
+        const solutionComponent = components.find((comp) => {
+            return comp._id==flowStep.source}) as TemplateComponent;
+        if (solutionComponent) {
+            return solutionComponent.name;
+        } else {
+            return 'Unknown';
+        }
+    }
+    logger.debug(currentComponent);
     return (
         <>
             {working ? <Center>Working...</Center> : <></>}
-            <Center>
-                <Box style={{width: 800, height: 800}} id="sequencecanvas" ref={canvas}>
+            <Grid>
+                <Grid.Col span={2}>
+                    <Box>
+                        <Center>
+                            <Stack>
+                                <h1>Flow</h1>
+                                {flowSteps.map((step) => {
+                                    const flowStep: SolutionFlowStep = ((step as unknown) as SolutionFlowStep);
+                                    return <Group key={flowStep._id}>
+                                        <div>{flowStep.sequence}</div>
+                                        <div>{componentName(flowStep)}</div>
+                                    </Group>
+                                })}
+                            </Stack>
+                        </Center>
+                    </Box>
+                </Grid.Col>
+                <Grid.Col span={10}>
+                <Center>
+                    <Box style={{width: 800, height: 800}} id="sequencecanvas" ref={canvas}>
 
-                </Box>
-            </Center>
+                    </Box>
+                </Center>
+                </Grid.Col>
+
+            </Grid>
         </>
     )
 }
 
-async function updateComponent(component, destination: string, inout: string, db) {
-    const dbComp = await db.get(component._id);
-    const logger = log.getLogger('updateComponent');
-    if (dbComp.connections === undefined || dbComp.connections === null) {
-        dbComp.connections = [];
-    }
-    if (!dbComp.connections.find((c) => {
-        return c.id === destination
-    })) {
-        dbComp.connections.push({id: destination, direction: inout, protocol: 'https', port: '443'});
-    }
-    logger.debug('component connections', component.connections);
-    try {
-        await db.put(dbComp);
-    } catch (err) {
-        logger.error('updateComponent', err);
-    }
-}
