@@ -3,12 +3,11 @@ import log from "loglevel";
 
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import FlowDiagram from "../graph/flowDiagram.ts";
-import {Box, Center, Grid, Group, Stack} from "@mantine/core";
+import {Box, Grid} from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {solutionGraphSetup, solutionEffect} from "./solutionEffects.ts";
+import {solutionEffect, solutionGraphSetup} from "./solutionEffects.ts";
 import {RowType} from "../types/rowType.ts";
-import {SolutionFlowStep} from "../types/solutionFlowStep.ts";
-import {TemplateComponent} from "../types/templateComponent.ts";
+import SolutionFlows from "./solutionFlows.tsx";
 
 export default function SolutionFlowDiagram() {
     const params = useParams();
@@ -35,7 +34,7 @@ export default function SolutionFlowDiagram() {
             solution_id: params.solutionId,
             type: RowType.SolutionFlowStep,
         },
-        sort : ['solution_id', 'type', 'sequence']
+        sort: ['solution_id', 'type', 'sequence']
     };
     const {docs: flowSteps, state: connectionsState} = useFind(FLOW_QUERY);
     const [currentComponent, setCurrentComponent] = useState(null);
@@ -53,8 +52,8 @@ export default function SolutionFlowDiagram() {
     }, [logger, db, layoutDocError]);
 
     useEffect(() => {
-       solutionGraphSetup(components, customGraph, db, layoutDoc, layoutDocError,
-           loaded, logger, params, canvas, setCustomGraph, setCurrentComponent);
+        solutionGraphSetup(components, customGraph, db, layoutDoc, layoutDocError,
+            loaded, logger, params, canvas, setCustomGraph, setCurrentComponent);
     }, [components, customGraph, db, layoutDoc, layoutDocError, loaded, logger, params]);
 
     useEffect(() => {
@@ -70,46 +69,19 @@ export default function SolutionFlowDiagram() {
         }
     }, [logger, loaded, componentsState, connectionsState, layoutDocState]);
     logger.debug(components);
-    const componentName = (flowStep: SolutionFlowStep) => {
-        const solutionComponent = components.find((comp) => {
-            return comp._id==flowStep.source}) as TemplateComponent;
-        if (solutionComponent) {
-            return solutionComponent.name;
-        } else {
-            return 'Unknown';
-        }
-    }
     logger.debug(currentComponent);
     return (
-        <>
-            {working ? <Center>Working...</Center> : <></>}
-            <Grid>
-                <Grid.Col span={2}>
-                    <Box>
-                        <Center>
-                            <Stack>
-                                <h1>Flow</h1>
-                                {flowSteps.map((step) => {
-                                    const flowStep: SolutionFlowStep = ((step as unknown) as SolutionFlowStep);
-                                    return <Group key={flowStep._id}>
-                                        <div>{flowStep.sequence}</div>
-                                        <div>{componentName(flowStep)}</div>
-                                    </Group>
-                                })}
-                            </Stack>
-                        </Center>
-                    </Box>
-                </Grid.Col>
-                <Grid.Col span={10}>
-                <Center>
-                    <Box style={{width: 800, height: 800}} id="sequencecanvas" ref={canvas}>
 
-                    </Box>
-                </Center>
-                </Grid.Col>
+        <Grid m={20}>
+            <Grid.Col span={2}>
+                <SolutionFlows></SolutionFlows>
+            </Grid.Col>
+            <Grid.Col span={10}>
+                <Box style={{width: 800, height: 800}} id="sequencecanvas" ref={canvas}>
+                </Box>
+            </Grid.Col>
+        </Grid>
 
-            </Grid>
-        </>
     )
 }
 
