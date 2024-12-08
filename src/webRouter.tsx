@@ -10,7 +10,7 @@ import FeaturesPage from "./pages/featuresPage.tsx";
 import SolutionDiagramPopoutPage from "./solutions/solutionDiagramPopoutPage.tsx";
 const ComponentsPage = lazy(() => import("./pages/componentsPage.tsx"));
 import {SolutionComponent} from "./solutionComponents/solutionComponent.tsx";
-const SolutionPage = lazy(() => import("./solutions/solutionPage.tsx"));
+const SolutionPage = lazy(() => import("./pages/solutionPage.tsx"));
 export const webRouter = createBrowserRouter([
     {
         path: "/",

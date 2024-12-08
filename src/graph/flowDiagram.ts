@@ -1,6 +1,6 @@
 import {dia, highlighters, shapes} from "@joint/core";
 import log from "loglevel";
-import {defaultLink, defaultNode} from "../solutionComponents/defaultNodes.ts";
+import {defaultLink, defaultNode} from "./defaultNodes.ts";
 import Graph = dia.Graph;
 import Paper = dia.Paper;
 export default class FlowDiagram {

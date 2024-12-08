@@ -5,18 +5,18 @@ export function defaultNode(id: string, x: number, y: number, name: string) {
         {
             id: id,
             position: {x: x, y: y},
-            size: {width: 100, height: 40},
+            size: {width: 120, height: 20},
             attrs: {
                 body: {
-                    fill: '#00f',
-                    rx: 10,
-                    ry: 10,
+                    fill: '#009',
+                    rx: 5,
+                    ry: 5,
                     strokeWidth: 2,
-                    stroke: '#00c'
+                    stroke: '#029'
                 },
                 label: {
                     text: name,
-                    fill: 'white'
+                    fill: '#cff'
                 }
             }
         });

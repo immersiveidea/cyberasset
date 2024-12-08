@@ -6,15 +6,15 @@ import {useDisclosure} from "@mantine/hooks";
 import {AppShell, MantineProvider, rgba, Tabs} from "@mantine/core";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";
-import SolutionHeader from "./solutionHeader.tsx";
+import SolutionHeader from "../solutions/solutionHeader.tsx";
 import QuickText from "../components/quickText.tsx";
 import {SolutionComponentList} from "../solutionComponents/solutionComponentList.tsx";
 import {SolutionComponent} from "../solutionComponents/solutionComponent.tsx";
-import SolutionFlowDiagram from "./solutionFlowDiagram.tsx";
+import SolutionFlowDiagram from "../solutions/solutionFlowDiagram.tsx";
 import log from "loglevel";
-import {SolutionConnections} from "../networkConnections/solutionConnections.tsx";
-import {SolutionSequenceDiagramView} from "./solutionSequenceDiagramView.tsx";
-import SolutionOverview from "./solutionOverview.tsx";
+import {SolutionSequenceDiagramView} from "../solutions/solutionSequenceDiagramView.tsx";
+import SolutionOverview from "../solutions/solutionOverview.tsx";
+
 
 export default function SolutionPage() {
     const logger = log.getLogger('SolutionPage');
@@ -47,8 +47,6 @@ export default function SolutionPage() {
                 return <SolutionComponentList/>
             case 'flow':
                 return <SolutionFlowDiagram/>
-            case 'connections':
-                return <SolutionConnections/>
             case 'sequence':
                 return <SolutionSequenceDiagramView/>
             case 'security':
@@ -84,9 +82,6 @@ export default function SolutionPage() {
                             </Tabs.Tab>
                             <Tabs.Tab value="flow">
                                 Flow Diagram
-                            </Tabs.Tab>
-                            <Tabs.Tab value="connections">
-                                Connections
                             </Tabs.Tab>
                             <Tabs.Tab value="sequence">
                                 Sequence Diagram
