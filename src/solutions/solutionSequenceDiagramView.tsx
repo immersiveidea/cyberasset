@@ -1,11 +1,13 @@
 import {useEffect, useRef} from "react";
 import log from "loglevel";
 
-import {useAllDocs} from "use-pouchdb";
+import {useAllDocs, useFind} from "use-pouchdb";
 import {Box, Center, ScrollArea} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import SequenceDiagram from "../graph/sequenceDiagram.ts";
 import {RowType} from "../types/rowType.ts";
+import {SolutionFlowStep} from "../types/solutionFlowStep.ts";
+import {TemplateComponent} from "../types/templateComponent.ts";
 
 
 
@@ -14,40 +16,47 @@ export function SolutionSequenceDiagramView() {
     const params = useParams();
     const canvas = useRef(null);
     const {rows: all, state} = useAllDocs({include_docs: true});
+    const COMPONENTS_QUERY = {
+        index: {
+            fields: ['type', 'solution_id']
+        },
+        selector: {
+            solution_id: params.solutionId,
+            type: RowType.SolutionComponent,
+        }
+    };
+    const {docs: components, state: componentsState, error: componentsError} = useFind(COMPONENTS_QUERY);
+    const FLOWSTEP_QUERY = {
+        index: {
+            fields: ['type', 'solution_id', 'sequence']
+        },
+        selector: {
+            type: RowType.SolutionFlowStep,
+            solution_id: params.solutionId
+
+        },
+        sort: ['type', 'solution_id', 'sequence']
+    };
+    const {docs: flowsteps, state: flowstepsState, error: flowstepsError} = useFind(FLOWSTEP_QUERY);
     useEffect(() => {
-        if (state === 'done') {
-            const tmpFlowSteps = [];
-            const tmpComponents = [];
-            for (const row of all) {
-                logger.debug(row.doc);
-                logger.debug(params);
-                const sol = ((row.doc as unknown) as {solution_id: string, type: string});
-                if (sol.solution_id === params.solutionId) {
-                    switch (sol.type) {
-                        case RowType.SolutionFlowStep:
-                            tmpFlowSteps.push(row.doc);
-                            break;
-                        case RowType.SolutionComponent:
-                            tmpComponents.push(row.doc);
-                            break;
-                        default:
-                            logger.debug(row.doc);
-                            break;
-                    }
-                }
-            }
-            tmpFlowSteps.sort((a, b) => {
-                return a.sequence - b.sequence
-            })
+        if (flowstepsError) {
+            logger.error(flowstepsError);
+        }
+        if (componentsError) {
+            logger.error(componentsError);
+        }
+        if (flowstepsState === 'done' && componentsState === 'done') {
+
             //setFlowSteps(tmpFlowSteps);
-            logger.debug('flowSteps', tmpFlowSteps);
+            logger.debug('flowSteps', flowsteps);
             //setComponents(tmpComponents);
 
             const swimlanes = [];
-            for (const flowStep of tmpFlowSteps) {
-                const component = tmpComponents.find((comp) => {
+            for (const step of flowsteps) {
+                const flowStep = (step as unknown) as SolutionFlowStep;
+                const component = components.find((comp) => {
                     return comp._id == flowStep.source
-                });
+                }) as TemplateComponent;
                 const lane = swimlanes.find((lane) => {
                     return lane.id === flowStep.source;
                 });
@@ -68,11 +77,11 @@ export function SolutionSequenceDiagramView() {
                 logger.error('canvas not found');
             } else {
                 const diagram = new SequenceDiagram(c);
-                diagram.updateDiagram(tmpFlowSteps, swimlanes);
+                diagram.updateDiagram(flowsteps, swimlanes);
             }
 
         }
-    }, [state]);
+    }, [flowstepsState, componentsState]);
     return (
 
             <ScrollArea type="always" scrollbarSize={18} scrollHideDelay={4000}>

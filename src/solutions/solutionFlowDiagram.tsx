@@ -3,10 +3,12 @@ import log from "loglevel";
 
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import FlowDiagram from "../graph/flowDiagram.ts";
-import {Box, Center, Grid, Stack} from "@mantine/core";
+import {Box, Center, Grid, Group, Stack} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {solutionGraphSetup, solutionEffect} from "./solutionEffects.ts";
 import {RowType} from "../types/rowType.ts";
+import {SolutionFlowStep} from "../types/solutionFlowStep.ts";
+import {TemplateComponent} from "../types/templateComponent.ts";
 
 export default function SolutionFlowDiagram() {
     const params = useParams();
@@ -27,12 +29,13 @@ export default function SolutionFlowDiagram() {
     const [customGraph, setCustomGraph] = useState(null as FlowDiagram);
     const FLOW_QUERY = {
         index: {
-            fields: ['solution_id', 'type', 'components']
+            fields: ['solution_id', 'type', 'sequence', 'components']
         },
         selector: {
             solution_id: params.solutionId,
             type: RowType.SolutionFlowStep,
-        }
+        },
+        sort : ['solution_id', 'type', 'sequence']
     };
     const {docs: flowSteps, state: connectionsState} = useFind(FLOW_QUERY);
     const [currentComponent, setCurrentComponent] = useState(null);
@@ -66,22 +69,37 @@ export default function SolutionFlowDiagram() {
             setLoaded(true);
         }
     }, [logger, loaded, componentsState, connectionsState, layoutDocState]);
-
+    logger.debug(components);
+    const componentName = (flowStep: SolutionFlowStep) => {
+        const solutionComponent = components.find((comp) => {
+            return comp._id==flowStep.source}) as TemplateComponent;
+        if (solutionComponent) {
+            return solutionComponent.name;
+        } else {
+            return 'Unknown';
+        }
+    }
     return (
         <>
             {working ? <Center>Working...</Center> : <></>}
             <Grid>
-                <Grid.Col span={4}>
+                <Grid.Col span={2}>
                     <Box>
                         <Center>
                             <Stack>
-                                <h1>Flow Diagram</h1>
-                                <div>{JSON.stringify(currentComponent)}</div>
+                                <h1>Flow</h1>
+                                {flowSteps.map((step) => {
+                                    const flowStep: SolutionFlowStep = ((step as unknown) as SolutionFlowStep);
+                                    return <Group key={flowStep._id}>
+                                        <div>{flowStep.sequence}</div>
+                                        <div>{componentName(flowStep)}</div>
+                                    </Group>
+                                })}
                             </Stack>
                         </Center>
                     </Box>
                 </Grid.Col>
-                <Grid.Col span={8}>
+                <Grid.Col span={10}>
                 <Center>
                     <Box style={{width: 800, height: 800}} id="sequencecanvas" ref={canvas}>
 

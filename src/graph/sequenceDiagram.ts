@@ -44,6 +44,7 @@ export default class SequenceDiagram {
             role.prop('attrs/body', {fill: '#404090'});
             role.prop('attrs/label', {fill: '#FFFFFF'});
             this._graph.addCell(role);
+
             const role2 = role.clone();
             role2.position(x, 400);
             bottoms.push(role2);
@@ -63,37 +64,15 @@ export default class SequenceDiagram {
         const data = []
         for (const flowstep of flowsteps) {
             this._logger.debug('flowstep', flowstep);
-            const respArray = flowsteps.filter((step) => {
+            const response = flowsteps.find((step) => {
                 return step.source === flowstep.destination &&
                     step.destination === flowstep.source &&
                     step.sequence > flowstep.sequence
             });
-            respArray.sort((a, b) => {
-                return a.sequence - b.sequence
-            });
-
-            const reqArray = flowsteps.filter((step) => {
-                return step.source === flowstep.source &&
-                    step.destination === flowstep.destination &&
-                    step.sequence > flowstep.sequence
-            });
-            reqArray.sort((a, b) => {
-                return a.sequence - b.sequence
-            });
-            const index = reqArray.findIndex((req) => {
-                return req._id == flowstep._id
-            });
-            this._logger.debug('index', index);
-            if (respArray && respArray.length > 0) {
-                const maxResp = index == -1 ? respArray[0] : respArray[index];
-                this._logger.debug('resp', maxResp);
-                const reqres = {
-                    request: {sequence: flowstep.sequence, stepid: flowstep.source},
-                    response: {sequence: maxResp.sequence, stepid: flowstep.destination},
-                }
-                data.push(reqres);
+            if (response) {
+                data.push({request: {sequence: flowstep.sequence, stepid: flowstep.source},
+                    response: {sequence: response.sequence, stepid: flowstep.destination}})
             }
-
         }
         let y = 3;
         for (const activation of data) {
@@ -102,8 +81,6 @@ export default class SequenceDiagram {
             const xOffset = 0;
             if (requestCell.position().x < responseCell.position().x) {
                 y -= .2;
-
-
             }
             const life = new Rectangle(
                 {
@@ -142,43 +119,28 @@ export default class SequenceDiagram {
 }
 
 function buildLinks(source, sourceSequence, target, targetSequence, i, graph) {
-    const link = buildLink(source, target, i, 'top');
-    link.attr('label/text', sourceSequence);
-    link.labels([
-        {
-            attrs: {
-
-
-                text: {
-                    text: sourceSequence.toString(),
-                    fontSize: 16,
-                }
-            }
-        }
-    ]);
+    const link = buildLink(source, target, i, 'top', sourceSequence);
     graph.addCell(link);
-    const linkReturn = buildLink(target, source, i, 'bottom');
-    linkReturn.labels([
-        {
-            attrs: {
-
-
-                text: {
-                    text: targetSequence.toString(),
-                    fontSize: 16,
-                }
-            }
-        }
-    ]);
+    const linkReturn = buildLink(target, source, i, 'bottom', targetSequence);
     graph.addCell(linkReturn);
 }
 
-function buildLink(source, target, i, position) {
+function buildLink(source, target, i, position, label) {
     const link = new Link({
         id: 'link' + source.id + target.id + i,
     });
     link.source(source, {anchor: {name: position}});
     link.target(target, {anchor: {name: position}});
     link.prop('attrs/line', {stroke: '#8888FF'});
+    link.labels([
+        {
+            attrs: {
+                text: {
+                    text: label.toString(),
+                    fontSize: 16,
+                }
+            }
+        }
+    ]);
     return link;
 }

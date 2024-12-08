@@ -6,11 +6,17 @@ import Header from "../header.tsx";
 import log from "loglevel";
 import {SolutionType} from "../types/solutionType.ts";
 import {RowType} from "../types/rowType.ts";
+import DeleteButton from "../components/buttons/deleteButton.tsx";
+import SelectButton from "../components/buttons/selectButton.tsx";
+import CopyButton from "../components/buttons/copyButton.tsx";
+import DownloadButton from "../components/buttons/downloadButton.tsx";
+import {useAuth0} from "@auth0/auth0-react";
 
 export function SolutionList() {
     const logger = log.getLogger('SolutionList');
     const db = usePouch();
     const navigate = useNavigate();
+    const auth0 = useAuth0();
 
     const {docs: solutions, state} = useFind({
         index: {
@@ -23,6 +29,7 @@ export function SolutionList() {
     const createSolution = async () => {
         const newSolution = {
             type: RowType.Solution,
+            authorEmail: auth0.user.email,
             name: '',
             description: ''
         }
@@ -39,10 +46,10 @@ export function SolutionList() {
         }
     }
 
-    const cloneSolution = async (event) => {
+    const cloneSolution = async (id) => {
         logger.debug('cloning', event);
         try {
-            const oldSolution = await db.get(event) as SolutionType;
+            const oldSolution = await db.get(id) as SolutionType;
             logger.debug('oldSolution', oldSolution);
             const all = await db.allDocs({include_docs: true});
             const clonedData = [];
@@ -51,7 +58,7 @@ export function SolutionList() {
             logger.debug(newSolution);
             for (const row of all.rows) {
                 const solutionEntity = row.doc as SolutionType;
-                if (solutionEntity.solution_id === event) {
+                if (solutionEntity.solution_id === id) {
                     const clonedDoc = {...solutionEntity};
                     delete clonedDoc._id;
                     delete clonedDoc._rev;
@@ -78,9 +85,18 @@ export function SolutionList() {
             logger.error(err);
         }
     }
+    const select = (id) => {
+        navigate(`/solution/${id}`);
+    }
+    const copy = (id) => {
+        logger.debug('copy', id);
+    }
+    const download = (id) => {
+        logger.debug('download', id);
+    }
     const solutionCard = (solution) => {
         return (
-            <Card w={256} h={256} key={solution._id}>
+            <Card w={300} h={256} key={solution._id}>
                 <Card.Section key="header">
                     {solution.name}
                 </Card.Section>
@@ -89,17 +105,10 @@ export function SolutionList() {
                 </Card.Section>
                 <Card.Section key="actions">
                     <Group justify="space-evenly">
-                        <Button key="use" onClick={
-                            () => {
-                                navigate(`/solution/${solution._id}`);
-                            }
-                        }>Select</Button>
-                        <Button key="delete" onClick={() => {
-                            deleteSolution(solution._id);
-                        }}>Delete</Button>
-                        <Button key="clone" onClick={() => {
-                            cloneSolution(solution._id)
-                        }}>Clone</Button>
+                        <SelectButton onClick={select} id={solution._id}/>
+                        <DeleteButton onClick={deleteSolution} id={solution._id}/>
+                        <CopyButton onClick={cloneSolution} id={solution._id}/>
+                        <DownloadButton onClick={download} id={solution._id}/>
                     </Group>
                 </Card.Section>
             </Card>
@@ -108,7 +117,6 @@ export function SolutionList() {
     if (state === 'loading') {
         return <div>Loading</div>
     } else {
-
         return (
             <>
                 <MantineProvider defaultColorScheme="dark" theme={theme}>
