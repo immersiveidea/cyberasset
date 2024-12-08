@@ -6,6 +6,7 @@ import {useParams} from "react-router-dom";
 import SolutionComponentCard from "./solutionComponentCard.tsx";
 import {NameId} from "../types/nameId.ts";
 import log from "loglevel";
+import {RowType} from "../types/rowType.ts";
 
 export function SolutionComponentList() {
     const logger = log.getLogger('SolutionComponentList');
@@ -19,7 +20,7 @@ export function SolutionComponentList() {
         },
         selector: {
             solution_id: params.solutionId,
-            type: 'component'
+            type: RowType.SolutionComponent
         }
     });
     useEffect(() => {
@@ -27,7 +28,7 @@ export function SolutionComponentList() {
             return (component as unknown as NameId).name;
         }));
     }, [solutionComponents])
-    const {doc: masterComponents, error: componentsError} = useDoc('components');
+    const {doc: masterComponents, error: componentsError} = useDoc('templatecomponents');
     const getKey = (name) => {
         return name.toLowerCase().trim().replace(/[^\p{L}\d]/gu, '');
     }
@@ -36,7 +37,7 @@ export function SolutionComponentList() {
             return getKey(component)
         });
         solutionComponents.forEach((component) => {
-            if (!comps.includes(getKey(component.name))) {
+            if (!comps.includes(getKey(((component as unknown) as {name: string}).name))) {
                 logger.debug('deleting', component);
                 db.remove(component);
             }
@@ -47,7 +48,7 @@ export function SolutionComponentList() {
     if (componentsError) {
         if (componentsError.status === 404) {
             db.put({
-                _id: 'components',
+                _id: 'templatecomponents',
                 type: 'components',
                 list: []
             });
@@ -59,20 +60,23 @@ export function SolutionComponentList() {
 
     const saveComponent = () => {
         const text = getKey(searchText);
+        logger.debug(searchText);
         if (text.length > 0) {
             // @ts-expect-error - this is a hack to get around the fact that the list is not typed
-            const existing = masterComponents.list.find((component) => {
+            const list = masterComponents?.list || [];
+            const existing = list.find((component) => {
                 return component.name.toLowerCase() === text
             });
             if (!existing) {
                 // @ts-expect-error - this is a hack to get around the fact that the list is not typed
-                const newList = [...masterComponents.list, {_id: getKey(text), name: searchText}];
+
+                const newList = [...masterComponents?.list||[], {_id: getKey(text), name: searchText}];
                 newList.sort((a, b) => {
                     return (a?._id < b?._id ? -1 : (a?._id > b?._id ? 1 : 0));
                 });
                 db.put({...masterComponents, list: newList}).then(() => {
                     if (params.solutionId) {
-                        db.post({type: 'component', name: searchText, solution_id: params.solutionId}).then(() => {
+                        db.post({type: RowType.SolutionComponent, name: searchText, solution_id: params.solutionId}).then(() => {
 
                         });
                         setSearchText('');
@@ -80,7 +84,7 @@ export function SolutionComponentList() {
                 });
             } else {
                 if (params.solutionId) {
-                    db.post({type: 'component', name: searchText, solution_id: params.solutionId});
+                    db.post({type: RowType.SolutionComponent, name: searchText, solution_id: params.solutionId});
                 }
             }
         }
@@ -97,13 +101,14 @@ export function SolutionComponentList() {
 
     const onOptionSubmit = (e) => {
         logger.debug('onOptionSubmit', e);
-        db.post({type: 'component', name: e, solution_id: params.solutionId});
+        db.post({type: RowType.SolutionComponent, name: e, solution_id: params.solutionId});
     }
     return (
         <Stack>
             <Group>
                 <MultiSelect searchable
                              key="select"
+                             label="Component Name"
                              searchValue={searchText}
                              value={componentValues}
                              onChange={setComponentValues}
@@ -115,7 +120,7 @@ export function SolutionComponentList() {
                              }}
                              onSearchChange={setSearchText}
                     // @ts-expect-error - this is a hack to get around the fact that the list is not typed
-                             data={masterComponents.list.map((x) => x.name)}/>
+                             data={masterComponents?.list?masterComponents.list.map((x) => x.name): []}/>
             </Group>
             <SimpleGrid cols={6}>
                 {renderOut}

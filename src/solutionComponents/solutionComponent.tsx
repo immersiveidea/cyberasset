@@ -1,7 +1,7 @@
 import {Modal, MultiSelect, Stack, Textarea, TextInput, Title} from '@mantine/core';
 import {useDoc, usePouch} from "use-pouchdb";
 
-import DeleteButton from "../components/deleteButton.tsx";
+import DeleteButton from "../components/buttons/deleteButton.tsx";
 import {useParams} from "react-router-dom";
 import log from "loglevel";
 import {deleteComponent} from "../dbUtils.ts";

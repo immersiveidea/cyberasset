@@ -17,9 +17,10 @@ export default function AdminActions() {
 
         }
 
-    }, []);
-    const clearAllData = () => {
-        db.destroy();
+    }, [db, logger]);
+    const clearAllData = async () => {
+        await db.destroy();
+        window.location.reload();
     }
     const renderAllData = () => {
         if (!rows || rows.length === 0) {

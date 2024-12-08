@@ -1,4 +1,26 @@
 import log from "loglevel";
+import {RowType} from "./types/rowType.ts";
+
+export const getFlowsteps = async (db, solutionId) => {
+    const logger = log.getLogger('getFlowsteps');
+    const FLOW_QUERY = {
+        index: {
+            fields: ['solution_id', 'type', 'components']
+        },
+        selector: {
+            solution_id: solutionId,
+            type: 'flowstep',
+        },
+        sort: ['sequence']
+    };
+    try {
+        const steps =  await db.find(FLOW_QUERY);
+        return steps.docs;
+    } catch (err) {
+        logger.error(err);
+        return [];
+    }
+}
 
 export const updateComponent = async (db, component) => {
     const logger = log.getLogger('updateComponent');
@@ -58,7 +80,7 @@ export const deleteFlowstep = async (db, flowstep) => {
 
         for (const row of all.rows) {
             switch (row.doc.type) {
-                case 'component':
+                case RowType.SolutionComponent:
                     if (row.doc.solution_id === flowstep.solution_id) {
                         if (row.doc.connections &&
                             row.doc.connections.length > 0) {
@@ -72,7 +94,7 @@ export const deleteFlowstep = async (db, flowstep) => {
                         }
                     }
                     break;
-                case 'flowstep':
+                case RowType.SolutionFlowStep:
                     if (row.doc.solution_id === flowstep.solution_id &&
                         row.doc._id !== flowstep._id) {
                         remainingFlowsteps.push(row.doc);

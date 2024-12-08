@@ -27,15 +27,14 @@ export default function Header() {
         if (show(item)) {
             return <Container size="sm"
                               display="inline-flex"
-                              component={Link}
-                              key={item.name}
-                              to={item.url}>{item.name}</Container>
+                              key={item.name}>
+                <Link to={item.url}>{item.name}</Link></Container>
         } else {
             return <Container size="sm"
                               display="none"
-                              component={Link}
-                              key={item.name}
-                              to={item.url}>{item.name}</Container>
+                              key={item.name}>
+                <Link to={item.url}>{item.name}</Link></Container>
+
         }
     });
 
