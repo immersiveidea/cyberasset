@@ -48,7 +48,7 @@ export function SolutionComponentList() {
     if (componentsError) {
         if (componentsError.status === 404) {
             db.put({
-                _id: 'components',
+                _id: 'templatecomponents',
                 type: 'components',
                 list: []
             });
@@ -63,12 +63,14 @@ export function SolutionComponentList() {
         logger.debug(searchText);
         if (text.length > 0) {
             // @ts-expect-error - this is a hack to get around the fact that the list is not typed
-            const existing = masterComponents.list.find((component) => {
+            const list = masterComponents?.list || [];
+            const existing = list.find((component) => {
                 return component.name.toLowerCase() === text
             });
             if (!existing) {
                 // @ts-expect-error - this is a hack to get around the fact that the list is not typed
-                const newList = [...masterComponents.list, {_id: getKey(text), name: searchText}];
+
+                const newList = [...masterComponents?.list||[], {_id: getKey(text), name: searchText}];
                 newList.sort((a, b) => {
                     return (a?._id < b?._id ? -1 : (a?._id > b?._id ? 1 : 0));
                 });
@@ -118,7 +120,7 @@ export function SolutionComponentList() {
                              }}
                              onSearchChange={setSearchText}
                     // @ts-expect-error - this is a hack to get around the fact that the list is not typed
-                             data={masterComponents.list.map((x) => x.name)}/>
+                             data={masterComponents?.list?masterComponents.list.map((x) => x.name): []}/>
             </Group>
             <SimpleGrid cols={6}>
                 {renderOut}

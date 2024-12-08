@@ -79,6 +79,7 @@ export default function SolutionFlowDiagram() {
             return 'Unknown';
         }
     }
+    logger.debug(currentComponent);
     return (
         <>
             {working ? <Center>Working...</Center> : <></>}
