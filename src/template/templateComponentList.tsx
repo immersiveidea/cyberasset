@@ -4,8 +4,10 @@ import {getLogger} from "loglevel";
 import {useEffect, useState} from "react";
 import {v4} from "uuid";
 import {SelectIcon} from "../components/selectIcon.tsx";
-import {TemplateComponentView} from "./templateComponentView.tsx";
+import {ComponentEditModal} from "./componentEditModal.tsx";
 import {TemplateComponent} from "../types/templateComponent.ts";
+import SelectButton from "../components/buttons/selectButton.tsx";
+import {ComponentCard} from "../components/componentCard.tsx";
 
 export function TemplateComponentList() {
     const logger = getLogger('TemplateComponentList');
@@ -47,20 +49,8 @@ export function TemplateComponentList() {
     }
     //@ts-expect-error I don't know how to fix this
     if (!templateDoc?.list) return <div>Loading...</div>
-    //@ts-expect-error I don't know how to fix this
-    const componentCards = templateDoc.list.map((component: TemplateComponent) => {
-        return (
-            <Card key={component._id}>
-                <Card.Section>
-                    <Button size="xs" color="red"
-                            onClick={() => {
-                                setSelected(component);
-                            }}>Select</Button>
-                    {component.name}
-                </Card.Section>
-            </Card>
-        )
-    });
+
+
     const saveComponent = async (data) => {
         logger.debug(selected);
         try {
@@ -82,7 +72,12 @@ export function TemplateComponentList() {
         }
         setSelected(null);
     }
-
+    //@ts-expect-error I don't know how to fix this
+    const componentCards = templateDoc.list.map((component: TemplateComponent) => {
+        return (
+            <ComponentCard component={component} update={saveComponent}/>
+        )
+    });
     return (
         <div>
             <h1>TemplateComponentList</h1>
@@ -98,9 +93,9 @@ export function TemplateComponentList() {
             </SimpleGrid>
 
             <SelectIcon icon="del"/>
-            <TemplateComponentView component={selected} closed={(data) => {
+            <ComponentEditModal component={selected} closed={(data) => {
                 saveComponent(data)
-            }}></TemplateComponentView>
+            }}></ComponentEditModal>
         </div>
 
     )

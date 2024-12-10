@@ -3,10 +3,13 @@ import {Group, MultiSelect, SimpleGrid, Stack} from "@mantine/core";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 
-import SolutionComponentCard from "./solutionComponentCard.tsx";
+
 import {NameId} from "../types/nameId.ts";
 import log from "loglevel";
 import {RowType} from "../types/rowType.ts";
+
+import {ComponentCard} from "../components/componentCard.tsx";
+import {TemplateComponent} from "../types/templateComponent.ts";
 
 export function SolutionComponentList() {
     const logger = log.getLogger('SolutionComponentList');
@@ -92,11 +95,19 @@ export function SolutionComponentList() {
     }
     // @ts-expect-error - this is a hack to get around the fact that the list is not typed
     const renderData = params.solutionId ? solutionComponents : masterComponents.list;
+    const update = async (data) => {
+        try {
+            logger.debug('update', data);
+            await db.put(data);
+        } catch (err) {
+            logger.error(err);
+        }
 
+    }
     const renderOut =
         renderData.map((row) => {
-            const data = (row as unknown) as NameId;
-            return <SolutionComponentCard key={data._id} data={data}/>
+            const data = (row as unknown) as TemplateComponent;
+            return <ComponentCard key={data._id} component={data} update={update}/>
         })
 
     const onOptionSubmit = (e) => {

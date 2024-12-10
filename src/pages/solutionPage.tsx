@@ -9,7 +9,6 @@ import Header from "../header.tsx";
 import SolutionHeader from "../solutions/solutionHeader.tsx";
 import QuickText from "../components/quickText.tsx";
 import {SolutionComponentList} from "../solutionComponents/solutionComponentList.tsx";
-import {SolutionComponent} from "../solutionComponents/solutionComponent.tsx";
 import SolutionFlowDiagram from "../solutions/solutionFlowDiagram.tsx";
 import log from "loglevel";
 import {SolutionSequenceDiagramView} from "../solutions/solutionSequenceDiagramView.tsx";
@@ -51,8 +50,6 @@ export default function SolutionPage() {
                 return <SolutionSequenceDiagramView/>
             case 'security':
                 return <QuickText/>
-            case 'component':
-                return <SolutionComponent/>
             default:
                 return <SolutionOverview/>
         }

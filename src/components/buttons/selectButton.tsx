@@ -3,7 +3,7 @@ import {IconSelect} from "@tabler/icons-react";
 
 export default function SelectButton({onClick, id}) {
     return (<Box key={'delete-' + id} pt={24}>
-        <Tooltip label="Select this solution">
+        <Tooltip label="Select this item">
         <Button size="xs" color="blue"
                 onClick={() => {
                     onClick(id);

@@ -3,7 +3,7 @@ import {IconTrash} from "@tabler/icons-react";
 
 export default function DeleteButton({onClick, id}) {
     return (<Box key={'delete-' + id} pt={24}>
-        <Tooltip label="Delete this solution">
+        <Tooltip label="Delete this">
         <Button size="xs" color="red"
                 onClick={() => {
                     onClick(id);

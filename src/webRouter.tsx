@@ -9,7 +9,6 @@ import FeaturesPage from "./pages/featuresPage.tsx";
 
 
 const ComponentsPage = lazy(() => import("./pages/componentsPage.tsx"));
-import {SolutionComponent} from "./solutionComponents/solutionComponent.tsx";
 const SolutionPage = lazy(() => import("./pages/solutionPage.tsx"));
 export const webRouter = createBrowserRouter([
     {
@@ -32,13 +31,6 @@ export const webRouter = createBrowserRouter([
         path: "/solutions", element: (<Suspense fallback={<div>Loading</div>}>
             <SolutionList/>
         </Suspense>)
-    },
-
-    {
-        path: "/component/:componentId",
-        element: (<Suspense fallback={<div>Loading</div>}>
-            <SolutionComponent/>
-        </Suspense>),
     },
     {
         path: "/admin",
