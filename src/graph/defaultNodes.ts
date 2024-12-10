@@ -26,19 +26,23 @@ export function defaultLink(sequence: number, id: string, source: string, target
     return new shapes.standard.Link({
         id: id,
         connector: {name: 'curve'},
-        source: {id: source},
-        target: {id: target},
+        source: {id: source,
+            connectionPoint: {name: 'bbox', args: {offset: {y: 6}}}
+        }   ,
+        target: {id: target,
+            connectionPoint: {name: 'bbox', args: {offset: {y: -6}}}
+        },
         labels: [
             {
                 attrs: {
                     text: {
-                        text: sequence.toString(),
-                        fontSize: 16,
+                        text: (sequence+1).toString(),
+                        fontSize: 12,
                     }
                 },
                 position: {
                     distance: 0.1,
-                    offset: 16
+                    offset: -10
                 }
 
 
