@@ -64,7 +64,7 @@ export function TemplateComponentList() {
                     } else {
                         return item;
                     }
-                })
+                }).filter((item) => { return !item?._deleted == true});
             logger.debug('saveComponent', newDoc);
             await db.put(newDoc);
         } catch (err) {
@@ -91,11 +91,6 @@ export function TemplateComponentList() {
             <SimpleGrid cols={4}>
                 {componentCards}
             </SimpleGrid>
-
-            <SelectIcon icon="del"/>
-            <ComponentEditModal component={selected} closed={(data) => {
-                saveComponent(data)
-            }}></ComponentEditModal>
         </div>
 
     )

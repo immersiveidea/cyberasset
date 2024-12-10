@@ -133,7 +133,7 @@ export function SolutionComponentList() {
                     // @ts-expect-error - this is a hack to get around the fact that the list is not typed
                              data={masterComponents?.list?masterComponents.list.map((x) => x.name): []}/>
             </Group>
-            <SimpleGrid cols={6}>
+            <SimpleGrid cols={4}>
                 {renderOut}
             </SimpleGrid>
         </Stack>
