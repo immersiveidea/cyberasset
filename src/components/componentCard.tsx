@@ -2,7 +2,7 @@ import {Card, Group} from "@mantine/core";
 import SelectButton from "./buttons/selectButton.tsx";
 import {TemplateComponent} from "../types/templateComponent.ts";
 import {useState} from "react";
-import {ComponentEditModal} from "../template/componentEditModal.tsx";
+import {ComponentEditModal} from "./componentEditModal.tsx";
 import DeleteButton from "./buttons/deleteButton.tsx";
 
 export function ComponentCard(props: {component: TemplateComponent, update: (data) => void}) {

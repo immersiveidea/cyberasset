@@ -4,7 +4,7 @@ import {getLogger} from "loglevel";
 import {useEffect, useState} from "react";
 import {v4} from "uuid";
 import {SelectIcon} from "../components/selectIcon.tsx";
-import {ComponentEditModal} from "./componentEditModal.tsx";
+import {ComponentEditModal} from "../components/componentEditModal.tsx";
 import {TemplateComponent} from "../types/templateComponent.ts";
 import SelectButton from "../components/buttons/selectButton.tsx";
 import {ComponentCard} from "../components/componentCard.tsx";

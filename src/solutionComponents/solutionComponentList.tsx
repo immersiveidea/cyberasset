@@ -1,5 +1,5 @@
 import {useDoc, useFind, usePouch} from "use-pouchdb";
-import {Group, MultiSelect, SimpleGrid, Stack} from "@mantine/core";
+import {Autocomplete, SimpleGrid, Stack, useCombobox} from "@mantine/core";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 
@@ -26,28 +26,18 @@ export function SolutionComponentList() {
             type: RowType.SolutionComponent
         }
     });
-    useEffect(() => {
-        setComponentValues(solutionComponents.map((component) => {
-            return (component as unknown as NameId).name;
-        }));
-    }, [solutionComponents])
     const {doc: masterComponents, error: componentsError} = useDoc('templatecomponents');
     const getKey = (name) => {
         return name.toLowerCase().trim().replace(/[^\p{L}\d]/gu, '');
     }
     useEffect(() => {
-        const comps = componentValues.map((component) => {
-            return getKey(component)
-        });
-        solutionComponents.forEach((component) => {
-            if (!comps.includes(getKey(((component as unknown) as {name: string}).name))) {
-                logger.debug('deleting', component);
-                db.remove(component);
-            }
-        });
+        logger.debug('masterComponents', masterComponents);
 
-        // db.post({type: 'component', solution_id: params.solutionId, name: 'test'});
-    }, [componentValues]);
+        if (masterComponents?.list) {
+            const values = masterComponents.list.map((x) => x.name);
+            setComponentValues(values);
+        }
+    }, [masterComponents]);
     if (componentsError) {
         if (componentsError.status === 404) {
             db.put({
@@ -57,6 +47,8 @@ export function SolutionComponentList() {
             });
         }
     }
+    // @ts-expect-error - this is a hack to get around the fact that the list is not typed
+    //store={masterComponents?.list ? masterComponents.list.map((x) => x.name) : []}/>
     if (solutionComponentsLoading &&
         solutionComponents &&
         solutionComponents.length === 0) return <div>Loading...</div>
@@ -73,13 +65,17 @@ export function SolutionComponentList() {
             if (!existing) {
                 // @ts-expect-error - this is a hack to get around the fact that the list is not typed
 
-                const newList = [...masterComponents?.list||[], {_id: getKey(text), name: searchText}];
+                const newList = [...masterComponents?.list || [], {_id: getKey(text), name: searchText}];
                 newList.sort((a, b) => {
                     return (a?._id < b?._id ? -1 : (a?._id > b?._id ? 1 : 0));
                 });
                 db.put({...masterComponents, list: newList}).then(() => {
                     if (params.solutionId) {
-                        db.post({type: RowType.SolutionComponent, name: searchText, solution_id: params.solutionId}).then(() => {
+                        db.post({
+                            type: RowType.SolutionComponent,
+                            name: searchText,
+                            solution_id: params.solutionId
+                        }).then(() => {
 
                         });
                         setSearchText('');
@@ -116,23 +112,23 @@ export function SolutionComponentList() {
     }
     return (
         <Stack>
-            <Group>
-                <MultiSelect searchable
-                             key="select"
-                             label="Component Name"
-                             searchValue={searchText}
-                             value={componentValues}
-                             onChange={setComponentValues}
-                             onOptionSubmit={onOptionSubmit}
-                             onKeyDown={(e) => {
-                                 if (e.key === 'Enter') {
-                                     saveComponent();
-                                 }
-                             }}
-                             onSearchChange={setSearchText}
-                    // @ts-expect-error - this is a hack to get around the fact that the list is not typed
-                             data={masterComponents?.list?masterComponents.list.map((x) => x.name): []}/>
-            </Group>
+
+            <Autocomplete
+                key="input"
+                label={'Add Component'}
+                value={searchText}
+                placeholder={'Component'}
+                data={componentValues}
+                onChange={(e) => {
+                    setSearchText(e);
+                }}
+                onOptionSubmit={onOptionSubmit}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        saveComponent();
+                    }
+                }}/>
+
             <SimpleGrid cols={4}>
                 {renderOut}
             </SimpleGrid>
