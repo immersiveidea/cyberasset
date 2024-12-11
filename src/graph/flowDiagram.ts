@@ -3,6 +3,8 @@ import log from "loglevel";
 import {defaultLink, defaultNode} from "./defaultNodes.ts";
 import Graph = dia.Graph;
 import Paper = dia.Paper;
+import {Simulate} from "react-dom/test-utils";
+import pointerMove = Simulate.pointerMove;
 export default class FlowDiagram {
     private readonly _logger = log.getLogger('FlowDiagram');
     private readonly _graph: Graph;
@@ -11,15 +13,20 @@ export default class FlowDiagram {
     private _on = [];
     private _lastClicked: { id: string, type: 'element' | 'edge' };
 
-
     constructor(el: HTMLElement) {
+        this._logger.debug('FlowDiagram constructor called');
         document.addEventListener('keydown', (evt) => {
             if (this._lastClicked && evt.key === 'Backspace') {
                 this._logger.debug(this._lastClicked);
                 this._logger.debug(evt);
+                highlighters.mask.removeAll(this._paper);
+                this._graph.getCell(this._lastClicked.id)?.remove();
+
                 this._on['delete']({id: this._lastClicked.id});
+                this._lastClicked = null;
             }
         });
+
         this._graph = new Graph({}, {cellNamespace: shapes});
         this._paper = new dia.Paper({
             el: el,
@@ -28,12 +35,14 @@ export default class FlowDiagram {
             model: this._graph,
             async: true,
             gridSize: 10,
+            clickThreshold: 4,
             cellViewNamespace: shapes,
             drawGrid: {name: "fixedDot"},
             background: {
                 color: 'rgba(0, 0, 0, 0.1)'
             }
         });
+
         this._paper.on('cell:pointerup', () => {
             if (this._drop) {
                 //evt.preventDefault();
@@ -44,6 +53,10 @@ export default class FlowDiagram {
                 this._drop = null;
             }
             // this._logger.debug('cell:pointerup', cellView.data.model.id, x, y);
+        });
+        this._paper.on('blank:pointerclick', () => {
+            highlighters.mask.removeAll(this._paper);
+            this._lastClicked = null;
         });
         this._paper.on('link:pointerclick', (cell) => {
             this._logger.debug('here');
@@ -62,7 +75,9 @@ export default class FlowDiagram {
             highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
             this._logger.debug('dblclick', cell);
             this._lastClicked = {id: cell.model.id as string, type: 'edge'};
-            this._on['delete']({id: this._lastClicked.id});
+            //cell.remove();
+            //this._on['delete']({id: this._lastClicked.id});
+
         })
         this._paper.on('element:pointerclick', (cell, evt) => {
             this._logger.debug(evt);
@@ -75,12 +90,12 @@ export default class FlowDiagram {
                             this._on['connect']({source: this._lastClicked.id, destination: cell.model.id});
                         }
                         highlighters.mask.removeAll(this._paper);
-                        this._lastClicked = null;
+                        highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
+                        this._lastClicked = {id: cell.model.id as string, type: 'element'};
                     } else {
                         this._logger.debug('unclick', this._lastClicked.id, cell.model);
                         highlighters.mask.removeAll(this._paper);
-                        highlighters.mask.add(cell, {selector: 'root'}, 'highlight');
-                        this._lastClicked = {id: cell.model.id as string, type: 'element'};
+                        this._lastClicked = null;
                     }
                 } else {
                     highlighters.mask.removeAll(this._paper);
@@ -104,7 +119,7 @@ export default class FlowDiagram {
     }
 
     public updateGraph(components, connections, layout) {
-        this._graph.clear();
+        //this._graph.clear();
         //const cells = this._graph.getCells().map((cell) => {return {id: cell.id, present: false, cell: cell}});
         let xCurrent = 10;
         let yCurrent = 10;
@@ -145,7 +160,9 @@ export default class FlowDiagram {
 
     public createNode(id: string, x: number, y: number, name: string) {
         const exists = this._graph.getCell(id) != null;
+        this._logger.debug(this._graph.getCells());
         if (exists) {
+            this._logger.debug('found', id);
             return exists;
         }
         const rect = defaultNode(id, x, y, name);

@@ -5,7 +5,7 @@ export function defaultNode(id: string, x: number, y: number, name: string) {
         {
             id: id,
             position: {x: x, y: y},
-            size: {width: 120, height: 20},
+            size: {width: 80, height: 45},
             attrs: {
                 body: {
                     fill: '#009',

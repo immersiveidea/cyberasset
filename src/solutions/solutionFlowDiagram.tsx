@@ -8,6 +8,7 @@ import {useParams} from "react-router-dom";
 import {solutionEffect, solutionGraphSetup} from "./solutionEffects.ts";
 import {RowType} from "../types/rowType.ts";
 import SolutionFlows from "./solutionFlows.tsx";
+import {FlowStepEditModal} from "../components/flowStepEditModal.tsx";
 
 export default function SolutionFlowDiagram() {
     const params = useParams();
@@ -38,6 +39,7 @@ export default function SolutionFlowDiagram() {
     };
     const {docs: flowSteps, state: connectionsState} = useFind(FLOW_QUERY);
     const [currentComponent, setCurrentComponent] = useState(null);
+    const [currentFlowstep, setCurrentFlowstep] = useState(null);
     const {doc: layoutDoc, state: layoutDocState, error: layoutDocError} = useDoc('layout');
     const db = usePouch();
     const [working, setWorking] = useState(false);
@@ -68,9 +70,8 @@ export default function SolutionFlowDiagram() {
             setLoaded(true);
         }
     }, [logger, loaded, componentsState, connectionsState, layoutDocState]);
-    logger.debug(components);
-    logger.debug(currentComponent);
     return (
+        <>
 
         <Grid m={20}>
             <Grid.Col span={2}>
@@ -81,6 +82,8 @@ export default function SolutionFlowDiagram() {
                 </Box>
             </Grid.Col>
         </Grid>
+            <FlowStepEditModal flowStep={currentFlowstep}/>
+        </>
 
     )
 }

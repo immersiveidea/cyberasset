@@ -14,13 +14,13 @@ export default function Header() {
         return item.auth === null || item.auth === isAuthenticated;
     }
     const topNavData = [
+        {url: '/', name: 'Home', auth: null},
+        {url: '/features', name: 'Features', auth: false},
+        {url: '/pricing', name: 'Pricing', auth: false},
         {url: '/solutions', name: 'Solutions', auth: true},
         {url: '/components', name: 'Components', auth: true},
-        {url: '/pricing', name: 'Pricing', auth: false},
-        {url: '/features', name: 'Features', auth: false},
         {url: '/admin', name: 'Admin', auth: true},
-        {url: '/', name: 'Home', auth: null},
-        {url: '/signup', name: 'Sign Up', auth: false},
+//        {url: '/signup', name: 'Sign Up', auth: false},
     ]
 
     const TopNavItems = topNavData.map((item) => {

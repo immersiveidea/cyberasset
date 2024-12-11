@@ -1,8 +1,9 @@
-import {AppShell, Card, Center, Image, MantineProvider, Modal, rgba, SimpleGrid} from "@mantine/core";
+import {AppShell, Card, Center, Image, MantineProvider, Modal, rgba, SimpleGrid, Title} from "@mantine/core";
 import {theme} from "../theme.ts";
 import {useDisclosure} from "@mantine/hooks";
 import {useNavigate} from "react-router-dom";
 import Header from "../header.tsx";
+import {MarketingCard} from "./marketingCard.tsx";
 //href="https://www.youtube.com/watch?v=-pVY2rJ0Bc4
 
 export default function HomePage() {
@@ -29,47 +30,11 @@ export default function HomePage() {
                                 referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                     </Center>
                 </Modal>
-                <SimpleGrid cols={{xs: 1, sm: 2, lg: 3}}>
-                    <Card m="md" w={400} styles={{root: {cursor: "pointer"}}} component="a" onClick={open}>
-                        <Card.Section>
-                            <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
+                <SimpleGrid cols={{xs: 1, sm: 1, lg: 1}}>
+                    <MarketingCard title="Create multiple solutions and collaborate with your your team." image="/solutions.png"/>
+                    <MarketingCard title="Add and share components between solutions." image="/solution_components.png"/>
+                    <MarketingCard title="Document the flow of data for your solution." image="/solution_flow.png"/>
 
-                        </Card.Section>
-                        <Card.Section>
-                            <Center>
-                                Youtube Tutorial
-                            </Center>
-                        </Card.Section>
-
-                    </Card>
-
-
-                    <Card m="md" w={400} styles={{root: {cursor: "pointer"}}} component="a" onClick={() => {
-                        changeTab('/inventory')
-                    }}>
-                        <Card.Section>
-                            <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
-
-                        </Card.Section>
-                        <Card.Section>
-                            <Center>
-                                Solutions
-                            </Center>
-                        </Card.Section>
-
-                    </Card>
-                    <Card m="md" w={400} styles={{root: {cursor: "pointer"}}} component="a" onClick={open}>
-                        <Card.Section>
-                            <Image w={400} h={200} src="/youtube.webp" alt="Cyber Security"/>
-
-                        </Card.Section>
-                        <Card.Section>
-                            <Center>
-                                Templates
-                            </Center>
-                        </Card.Section>
-
-                    </Card>
                 </SimpleGrid>
             </AppShell.Main>
         </AppShell>

@@ -3,11 +3,15 @@ import log, {Logger} from "loglevel";
 import Graph = dia.Graph;
 import Rectangle = shapes.standard.Rectangle;
 import Link = shapes.standard.Link;
+import {SolutionFlowStep} from "../types/solutionFlowStep.ts";
+import {TemplateComponent} from "../types/templateComponent.ts";
 
 export default class SequenceDiagram {
     private _graph: Graph;
     private _paper: dia.Paper;
     private _logger: Logger;
+    private _flowsteps: Map<number, SolutionFlowStep> = new Map();
+    private _components: Map<string, TemplateComponent> = new Map();
 
     constructor(el: HTMLElement) {
         this._logger = log.getLogger('SequenceDiagram');
@@ -29,10 +33,37 @@ export default class SequenceDiagram {
         });
 
     }
+    private getSwimlanes(flowsteps: SolutionFlowStep[]) {
+        const swimlanes = [];
+        for (const step of flowsteps) {
+            const flowStep = (step as unknown) as SolutionFlowStep;
+            const component = this._components.get(flowStep.source);
+            const lane = swimlanes.find((lane) => {
+                return lane.id === flowStep.source
+            });
+            if (lane) {
+                lane.interactions.push({sequence: flowStep.sequence, destination: flowStep.destination});
+            } else {
+                swimlanes.push({
+                    id: flowStep.source,
+                    name: component.name,
+                    interactions: [{sequence: flowStep.sequence, destination: flowStep.destination}]
+                });
+            }
+        }
+        return swimlanes;
+    }
 
-    public updateDiagram(flowsteps, swimlanes) {
+    public updateDiagram(flowsteps, components) {
         let x = 100;
         const bottoms = [];
+        for (const flowstep of flowsteps) {
+            this._flowsteps.set(flowstep.sequence, flowstep);
+        }
+        for (const component of components) {
+            this._components.set(component._id, component);
+        }
+        const swimlanes = this.getSwimlanes(flowsteps, components);
         for (const swimlane of swimlanes) {
             const role = new Rectangle(
                 {
