@@ -62,7 +62,7 @@ export default class SequenceDiagram {
         return swimlanes;
     }
 
-    public updateDiagram(flowsteps, components) {
+    public updateDiagram(flowsteps: Array<SolutionFlowStep>, components) {
         let x = 100;
         const bottoms = [];
         for (const flowstep of flowsteps) {
@@ -99,43 +99,49 @@ export default class SequenceDiagram {
             this._graph.addCell(lifeline);
             x = x + 120;
         }
-        const factor = 30;
+        const factor = 25;
+        const yStart = 80;
         const data = [];
-
+        const responses: Array<SolutionFlowStep> = [];
         for (const flowstep of flowsteps) {
             this._logger.debug('flowstep', flowstep);
             const future = flowsteps.slice(flowstep.sequence+1);
             this._logger.debug('future', future);
             const response = future.find((step) => {
                 return step.source === flowstep.destination &&
-                    flowstep?.response !== true &&
+                    !flowstep.responseTo &&
                     step.destination === flowstep.source &&
                     step.sequence > flowstep.sequence
             });
             if (response) {
                 this._logger.debug('response', response);
-                response.response = true;
+                if (response?.responseTo !== flowstep._id) {
+                    response.responseTo = flowstep._id;
+                    responses.push(response);
+                }
                 data.push({request: {sequence: flowstep.sequence, stepid: flowstep.source},
                     response: {sequence: response.sequence, stepid: flowstep.destination}})
             }
         }
         this._logger.debug(data.length);
-        let y = 3;
+
+
         for (const activation of data) {
+            const y = activation.request.sequence;
             const requestCell = this._graph.getCell('lifestart' + activation.request.stepid);
             const responseCell = this._graph.getCell('lifestart' + activation.response.stepid);
             const xOffset = 0;
-            if (requestCell.position().x < responseCell.position().x) {
-                y -= .2;
-            }
+            const requestPosition = {x: requestCell.position().x + 45 + xOffset + 2, y: yStart+ factor * y};
+            const responsePosition = {x: responseCell.position().x + 45 + xOffset + 2, y: yStart+ factor * y};
+            const height = (activation.response.sequence - activation.request.sequence) * factor;
             const life = new Rectangle(
                 {
                     id: 'life' + activation.response.stepid + 'b' + y,
                     size: {
-                        width: 10,
-                        height: activation.response.sequence * factor - activation.request.sequence * factor
+                        width: 12,
+                        height: height
                     },
-                    position: {x: requestCell.position().x + 45 + xOffset + 2, y: factor * y}
+                    position: requestPosition
                 });
 
             const life2 = new Rectangle(
@@ -143,35 +149,42 @@ export default class SequenceDiagram {
                     id: 'life' + activation.request.stepid + 'a' + y,
                     size: {
                         width: 8,
-                        height: activation.response.sequence * factor - activation.request.sequence * factor
+                        height: height
                     },
-                    position: {x: responseCell.position().x + 45 + xOffset - 2, y: factor * y}
+                    position: responsePosition
                 });
             life.attr('body/fill', '#8888DD');
             life2.attr('body/fill', '#00AACC');
 
             this._graph.addCell(life);
             this._graph.addCell(life2);
-            buildLinks(life, activation.request.sequence, life2, activation.response.sequence, y, this._graph);
-            y += 2;
+
+            this._logger.debug('life', activation.response.sequence);
+
+            buildLinks(life, activation.request.sequence, life2, activation.response.sequence, y, this._graph, this._flowsteps.get(activation.request.sequence),
+            this._flowsteps.get(activation.response.sequence)
+            );
         }
         this._logger.debug('data', data);
-
         bottoms.forEach((bottom) => {
-            bottom.position(bottom.position().x, (y + 10) * factor);
+            bottom.position(bottom.position().x, data.length  * factor + yStart + 230);
         })
+
 
     }
 }
 
-function buildLinks(source, sourceSequence, target, targetSequence, i, graph) {
-    const link = buildLink(source, target, i, 'top', sourceSequence);
+function buildLinks(source, sourceSequence, target, targetSequence, i, graph, flowstep: SolutionFlowStep,
+                     response: SolutionFlowStep) {
+
+
+    const link = buildLink(source, target, i, 'top', sourceSequence, flowstep);
     graph.addCell(link);
-    const linkReturn = buildLink(target, source, i, 'bottom', targetSequence);
+    const linkReturn = buildLink(target, source, i, 'bottom', targetSequence, response);
     graph.addCell(linkReturn);
 }
 
-function buildLink(source, target, i, position, sequence) {
+function buildLink(source, target, i, position, sequence, flowstep) {
     const link = new Link({
         id: 'link' + source.id + target.id + i,
     });
@@ -183,8 +196,8 @@ function buildLink(source, target, i, position, sequence) {
         {
             attrs: {
                 text: {
-                    text: sequence.toString(),
-                    fontSize: 16,
+                    text: sequence.toString() + ' ' + (flowstep?.name || ''),
+                    fontSize: 12,
                 }
             }
         }

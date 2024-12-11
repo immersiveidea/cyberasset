@@ -12,6 +12,7 @@ export type SolutionFlowStep = {
     name: string;
     message: string,
     returnStep: string,
+    responseTo: string,
     host: string,
     method: string,
     path: string,
