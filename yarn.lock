@@ -933,6 +933,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mantine/code-highlight@npm:^7.15.0":
+  version: 7.15.0
+  resolution: "@mantine/code-highlight@npm:7.15.0"
+  dependencies:
+    clsx: "npm:^2.1.1"
+    highlight.js: "npm:^11.10.0"
+  peerDependencies:
+    "@mantine/core": 7.15.0
+    "@mantine/hooks": 7.15.0
+    react: ^18.x || ^19.x
+    react-dom: ^18.x || ^19.x
+  checksum: 10c0/eb98bd0ac413d8f6ea6fc5932c5a83f172ca67832ad74abb05c05d2f2ce2d980ddb5b0931b0acea8f8229be71ba87ee7ab331833b8279f1542cc53d3d35c631a
+  languageName: node
+  linkType: hard
+
 "@mantine/core@npm:7.12.0":
   version: 7.12.0
   resolution: "@mantine/core@npm:7.12.0"
@@ -976,6 +991,30 @@ __metadata:
   version: 0.13.1
   resolution: "@maxgraph/core@npm:0.13.1"
   checksum: 10c0/7726592ad772a093d6e740d40ddec1bc5548865d1a8f1821e877db1c9574e81d923bfc87c454699d70f3cebf0e6fd0a727d198fb816b106318c5f51ed80aac3d
+  languageName: node
+  linkType: hard
+
+"@monaco-editor/loader@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@monaco-editor/loader@npm:1.4.0"
+  dependencies:
+    state-local: "npm:^1.0.6"
+  peerDependencies:
+    monaco-editor: ">= 0.21.0 < 1"
+  checksum: 10c0/68938350adf2f42363a801d87f5d00c87d397d4cba7041141af10a9216bd35c85209b4723a26d56cb32e68eef61471deda2a450f8892891118fbdce7fa1d987d
+  languageName: node
+  linkType: hard
+
+"@monaco-editor/react@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "@monaco-editor/react@npm:4.6.0"
+  dependencies:
+    "@monaco-editor/loader": "npm:^1.4.0"
+  peerDependencies:
+    monaco-editor: ">= 0.25.0 < 1"
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/231e9a9b66a530db326f6732de0ebffcce6b79dcfaf4948923d78b9a3d5e2a04b7a06e1f85bbbca45a5ae15c107a124e4c5c46cabadc20a498fb5f2d05f7f379
   languageName: node
   linkType: hard
 
@@ -3498,6 +3537,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"highlight.js@npm:^11.10.0":
+  version: 11.10.0
+  resolution: "highlight.js@npm:11.10.0"
+  checksum: 10c0/cd8bf7ef06cbd72ddb83580ecabe769f08f062be8bb82d2eb492d31c17f7480d1f8d14a66fc81deee0601645435f19f04c470510563f847242a41ccff0ab873e
+  languageName: node
+  linkType: hard
+
 "hoist-non-react-statics@npm:^3.3.1":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
@@ -5549,6 +5595,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"state-local@npm:^1.0.6":
+  version: 1.0.7
+  resolution: "state-local@npm:1.0.7"
+  checksum: 10c0/8dc7daeac71844452fafb514a6d6b6f40d7e2b33df398309ea1c7b3948d6110c57f112b7196500a10c54fdde40291488c52c875575670fb5c819602deca48bd9
+  languageName: node
+  linkType: hard
+
 "string-width-cjs@npm:string-width@^4.2.0, string-width@npm:^4.1.0":
   version: 4.2.3
   resolution: "string-width@npm:4.2.3"
@@ -6018,10 +6071,12 @@ __metadata:
     "@auth0/auth0-react": "npm:^2.2.4"
     "@emotion/react": "npm:^11.13.0"
     "@joint/core": "npm:^4.0.4"
+    "@mantine/code-highlight": "npm:^7.15.0"
     "@mantine/core": "npm:7.12.0"
     "@mantine/form": "npm:7.12.0"
     "@mantine/hooks": "npm:7.12.0"
     "@maxgraph/core": "npm:^0.13.0"
+    "@monaco-editor/react": "npm:^4.6.0"
     "@projectstorm/react-diagrams": "npm:^7.0.4"
     "@stripe/stripe-js": "npm:^4.3.0"
     "@tabler/icons-react": "npm:^3.24.0"

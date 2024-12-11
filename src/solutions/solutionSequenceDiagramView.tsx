@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import log from "loglevel";
 
 import {useAllDocs, useFind} from "use-pouchdb";
@@ -8,6 +8,7 @@ import SequenceDiagram from "../graph/sequenceDiagram.ts";
 import {RowType} from "../types/rowType.ts";
 import {SolutionFlowStep} from "../types/solutionFlowStep.ts";
 import {TemplateComponent} from "../types/templateComponent.ts";
+import {FlowStepEditModal} from "../components/flowStepEditModal.tsx";
 
 
 
@@ -15,6 +16,7 @@ export function SolutionSequenceDiagramView() {
     const logger = log.getLogger('SolutionSequenceDiagramView');
     const params = useParams();
     const canvas = useRef(null);
+    const [selected, setSelected] = useState(null as SolutionFlowStep);
     const {rows: all, state} = useAllDocs({include_docs: true});
     const COMPONENTS_QUERY = {
         index: {
@@ -55,15 +57,23 @@ export function SolutionSequenceDiagramView() {
             if (!c) {
                 logger.error('canvas not found');
             } else {
-                const diagram = new SequenceDiagram(c);
+                const diagram = new SequenceDiagram(c, setSelected);
                 diagram.updateDiagram(flowsteps, components);
-
             }
 
         }
     }, [flowstepsState, componentsState]);
+    const flowStepModal = () => {
+        if (selected) {
+            const componentMap: Map<string, TemplateComponent> = new Map();
+            for (const component of components) {
+                componentMap.set(component._id, (component as unknown) as TemplateComponent);
+            }
+            return <FlowStepEditModal flowStep={selected} components={componentMap}/>;
+        }
+    }
     return (
-
+        <>
             <ScrollArea type="always" scrollbarSize={18} scrollHideDelay={4000}>
                 <Center>
                 <Box style={{width: 800, height: 800}} id="sequencecanvas" ref={canvas}>
@@ -71,6 +81,7 @@ export function SolutionSequenceDiagramView() {
                 </Box>
             </Center>
             </ScrollArea>
-
+            {flowStepModal()}
+        </>
     )
 }

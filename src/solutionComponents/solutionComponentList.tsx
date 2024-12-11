@@ -2,9 +2,6 @@ import {useDoc, useFind, usePouch} from "use-pouchdb";
 import {Autocomplete, SimpleGrid, Stack, useCombobox} from "@mantine/core";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-
-
-import {NameId} from "../types/nameId.ts";
 import log from "loglevel";
 import {RowType} from "../types/rowType.ts";
 

@@ -13,10 +13,12 @@ export default class SequenceDiagram {
     private _flowsteps: Map<number, SolutionFlowStep> = new Map();
     private _components: Map<string, TemplateComponent> = new Map();
 
-    constructor(el: HTMLElement) {
+    constructor(el: HTMLElement, setSelected: (selected: any) => void) {
         this._logger = log.getLogger('SequenceDiagram');
+        this._logger.debug('SequenceDiagram constructor called');
         this._graph = new Graph({}, {cellNamespace: shapes});
-        el.style.pointerEvents = 'none';
+        //el.style.pointerEvents = 'none';
+
         this._paper = new dia.Paper({
             el: el,
             width: 1000,
@@ -30,6 +32,12 @@ export default class SequenceDiagram {
             background: {
                 color: 'rgba(20, 20, 40, 0.9)'
             }
+        });
+        this._paper.on('link:pointerclick', (cell) => {
+            const seq = cell.model.get('sequence');
+            const flowstep = this._flowsteps.get(seq);
+            setSelected(flowstep);
+            this._logger.debug('link:pointerclick', JSON.stringify(cell.model), JSON.stringify(flowstep));
         });
 
     }
@@ -63,7 +71,7 @@ export default class SequenceDiagram {
         for (const component of components) {
             this._components.set(component._id, component);
         }
-        const swimlanes = this.getSwimlanes(flowsteps, components);
+        const swimlanes = this.getSwimlanes(flowsteps);
         for (const swimlane of swimlanes) {
             const role = new Rectangle(
                 {
@@ -92,19 +100,26 @@ export default class SequenceDiagram {
             x = x + 120;
         }
         const factor = 30;
-        const data = []
+        const data = [];
+
         for (const flowstep of flowsteps) {
             this._logger.debug('flowstep', flowstep);
-            const response = flowsteps.find((step) => {
+            const future = flowsteps.slice(flowstep.sequence+1);
+            this._logger.debug('future', future);
+            const response = future.find((step) => {
                 return step.source === flowstep.destination &&
+                    flowstep?.response !== true &&
                     step.destination === flowstep.source &&
                     step.sequence > flowstep.sequence
             });
             if (response) {
+                this._logger.debug('response', response);
+                response.response = true;
                 data.push({request: {sequence: flowstep.sequence, stepid: flowstep.source},
                     response: {sequence: response.sequence, stepid: flowstep.destination}})
             }
         }
+        this._logger.debug(data.length);
         let y = 3;
         for (const activation of data) {
             const requestCell = this._graph.getCell('lifestart' + activation.request.stepid);
@@ -156,22 +171,25 @@ function buildLinks(source, sourceSequence, target, targetSequence, i, graph) {
     graph.addCell(linkReturn);
 }
 
-function buildLink(source, target, i, position, label) {
+function buildLink(source, target, i, position, sequence) {
     const link = new Link({
         id: 'link' + source.id + target.id + i,
     });
     link.source(source, {anchor: {name: position}});
     link.target(target, {anchor: {name: position}});
     link.prop('attrs/line', {stroke: '#8888FF'});
+
     link.labels([
         {
             attrs: {
                 text: {
-                    text: label.toString(),
+                    text: sequence.toString(),
                     fontSize: 16,
                 }
             }
         }
     ]);
+    link.set('sequence', sequence);
+
     return link;
 }
