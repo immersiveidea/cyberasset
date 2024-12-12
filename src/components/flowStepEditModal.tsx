@@ -13,10 +13,11 @@ export function FlowStepEditModal(props: {flowStep: SolutionFlowStep, components
     const db = usePouch();
     const messageFormats = [
         {value: 'json', label: 'JSON', icon: '<IconJson/>'},
+        {value: 'html', label: 'HTML', icon: '<IconText/>'},
+        {value: 'text', label: 'Plain Text', icon: '<IconText/>'},
         {value: 'xml', label: 'XML', icon: '<IconXml/>'},
         {value: 'yaml', label: 'YAML', icon: '<IconYaml/>'},
         {value: 'binary', label: 'Binary', icon: '<IconBinary/>'},
-        {value: 'text', label: 'Plain Text', icon: '<IconText/>'},
         {value: 'base64text', label: 'Base64 Binary', icon: '<IconText/>'},
     ]
     const protocols = [
@@ -59,24 +60,24 @@ export function FlowStepEditModal(props: {flowStep: SolutionFlowStep, components
         setCurrentFlowstep(null);
         //setCurrentFlowstep({...currentFlowstep});
     }
+    const isResponse: boolean = !!currentFlowstep.responseTo;
     const method = () => {
         const width="10ex";
-        if (currentFlowstep.protocol === 'http' || currentFlowstep.protocol === 'https') {
+        if ((currentFlowstep.protocol === 'http' || currentFlowstep.protocol === 'https') &&  !isResponse) {
             return <Select label="Method" w={width} value={currentFlowstep.method} id="method" data={methods}
               onChange={(value)=>{
-                currentFlowstep.method = value;
-                setCurrentFlowstep({...currentFlowstep});
+                setCurrentFlowstep({...currentFlowstep, method: value});
               }}/>
         } else {
             return <Select disabled={true} label="Method" w={width} value={currentFlowstep.method} id="method" data={methods}
                     onChange={(value)=>{
-                        currentFlowstep.method = value;
-                        setCurrentFlowstep({...currentFlowstep});
+                        setCurrentFlowstep({...currentFlowstep, method: value});
                     }}/>
 
         }
 
     }
+
     return (
         <Modal opened={true} size="100%" onClose={()=> {setCurrentFlowstep(null)}}>
 
@@ -91,48 +92,43 @@ export function FlowStepEditModal(props: {flowStep: SolutionFlowStep, components
 
             </Group>
             <TextInput label="Message Name" value={currentFlowstep.name} id="name" onChange={(value) => {
-                currentFlowstep.name = value.currentTarget.value;
-                setCurrentFlowstep({...currentFlowstep});
+                setCurrentFlowstep({...currentFlowstep, name: value.currentTarget.value});
             }}/>
             <Textarea autosize minRows={2} label="Description" value={currentFlowstep.description} id="sequence"
                 onChange={(value)=>{
-                    currentFlowstep.description = value.currentTarget.value;
-                    setCurrentFlowstep({...currentFlowstep});
+                    setCurrentFlowstep({...currentFlowstep, description: value.currentTarget.value});
                 }}/>
             <Group>
-                <Select label="Protocol" value={currentFlowstep.protocol} id="protocol" data={protocols}
+                <Select label="Protocol" disabled={isResponse} value={currentFlowstep.protocol} id="protocol" data={protocols}
                     onChange={(value) => {
-                        currentFlowstep.protocol = value;
+                        let method = currentFlowstep.method;
+
                         if (value !== 'http' && value !== 'https') {
                             logger.debug('setting method to empty');
-                            currentFlowstep.method = '';
+                            method = '';
                         }
-                        setCurrentFlowstep({...currentFlowstep});
+                        setCurrentFlowstep({...currentFlowstep, protocol: value, method: method});
                     }}/>
                 {method()}
-                <TextInput label="Host" w="30ex" value={currentFlowstep.host} id="host"
+                <TextInput label="Host"  disabled={isResponse}  w="30ex" value={currentFlowstep.host} id="host"
                     onChange={(value)=> {
-                        currentFlowstep.host = value.currentTarget.value;
-                        setCurrentFlowstep({...currentFlowstep});
+                        setCurrentFlowstep({...currentFlowstep, host: value.currentTarget.value});
                     }}/>
-                <TextInput label="Port" w="8ex" value={currentFlowstep.port} id="port"
+                <TextInput label="Port" w="8ex"  disabled={isResponse} value={currentFlowstep.port} id="port"
                     onChange={(value)=> {
-                        currentFlowstep.port = parseInt(value.currentTarget.value);
-                        setCurrentFlowstep({...currentFlowstep});
+
+                        setCurrentFlowstep({...currentFlowstep, port: parseInt(value.currentTarget.value)});
                     }}/>
-                <TextInput label="path" value={currentFlowstep.path} id="path"
+                <TextInput label="path"  disabled={isResponse}  value={currentFlowstep.path} id="path"
                     onChange={(value)=> {
-                        currentFlowstep.path = value.currentTarget.value;
-                        setCurrentFlowstep({...currentFlowstep});
+                        setCurrentFlowstep({...currentFlowstep, path: value.currentTarget.value});
                     }}/>
                 <Select label="Message Format" value={currentFlowstep.messageformat} id="messageformat" data={messageFormats} onChange={(value) => {
-                    currentFlowstep.messageformat = value;
-                    setCurrentFlowstep({...currentFlowstep});
+                    setCurrentFlowstep({...currentFlowstep, messageformat: value});
                 }}/>
             </Group>
             <ExampleMessageEditor format={currentFlowstep.messageformat} message={currentFlowstep.message || ''} update={(message)=> {
-                currentFlowstep.message = message;
-                setCurrentFlowstep({...currentFlowstep});
+                setCurrentFlowstep({...currentFlowstep, message: message});
             }}/>
             <Button onClick={save}>Save</Button>
 
