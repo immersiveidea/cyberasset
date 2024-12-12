@@ -49,9 +49,13 @@ export function FlowStepEditModal(props: {flowStep: SolutionFlowStep, components
     if (currentFlowstep == null || !props.components) {
         return <></>
     }
-    const save = () => {
+    const save = async () => {
         logger.debug('flowstep', currentFlowstep);
-        db.put(currentFlowstep);
+        try {
+            await db.put(currentFlowstep);
+        } catch (err) {
+            logger.error(err);
+        }
         setCurrentFlowstep(null);
         //setCurrentFlowstep({...currentFlowstep});
     }

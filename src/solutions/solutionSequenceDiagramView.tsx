@@ -17,7 +17,7 @@ export function SolutionSequenceDiagramView() {
     const params = useParams();
     const canvas = useRef(null);
     const [selected, setSelected] = useState(null as SolutionFlowStep);
-    const {rows: all, state} = useAllDocs({include_docs: true});
+
     const COMPONENTS_QUERY = {
         index: {
             fields: ['type', 'solution_id']

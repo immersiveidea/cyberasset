@@ -14,7 +14,7 @@ export default class FlowDiagram {
 
     constructor(el: HTMLElement) {
         this._logger.debug('FlowDiagram constructor called');
-        document.addEventListener('keydown', (evt) => {
+        /*document.addEventListener('keydown', (evt) => {
             if (this._lastClicked && evt.key === 'Backspace') {
                 this._logger.debug(this._lastClicked);
                 this._logger.debug(evt);
@@ -25,7 +25,7 @@ export default class FlowDiagram {
                 this._lastClicked = null;
             }
         });
-
+        */
         this._graph = new Graph({}, {cellNamespace: shapes});
         this._paper = new dia.Paper({
             el: el,
