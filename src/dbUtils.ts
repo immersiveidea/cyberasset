@@ -1,6 +1,13 @@
 import log from "loglevel";
 import {RowType} from "./types/rowType.ts";
-
+export const cleanFlowstepsForComponent = async (db, component) => {
+    const flowsteps = await getFlowsteps(db, component.solution_id);
+    for (const step of flowsteps) {
+        if (step.source === component._id || step.destination === component._id) {
+            await db.remove(step);
+        }
+    }
+}
 export const getFlowsteps = async (db, solutionId) => {
     const logger = log.getLogger('getFlowsteps');
     const FLOW_QUERY = {

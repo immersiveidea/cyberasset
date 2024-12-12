@@ -7,6 +7,7 @@ import {RowType} from "../types/rowType.ts";
 
 import {ComponentCard} from "../components/componentCard.tsx";
 import {TemplateComponent} from "../types/templateComponent.ts";
+import {cleanFlowstepsForComponent} from "../dbUtils.ts";
 
 export function SolutionComponentList() {
     const logger = log.getLogger('SolutionComponentList');
@@ -57,7 +58,7 @@ export function SolutionComponentList() {
             // @ts-expect-error - this is a hack to get around the fact that the list is not typed
             const list = masterComponents?.list || [];
             const existing = list.find((component) => {
-                return component.name.toLowerCase() === text
+                return component._id === getKey(text)
             });
             if (!existing) {
                 // @ts-expect-error - this is a hack to get around the fact that the list is not typed
@@ -91,6 +92,9 @@ export function SolutionComponentList() {
     const update = async (data) => {
         try {
             logger.debug('update', data);
+            if (data._deleted == true) {
+                cleanFlowstepsForComponent(db, data._id);
+            }
             await db.put(data);
         } catch (err) {
             logger.error(err);
@@ -103,9 +107,11 @@ export function SolutionComponentList() {
             return <ComponentCard key={data._id} component={data} update={update}/>
         })
 
-    const onOptionSubmit = (e) => {
+    const onOptionSubmit = async (e) => {
         logger.debug('onOptionSubmit', e);
-        db.post({type: RowType.SolutionComponent, name: e, solution_id: params.solutionId});
+        await db.post({type: RowType.SolutionComponent,
+            name: e, solution_id: params.solutionId});
+        setSearchText('');
     }
     return (
         <Stack>

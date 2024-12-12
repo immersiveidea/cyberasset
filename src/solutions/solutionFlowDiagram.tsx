@@ -3,15 +3,15 @@ import log from "loglevel";
 
 import {useDoc, useFind, usePouch} from "use-pouchdb";
 import FlowDiagram from "../graph/flowDiagram.ts";
-import {Box, Grid} from "@mantine/core";
-import {useParams} from "react-router-dom";
+import {Box, Button, Grid, Group, Stack} from "@mantine/core";
+import {useNavigate, useParams} from "react-router-dom";
 import {solutionEffect, solutionGraphSetup} from "./solutionEffects.ts";
 import {RowType} from "../types/rowType.ts";
 import SolutionFlows from "./solutionFlows.tsx";
-import {FlowStepEditModal} from "../components/flowStepEditModal.tsx";
 
 export default function SolutionFlowDiagram() {
     const params = useParams();
+    const navigate = useNavigate();
     const logger = log.getLogger('SolutionFlowDiagram');
     const canvas = useRef(null);
 
@@ -37,9 +37,9 @@ export default function SolutionFlowDiagram() {
         },
         sort: ['solution_id', 'type', 'sequence']
     };
-    const {docs: flowSteps, state: connectionsState} = useFind(FLOW_QUERY);
+    const {docs: flowSteps, state: connectionsState, error: flowError} = useFind(FLOW_QUERY);
+    logger.debug('flowSteps', params, flowSteps, connectionsState, flowError);
     const [currentComponent, setCurrentComponent] = useState(null);
-    const [currentFlowstep, setCurrentFlowstep] = useState(null);
     const {doc: layoutDoc, state: layoutDocState, error: layoutDocError} = useDoc('layout');
     const db = usePouch();
     const [working, setWorking] = useState(false);
@@ -55,8 +55,8 @@ export default function SolutionFlowDiagram() {
 
     useEffect(() => {
         solutionGraphSetup(components, customGraph, db, layoutDoc, layoutDocError,
-            loaded, logger, params, canvas, setCustomGraph, setCurrentComponent);
-    }, [components, customGraph, db, layoutDoc, layoutDocError, loaded, logger, params]);
+            loaded,  params.solutionId, canvas, setCustomGraph, setCurrentComponent);
+    }, [components, customGraph, db, layoutDoc, layoutDocError, loaded, params]);
 
     useEffect(() => {
         solutionEffect(layoutDocState, componentsState, connectionsState, customGraph,
@@ -70,19 +70,30 @@ export default function SolutionFlowDiagram() {
             setLoaded(true);
         }
     }, [logger, loaded, componentsState, connectionsState, layoutDocState]);
+    const clearFlow = async () => {
+        const steps = await db.find(FLOW_QUERY);
+        for (const doc of steps.docs){
+            await db.remove(doc);
+        }
+        setCustomGraph(null);
+    }
     return (
         <>
+            <Grid id="solutionGrid" m={20}>
+                <Grid.Col span={2}>
+                    <SolutionFlows></SolutionFlows>
+                </Grid.Col>
+                <Grid.Col span={10}>
+                    <Stack style={{width: 800, height: 800}}>
+                        <Group>
+                            <Button onClick={clearFlow}>Clear</Button>
+                        </Group>
+                        <Box id="sequencecanvas" ref={canvas}>
+                        </Box>
+                    </Stack>
 
-        <Grid m={20}>
-            <Grid.Col span={2}>
-                <SolutionFlows></SolutionFlows>
-            </Grid.Col>
-            <Grid.Col span={10}>
-                <Box style={{width: 800, height: 800}} id="sequencecanvas" ref={canvas}>
-                </Box>
-            </Grid.Col>
-        </Grid>
-            <FlowStepEditModal flowStep={currentFlowstep}/>
+                </Grid.Col>
+            </Grid>
         </>
 
     )

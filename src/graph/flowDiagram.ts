@@ -3,8 +3,7 @@ import log from "loglevel";
 import {defaultLink, defaultNode} from "./defaultNodes.ts";
 import Graph = dia.Graph;
 import Paper = dia.Paper;
-import {Simulate} from "react-dom/test-utils";
-import pointerMove = Simulate.pointerMove;
+
 export default class FlowDiagram {
     private readonly _logger = log.getLogger('FlowDiagram');
     private readonly _graph: Graph;

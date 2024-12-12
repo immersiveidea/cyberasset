@@ -22,10 +22,12 @@ export const solutionEffect  = (layoutDocState, componentsState, connectionsStat
 }
 
 export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
-                                   layoutDocError, loaded, logger, params,
+                                   layoutDocError, loaded, solution_id,
                                    canvas, setCustomGraph, setCurrentComponent) => {
+    const logger = log.getLogger('solutionGraphSetup');
+    logger.debug('solutionGraphSetup', loaded, customGraph);
     if (loaded && !customGraph) {
-        logger.debug(layoutDocError);
+
         const c = canvas.current;
         logger.debug(c);
         if (!c) {
@@ -51,7 +53,7 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
                     logger.debug('all', all);
                     const count = all.rows.filter((row) => {
                         const solution = row.doc as SolutionType;
-                        return solution.type === RowType.SolutionFlowStep && solution.solution_id === params.solutionId;
+                        return solution.type === RowType.SolutionFlowStep && solution.solution_id === solution_id;
                     });
                     logger.debug('count', count);
                     const sequence = count.length;
@@ -65,16 +67,16 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
                     logger.debug(destComponent);
                     const flowStep = await db.post({
                         type: RowType.SolutionFlowStep,
-                        solution_id: params.solutionId,
+                        solution_id: solution_id,
                         sequence: sequence,
                         protocol: 'https',
                         port: '443',
                         source: event.source,
                         destination: event.destination
                     });
-                    await updateComponent(sourceComponent, event.destination, 'out', db);
+                    //await updateComponent(sourceComponent, event.destination, 'out', db);
                     logger.debug('sourceComponent', sourceComponent);
-                    await updateComponent(destComponent, event.source, 'in', db);
+                    //await updateComponent(destComponent, event.source, 'in', db);
                     logger.debug('destComponent', destComponent);
                     logger.debug('flowStep', flowStep);
                 } catch (err) {
