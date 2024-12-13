@@ -6,6 +6,7 @@ export type TemplateComponent = NameId & {
     _rev: string
     name: string;
     type: RowType;
+    shape?: string;
     icon?: string;
     description?: string;
     tags?: string[];

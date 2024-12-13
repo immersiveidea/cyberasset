@@ -1,7 +1,7 @@
 import {shapes} from "@joint/core";
 
-export function defaultNode(id: string, x: number, y: number, name: string) {
-    return new shapes.standard.Rectangle(
+export function buildNode(id: string, x: number, y: number, name: string, type: string = 'Rectangle') {
+    return new shapes.standard[type](
         {
             id: id,
             position: {x: x, y: y},

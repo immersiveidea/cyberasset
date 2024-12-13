@@ -1,5 +1,5 @@
 import {useDoc, usePouch} from "use-pouchdb";
-import {Button, Card, SimpleGrid, TextInput} from "@mantine/core";
+import {Button, Card, Select, SimpleGrid, TextInput} from "@mantine/core";
 import {getLogger} from "loglevel";
 import {useEffect, useState} from "react";
 import {v4} from "uuid";
@@ -8,15 +8,17 @@ import {ComponentEditModal} from "../components/componentEditModal.tsx";
 import {TemplateComponent} from "../types/templateComponent.ts";
 import SelectButton from "../components/buttons/selectButton.tsx";
 import {ComponentCard} from "../components/componentCard.tsx";
+import {shapes} from "@joint/core";
 
 export function TemplateComponentList() {
     const logger = getLogger('TemplateComponentList');
     const {doc: templateDoc, error} = useDoc('templatecomponents');
-    const [componentName, setComponentName] = useState('');
+    const [component, setComponent] = useState({name: '', shape: 'Rectangle'});
     const [components, setComponents] = useState(new Map<string, object>);
     const [componentNames, setComponentNames] = useState(new Set<string>);
     const [selected, setSelected] = useState(null);
-
+    const [shape, setShape] = useState('Rectangle');
+    const shapes = [{value: 'Rectangle', label: 'Rectangle'}, {value: 'Cylinder', label: 'Cylinder'}];
     const db = usePouch();
     useEffect(() => {
         if (error && error.status === 404) {
@@ -36,16 +38,17 @@ export function TemplateComponentList() {
         }
     }, [templateDoc, db, error]);
     const createComponent = async () => {
-        logger.debug('createComponent', componentName);
-        if (componentName && !componentNames.has(componentName)) {
+        logger.debug('createComponent', component);
+        if (component && !componentNames.has(component.name)) {
             const newDoc = {...templateDoc};
-            ((newDoc as unknown) as { list: Array<{ _id: string, name: string }> }).list.push({
+            ((newDoc as unknown) as { list: Array<{ _id: string, name: string, shape: string }> }).list.push({
                 _id: v4(),
-                name: componentName
+                name: component.name,
+                shape: component.shape
             });
             await db.put(newDoc);
         }
-        setComponentName('');
+        setComponent({name: '', shape: 'Rectangle'});
     }
     //@ts-expect-error I don't know how to fix this
     if (!templateDoc?.list) return <div>Loading...</div>
@@ -81,13 +84,14 @@ export function TemplateComponentList() {
     return (
         <div>
             <h1>TemplateComponentList</h1>
-            <TextInput label="Component" value={componentName} id="newComponent"
-                       onChange={(evt) => setComponentName(evt.currentTarget.value)}
+            <TextInput label="Component" value={component.name} id="newComponent"
+                       onChange={(evt) => setComponent({...component, name: evt.currentTarget.value})}
                        onKeyPress={(evt) => {
                            if (evt.code === "Enter") {
                                createComponent()
                            }
                        }} placeholder="New Component Name"/>
+
             <SimpleGrid cols={4}>
                 {componentCards}
             </SimpleGrid>

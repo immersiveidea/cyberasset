@@ -1,6 +1,6 @@
 import {dia, highlighters, shapes} from "@joint/core";
 import log from "loglevel";
-import {defaultLink, defaultNode} from "./defaultNodes.ts";
+import {defaultLink, buildNode} from "./defaultNodes.ts";
 import Graph = dia.Graph;
 import Paper = dia.Paper;
 
@@ -14,18 +14,6 @@ export default class FlowDiagram {
 
     constructor(el: HTMLElement) {
         this._logger.debug('FlowDiagram constructor called');
-        /*document.addEventListener('keydown', (evt) => {
-            if (this._lastClicked && evt.key === 'Backspace') {
-                this._logger.debug(this._lastClicked);
-                this._logger.debug(evt);
-                highlighters.mask.removeAll(this._paper);
-                this._graph.getCell(this._lastClicked.id)?.remove();
-
-                this._on['delete']({id: this._lastClicked.id});
-                this._lastClicked = null;
-            }
-        });
-        */
         this._graph = new Graph({}, {cellNamespace: shapes});
         this._paper = new dia.Paper({
             el: el,
@@ -123,13 +111,13 @@ export default class FlowDiagram {
         let xCurrent = 10;
         let yCurrent = 10;
         components.forEach((component) => {
-            const comp = component as unknown as { _id: string, name: string };
+            const comp = component as unknown as { _id: string, name: string, shape?: string };
             if (yCurrent > 500) {
                 yCurrent = 10;
                 xCurrent += 200;
             }
             const pos = layout[comp._id]?.position || {x: xCurrent, y: yCurrent += 50};
-            this.createNode(comp._id, pos.x, pos.y, comp.name);
+            this.createNode(comp._id, pos.x, pos.y, comp.name, comp.shape);
             /*if (cells.find((cell) => cell.id == comp._id)) {
                 cells.find((cell) => cell.id == comp._id).present = true;
             }*/
@@ -157,20 +145,20 @@ export default class FlowDiagram {
         })
     }
 
-    public createNode(id: string, x: number, y: number, name: string) {
+    public createNode(id: string, x: number, y: number, name: string, shape?: string) {
         const exists = this._graph.getCell(id) != null;
         this._logger.debug(this._graph.getCells());
         if (exists) {
             this._logger.debug('found', id);
             return exists;
         }
-        const rect = defaultNode(id, x, y, name);
-        const cell = this._graph.addCell(rect);
+        const node = buildNode(id, x, y, name, shape);
+        const cell = this._graph.addCell(node);
         cell.on('change:position', (cell, position) => {
             this._drop = {id: cell.id, x: position.x, y: position.y};
         })
         this._logger.debug('createNode', id, x, y, name, exists);
-        return rect;
+        return node;
     }
 
     public createEdge(sequence: number, id: string, source: string, target: string) {
