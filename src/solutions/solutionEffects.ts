@@ -6,19 +6,12 @@ import {RowType} from "../types/rowType.ts";
 
 export const solutionEffect  = (layoutDocState, componentsState, connectionsState,
                                 customGraph, flowSteps, components,
-                                layoutDoc, logger, setWorking) => {
+                                layoutDoc) => {
     if (layoutDocState !== 'done' || componentsState !== 'done' || connectionsState !== 'done'
-        || !customGraph) {
+        || !layoutDoc || !customGraph) {
         return;
     }
-
-    logger.debug('customGraph', customGraph);
-
-    setWorking(true);
     customGraph.updateGraph(components, flowSteps, layoutDoc);
-    logger.debug('layoutDoc', layoutDoc);
-    logger.debug('flowSteps', flowSteps);
-    setWorking(false);
 }
 
 export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
@@ -26,7 +19,7 @@ export const solutionGraphSetup = (components, customGraph, db, layoutDoc,
                                    canvas, setCustomGraph, setCurrentComponent) => {
     const logger = log.getLogger('solutionGraphSetup');
     logger.debug('solutionGraphSetup', loaded, customGraph);
-    if (loaded && !customGraph) {
+    if (loaded && layoutDoc && !customGraph) {
 
         const c = canvas.current;
         logger.debug(c);

@@ -88,8 +88,6 @@ export function FlowStepEditModal(props: {flowStep: SolutionFlowStep, components
                            value={currentFlowstep.sequence} id="sequence" readOnly/>
                 <TextInput label="Source" disabled={true} value={props.components.get(currentFlowstep.source)?.name} id="source" readOnly/>
                 <TextInput label="Destination" disabled={true} value={props.components.get(currentFlowstep.destination)?.name} id="destination" readOnly/>
-
-
             </Group>
             <TextInput label="Message Name" value={currentFlowstep.name} id="name" onChange={(value) => {
                 setCurrentFlowstep({...currentFlowstep, name: value.currentTarget.value});

@@ -3822,6 +3822,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-file-download@npm:^0.4.2":
+  version: 0.4.12
+  resolution: "js-file-download@npm:0.4.12"
+  checksum: 10c0/3caec1491fa744214409e0bcb1fb18d76e3d56715c477ee033cb7d8becb5cf777803409dc1995c913bf1a2270dac98d78f07d83bba319b8e800bc7bf2a7266a7
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^3.0.0 || ^4.0.0, js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -6094,6 +6101,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.7"
     events: "npm:^3.3.0"
     flexsearch: "npm:^0.7.43"
+    js-file-download: "npm:^0.4.2"
     loglevel: "npm:^1.9.2"
     openai: "npm:^4.75.0"
     postcss: "npm:^8.4.38"

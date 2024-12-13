@@ -40,29 +40,47 @@ export default function SolutionFlowDiagram() {
     const {docs: flowSteps, state: connectionsState, error: flowError} = useFind(FLOW_QUERY);
     logger.debug('flowSteps', params, flowSteps, connectionsState, flowError);
     const [currentComponent, setCurrentComponent] = useState(null);
-    const {doc: layoutDoc, state: layoutDocState, error: layoutDocError} = useDoc('layout');
+    const LAYOUT_QUERY = {
+        index: {
+            fields: ['solution_id', 'type']
+        },
+        selector: {
+            solution_id: params.solutionId,
+            type: RowType.SolutionFlowLayout,
+        }
+    };
+    const {docs: layoutDocs, state: layoutDocState, error: layoutDocError} = useFind(LAYOUT_QUERY);
+    const [layoutDoc, setLayoutDoc] = useState(null);
     const db = usePouch();
-    const [working, setWorking] = useState(false);
 
     useEffect(() => {
-        if (layoutDocError?.status === 404) {
-            db.put({_id: 'layout'}).catch((err) => {
+        const logger = log.getLogger('SolutionFlowDiagram');
+        if ((db && layoutDocError?.status === 404) ||
+            (layoutDocState == "done" && layoutDocs.length === 0)) {
+                logger.debug('creating layout doc');
+                db.post({type: RowType.SolutionFlowLayout, solution_id: params.solutionId}
+            ).catch((err) => {
                 logger.error(err);
             });
         }
-        logger.debug(layoutDocError);
-    }, [logger, db, layoutDocError]);
+        if (db && layoutDocState === 'done' && layoutDocs.length > 0) {
+            logger.debug('layout Document', layoutDocs[0]);
+            setLayoutDoc(layoutDocs[0]);
+        }
+        logger.debug('Layout Data', layoutDocs, layoutDocError, layoutDocState);
+    }, [db, layoutDocs, layoutDocError, layoutDocState]);
 
     useEffect(() => {
         solutionGraphSetup(components, customGraph, db, layoutDoc, layoutDocError,
             loaded,  params.solutionId, canvas, setCustomGraph, setCurrentComponent);
+
     }, [components, customGraph, db, layoutDoc, layoutDocError, loaded, params]);
 
     useEffect(() => {
         solutionEffect(layoutDocState, componentsState, connectionsState, customGraph,
-            flowSteps, components, layoutDoc, logger, setWorking);
+            flowSteps, components, layoutDoc);
     }, [layoutDocState, componentsState, connectionsState, logger, customGraph,
-        flowSteps, components, layoutDoc, setWorking]);
+        flowSteps, components, layoutDoc]);
 
     useEffect(() => {
         if (componentsState === 'done' && connectionsState === 'done' && !loaded) {

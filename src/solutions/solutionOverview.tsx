@@ -11,19 +11,10 @@ export default function SolutionOverview() {
     const logger = log.getLogger('SolutionOverview');
     const params = useParams();
     const db = usePouch();
-    const OVERVIEW_QUERY = {
-        index: {
-            fields: ['solution_id', 'type']
-        },
-        selector: {
-            solution_id: params.solutionId
-        }
-    };
     const {doc, state: solutionState} = useDoc(params.solutionId);
     const [solutionData, setSolutionData] = useState({name: '', description: ''} as SolutionType);
-
     useEffect(() => {
-        if (solutionState === "done" && doc) {
+        if (solutionState === "done" && doc?._id) {
             logger.debug('solutionData', doc);
             setSolutionData((doc as unknown) as SolutionType);
         }
@@ -32,15 +23,26 @@ export default function SolutionOverview() {
     const saveSolution = async () => {
         logger.debug('saving', solutionData);
         const newData = {...doc, ...solutionData};
+
         try {
-            await db.put(newData);
+            newData.type = RowType.Solution;
+            const doc = await db.put(newData);
+            if (doc.ok && doc.id != solutionData.solution_id) {
+                try  {
+                    logger.debug('updating solution_id', doc);
+                    await db.put({...solutionData, solution_id: doc.id, _rev: doc.rev});
+                } catch (err) {
+                    logger.error(err);
+                }
+
+            }
+            logger.debug("Saved Solution" , doc);
         } catch (err) {
             logger.error(err);
         }
     }
+
     const overviewData = () => {
-        logger.debug('solutionData', solutionData);
-        logger.debug('solutionState', solutionState);
         if (solutionState === 'done' && solutionData) {
             return <>
                 <TextInput label="Solution ID (not editable)" value={solutionData._id} disabled/>

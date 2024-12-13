@@ -1,5 +1,5 @@
 import {useFind, usePouch} from "use-pouchdb";
-import {AppShell, Button, Card, Group, MantineProvider, rgba, SimpleGrid} from "@mantine/core";
+import {AppShell, Button, Card, FileInput, Group, MantineProvider, rgba, SimpleGrid} from "@mantine/core";
 import {useNavigate} from "react-router-dom";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";
@@ -11,6 +11,7 @@ import SelectButton from "../components/buttons/selectButton.tsx";
 import CopyButton from "../components/buttons/copyButton.tsx";
 import DownloadButton from "../components/buttons/downloadButton.tsx";
 import {useAuth0} from "@auth0/auth0-react";
+import fileDownload from "js-file-download";
 
 export function SolutionList() {
     const logger = log.getLogger('SolutionList');
@@ -36,7 +37,7 @@ export function SolutionList() {
         const response = await db.post(newSolution);
         navigate(`/solution/${response.id}/edit`);
     }
-    const deleteSolution = async(event) => {
+    const deleteSolution = async (event) => {
         logger.debug('deleting', event);
         try {
             const solution = await db.get(event);
@@ -88,11 +89,60 @@ export function SolutionList() {
     const select = (id) => {
         navigate(`/solution/${id}`);
     }
+
     const copy = (id) => {
         logger.debug('copy', id);
     }
-    const download = (id) => {
-        logger.debug('download', id);
+    const download = async (id) => {
+
+        const QUERY = {
+            selector: {
+                solution_id: id,
+            }
+        }
+        const {docs: newData} = await db.find(QUERY);
+        logger.debug(JSON.stringify(newData));
+        fileDownload(JSON.stringify(newData), 'solution.json');
+
+    }
+    const importSolution = async (file: File) => {
+        const text = await file.text();
+        logger.debug(text);
+        const data = JSON.parse(text);
+        const conflicts =[];
+        if (data.length > 0) {
+            for (const item of data) {
+                try {
+                    let existing= null;
+                    try {
+                        existing = await db.get(item._id);
+                    } catch (error) {
+                        logger.debug('not found', item);
+                        existing = null;
+                    }
+                    if (!existing) {
+                        logger.debug('adding', item);
+                        delete item._rev;
+                        await db.put(item);
+                    } else {
+                        if (existing._rev === item._rev) {
+                            logger.debug('Existing', existing);
+                            logger.debug('Imported', item);
+                        } else {
+                            conflicts.push({myItem: existing, thierItem: item});
+                        }
+                    }
+                } catch (err) {
+                    logger.error(err);
+                }
+            }
+        }
+        if (conflicts.length > 0) {
+            logger.debug('conflicts', conflicts);
+        } else {
+            logger.debug('no conflicts');
+        }
+
     }
     const solutionCard = (solution) => {
         return (
@@ -127,7 +177,11 @@ export function SolutionList() {
                             <Header/>
                         </AppShell.Header>
                         <AppShell.Main bg="none">
-                            <Button onClick={createSolution}>Create New Solution</Button>
+                            <Group>
+                                <Button w="200px" key="create" onClick={createSolution}>Create New Solution</Button>
+
+                                <FileInput placeholder="Open File" w="200px" accept=".json" onChange={importSolution}>Import Solution File</FileInput>
+                            </Group>
                             <SimpleGrid cols={3}>
                                 {solutions.map((solution) => {
                                     console.log(solution);

@@ -28,6 +28,7 @@
     "contentful": "^10.13.2",
     "events": "^3.3.0",
     "flexsearch": "^0.7.43",
+    "js-file-download": "^0.4.2",
     "loglevel": "^1.9.2",
     "openai": "^4.75.0",
     "pouchdb": "^9.0.0",
