@@ -118,9 +118,12 @@ export function SolutionComponentList() {
 
     const onOptionSubmit = async (e) => {
         logger.debug('onOptionSubmit', e);
-        await db.post({type: RowType.SolutionComponent,
-            name: e, solution_id: params.solutionId});
-        setCurrentComponent({name: e, _id: null, _rev: null, type: RowType.SolutionComponent, shape: 'Rectangle'});
+        const comp = masterComponents.list.find((val) => val._id === e);
+        logger.debug('component result', comp);
+        const current = await db.post({type: RowType.SolutionComponent,
+            name: comp.name, solution_id: params.solutionId});
+        setCurrentComponent({name: '', _id: null, _rev: null, type: RowType.SolutionComponent, shape: 'Rectangle'});
+        logger.debug("current", current, currentComponent);
     }
     return (
         <Stack>
