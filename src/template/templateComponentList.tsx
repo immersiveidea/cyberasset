@@ -1,5 +1,5 @@
 import {useDoc, usePouch} from "use-pouchdb";
-import {Button, Card, Select, SimpleGrid, TextInput} from "@mantine/core";
+import {Button, Card, Select, SimpleGrid, Stack, TextInput} from "@mantine/core";
 import {getLogger} from "loglevel";
 import {useEffect, useState} from "react";
 import {v4} from "uuid";
@@ -82,7 +82,7 @@ export function TemplateComponentList() {
         )
     });
     return (
-        <div>
+        <Stack>
             <h1>TemplateComponentList</h1>
             <TextInput label="Component" value={component.name} id="newComponent"
                        onChange={(evt) => setComponent({...component, name: evt.currentTarget.value})}
@@ -92,10 +92,10 @@ export function TemplateComponentList() {
                            }
                        }} placeholder="New Component Name"/>
 
-            <SimpleGrid cols={4}>
+
                 {componentCards}
-            </SimpleGrid>
-        </div>
+
+        </Stack>
 
     )
 }

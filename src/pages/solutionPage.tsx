@@ -1,8 +1,8 @@
 import "@mantine/core/styles.css";
 import React, {useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
-import {useDoc, usePouch} from "use-pouchdb";
-import {AppShell, MantineProvider, rgba, Tabs} from "@mantine/core";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import {useDoc} from "use-pouchdb";
+import {Affix, AppShell, Burger, MantineProvider, NavLink, rgba} from "@mantine/core";
 import {theme} from "../theme.ts";
 import Header from "../header.tsx";
 import QuickText from "../components/quickText.tsx";
@@ -11,12 +11,14 @@ import SolutionFlowDiagram from "../solutions/solutionFlowDiagram.tsx";
 import log from "loglevel";
 import {SolutionSequenceDiagramView} from "../solutions/solutionSequenceDiagramView.tsx";
 import SolutionOverview from "../solutions/solutionOverview.tsx";
+import {useDisclosure} from "@mantine/hooks";
 
 
 export default function SolutionPage() {
     const logger = log.getLogger('SolutionPage');
     const params = useParams();
-
+    const [mobileOpened, {toggle: toggleMobile}] = useDisclosure();
+    const [desktopOpened, {toggle: toggleDesktop}] = useDisclosure(true);
     const navigate = useNavigate();
     const {doc: s, state} = useDoc(params.solutionId);
     const solution = (s as unknown) as { name: string, description: string, _id: string };
@@ -51,33 +53,33 @@ export default function SolutionPage() {
         <MantineProvider defaultColorScheme="dark" theme={theme}>
             <AppShell
                 header={{height: 84}}
+                navbar={{width: 220, breakpoint: 'xs', collapsed: {mobile: !mobileOpened, desktop: !desktopOpened}}}
                 padding="md">
+                <Affix position={{top: 90, left: 10}}>
+                    <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm"/>
+                    <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm"/>
+
+                </Affix>
                 <AppShell.Header bg={rgba('#FFF', .1)}>
                     <Header/>
+
                 </AppShell.Header>
-                <AppShell.Main bg="none">
-                    <Tabs value={params.tab || 'overview'}
-                          onChange={(value) => {
-                              navigate(`/solution/${params.solutionId}/${value}`)
-                          }}>
-                        <Tabs.List>
-                            <Tabs.Tab value="overview">
-                                Overview
-                            </Tabs.Tab>
-                            <Tabs.Tab value="components">
-                                Components
-                            </Tabs.Tab>
-                            <Tabs.Tab value="flow">
-                                Flow Diagram
-                            </Tabs.Tab>
-                            <Tabs.Tab value="sequence">
-                                Sequence Diagram
-                            </Tabs.Tab>
-                            <Tabs.Tab value="security">
-                                Security
-                            </Tabs.Tab>
-                        </Tabs.List>
-                    </Tabs>
+                <AppShell.Navbar pt={30}>
+                    <NavLink component={Link} to={`/solution/${params.solutionId}/overview`}
+                             label={`Solution: ${solution.name}`}>
+                    </NavLink>
+                    <SolutionComponentList/>
+                    <NavLink component={Link} to={`/solution/${params.solutionId}/flow`}
+                             label="Flow Diagram">
+                    </NavLink>
+                    <NavLink component={Link} to={`/solution/${params.solutionId}/sequence`}
+                             label="Sequence Diagram">
+                    </NavLink>
+                    <NavLink component={Link} to={`/solution/${params.solutionId}/security`}
+                             label="Security">
+                    </NavLink>
+                </AppShell.Navbar>
+                <AppShell.Main>
                     {solutionContent()}
                 </AppShell.Main>
             </AppShell>

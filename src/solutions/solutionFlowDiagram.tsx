@@ -1,13 +1,13 @@
 import {useEffect, useRef, useState} from "react";
 import log from "loglevel";
 
-import {useDoc, useFind, usePouch} from "use-pouchdb";
+import {useFind, usePouch} from "use-pouchdb";
 import FlowDiagram from "../graph/flowDiagram.ts";
-import {Box, Button, Grid, Group, Stack} from "@mantine/core";
+import {Affix, Box, Button, Container, Group, Stack, Tooltip} from "@mantine/core";
 import {useNavigate, useParams} from "react-router-dom";
 import {solutionEffect, solutionGraphSetup} from "./solutionEffects.ts";
 import {RowType} from "../types/rowType.ts";
-import SolutionFlows from "./solutionFlows.tsx";
+import DeleteButton from "../components/buttons/deleteButton.tsx";
 
 export default function SolutionFlowDiagram() {
     const params = useParams();
@@ -37,8 +37,8 @@ export default function SolutionFlowDiagram() {
         },
         sort: ['solution_id', 'type', 'sequence']
     };
-    const {docs: flowSteps, state: connectionsState, error: flowError} = useFind(FLOW_QUERY);
-    logger.debug('flowSteps', params, flowSteps, connectionsState, flowError);
+    const {docs: flowSteps, state: flowstepsState, error: flowError} = useFind(FLOW_QUERY);
+    logger.debug('flowSteps', params, flowSteps, flowstepsState, flowError);
     const [currentComponent, setCurrentComponent] = useState(null);
     const LAYOUT_QUERY = {
         index: {
@@ -57,8 +57,8 @@ export default function SolutionFlowDiagram() {
         const logger = log.getLogger('SolutionFlowDiagram');
         if ((db && layoutDocError?.status === 404) ||
             (layoutDocState == "done" && layoutDocs.length === 0)) {
-                logger.debug('creating layout doc');
-                db.post({type: RowType.SolutionFlowLayout, solution_id: params.solutionId}
+            logger.debug('creating layout doc');
+            db.post({type: RowType.SolutionFlowLayout, solution_id: params.solutionId}
             ).catch((err) => {
                 logger.error(err);
             });
@@ -72,48 +72,58 @@ export default function SolutionFlowDiagram() {
 
     useEffect(() => {
         solutionGraphSetup(components, customGraph, db, layoutDoc, layoutDocError,
-            loaded,  params.solutionId, canvas, setCustomGraph, setCurrentComponent);
+            loaded, params.solutionId, canvas, setCustomGraph, setCurrentComponent);
 
     }, [components, customGraph, db, layoutDoc, layoutDocError, loaded, params]);
 
     useEffect(() => {
-        solutionEffect(layoutDocState, componentsState, connectionsState, customGraph,
+        solutionEffect(layoutDocState, componentsState, flowstepsState, customGraph,
             flowSteps, components, layoutDoc);
-    }, [layoutDocState, componentsState, connectionsState, logger, customGraph,
+    }, [layoutDocState, componentsState, flowstepsState, logger, customGraph,
         flowSteps, components, layoutDoc]);
+    useEffect(()=> {
+        logger.debug(currentComponent);
+    }, [currentComponent]);
 
     useEffect(() => {
-        if (componentsState === 'done' && connectionsState === 'done' && !loaded) {
+        if (customGraph && components && layoutDoc) {
+            customGraph.updateGraph(components, flowSteps, layoutDoc);
+        }
+    }, [components, customGraph, layoutDoc]);
+
+    useEffect(() => {
+        if (componentsState === 'done' && flowstepsState === 'done' && !loaded) {
             logger.debug('loaded');
             setLoaded(true);
         }
-    }, [logger, loaded, componentsState, connectionsState, layoutDocState]);
-    const clearFlow = async () => {
-        const steps = await db.find(FLOW_QUERY);
-        for (const doc of steps.docs){
-            await db.remove(doc);
+    }, [logger, loaded, componentsState, flowstepsState, layoutDocState]);
+
+    const deleteComponent = async () => {
+        try {
+            const comp = await db.get(currentComponent?._id);
+            if (comp) {
+                await db.remove(comp);
+
+            }
+        } catch (error) {
+            logger.warn('Error deleting component', error);
         }
-        setCustomGraph(null);
+
     }
+
     return (
-        <>
-            <Grid id="solutionGrid" m={20}>
-                <Grid.Col span={2}>
-                    <SolutionFlows></SolutionFlows>
-                </Grid.Col>
-                <Grid.Col span={10}>
-                    <Stack style={{width: 800, height: 800}}>
-                        <Group>
-                            <Button onClick={clearFlow}>Clear</Button>
-                        </Group>
-                        <Box id="sequencecanvas" ref={canvas}>
-                        </Box>
-                    </Stack>
+        <Stack>
+            <Affix position={{top: 90, right: 10}}>
+                <Group>
+                    <Tooltip label="Remove Item">
+                        <DeleteButton id={null} onClick={deleteComponent}></DeleteButton>
+                    </Tooltip>
+                </Group>
+            </Affix>
 
-                </Grid.Col>
-            </Grid>
-        </>
-
+            <Container id="sequencecanvas" ref={canvas}>
+            </Container>
+        </Stack>
     )
 }
 

@@ -1,12 +1,13 @@
-import {Card, Group} from "@mantine/core";
-import SelectButton from "./buttons/selectButton.tsx";
+import {Button, Group, NavLink, Text} from "@mantine/core";
 import {TemplateComponent} from "../types/templateComponent.ts";
 import {useState} from "react";
 import {ComponentEditModal} from "./componentEditModal.tsx";
 import DeleteButton from "./buttons/deleteButton.tsx";
+import {Link, useParams} from "react-router-dom";
 
 export function ComponentCard(props: {component: TemplateComponent, update: (data) => void}) {
     const [selected, setSelected] = useState(null);
+    const params = useParams();
     const editModal = () => {
         if (selected) {
             return (
@@ -25,18 +26,9 @@ export function ComponentCard(props: {component: TemplateComponent, update: (dat
     }
     return (
         <>
-            <Card key={props.component._id}>
-                <Card.Section key="data" p={5}>
-                    {props.component.name}
-                </Card.Section>
-                <Card.Section key="buttons" p={5}>
-                    <Group>
-                        <SelectButton key="select" id={props.component._id} onClick={() => setSelected(props.component)}/>
-                        <DeleteButton key="delete" id={props.component._id} onClick={() => removeComponent(props.component)}/>
-                    </Group>
-
-                </Card.Section>
-            </Card>
+                    <NavLink key={props.component._id} m={4}
+                        label={props.component.name} onClick={() => {setSelected(props.component)}}>
+                    </NavLink>
             {editModal()}
         </>
     )

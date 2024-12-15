@@ -46,7 +46,7 @@ export default class FlowDiagram {
             this._lastClicked = null;
         });
         this._paper.on('link:pointerclick', (cell) => {
-            this._logger.debug('here');
+
             this._logger.debug('link:pointerclick', this._lastClicked?.id, cell.model.id);
             if (this._lastClicked?.id == cell.model.id) {
                 highlighters.mask.removeAll(this._paper);
@@ -107,7 +107,14 @@ export default class FlowDiagram {
 
     public updateGraph(components, connections, layout) {
         //this._graph.clear();
-        //const cells = this._graph.getCells().map((cell) => {return {id: cell.id, present: false, cell: cell}});
+        const cells = this._graph.getCells().map((cell) => {return {id: cell.id, present: false, cell: cell}});
+        for (const cell of cells) {
+            if (components.find((comp) => comp._id === cell.id) == null) {
+                this._logger.debug('delete', cell.id);
+                cell.cell.remove();
+             //   this._on['delete']({id: cell.id});
+            }
+        }
         let xCurrent = 10;
         let yCurrent = 10;
         components.forEach((component) => {
@@ -117,11 +124,10 @@ export default class FlowDiagram {
                 xCurrent += 200;
             }
             const pos = layout[comp._id]?.position || {x: xCurrent, y: yCurrent += 50};
+
             this.createNode(comp._id, pos.x, pos.y, comp.name, comp.shape);
-            /*if (cells.find((cell) => cell.id == comp._id)) {
-                cells.find((cell) => cell.id == comp._id).present = true;
-            }*/
         })
+
         connections.forEach((connection) => {
             const comp = connection as unknown as {
                 _id: string,

@@ -1,9 +1,29 @@
-import {Box, Burger, Button, Container, Grid, Group, Image, Popover, Stack, Text} from "@mantine/core";
-import {AppState, LogoutOptions, RedirectLoginOptions, useAuth0} from "@auth0/auth0-react";
+import {
+    Box,
+    Burger,
+    Button,
+    Container,
+    Grid,
+    Group,
+    HoverCard, HoverCardDropdown,
+    Image,
+    NavLink,
+    Popover,
+    Stack,
+    Text
+} from "@mantine/core";
+import {useAuth0} from "@auth0/auth0-react";
 import {Link} from "react-router-dom";
+import {useFind} from "use-pouchdb";
+import log from "loglevel";
+import {RowType} from "./types/rowType.ts";
 const local = false;
-export default function Header() {
 
+export default function Header() {
+    const logger = log.getLogger('Header');
+    const {docs: solutionList, state: solutionState} = useFind({selector: {type: RowType.Solution}});
+
+    logger.debug('solutionList', solutionList);
     let {user, isAuthenticated, loginWithRedirect, logout} = useAuth0();
     if (local) {
         user = {};
@@ -17,12 +37,25 @@ export default function Header() {
         {url: '/', name: 'Home', auth: null},
         {url: '/features', name: 'Features', auth: false},
         {url: '/pricing', name: 'Pricing', auth: false},
-        {url: '/solutions', name: 'Solutions', auth: true},
         {url: '/components', name: 'Components', auth: true},
         {url: '/admin', name: 'Admin', auth: true},
 //        {url: '/signup', name: 'Sign Up', auth: false},
     ]
-
+    const solutionNavData = solutionList.map((solution) => {
+        return (
+            <NavLink component={Link} to={`/solution/${solution._id}`} label={solution.name}/>
+        )
+    });
+    const solutionNav = () => {
+        return (
+            <HoverCard>
+                <HoverCard.Target><Link to='/solutions'>Solutions</Link></HoverCard.Target>
+                <HoverCardDropdown>
+                    {solutionNavData}
+                </HoverCardDropdown>
+            </HoverCard>
+        )
+    }
     const TopNavItems = topNavData.map((item) => {
         if (show(item)) {
             return <Container size="sm"
@@ -63,7 +96,9 @@ export default function Header() {
                 <Grid.Col key="left-grid" span={8}>
                     <Group key="left-group" visibleFrom="xs" justify="left" w={512}>
                         <Text key="shield">SHIELD</Text>
+                        {solutionNav()}
                         {TopNavItems}
+
                     </Group>
                     <Group key="right-group" hiddenFrom="xs">
                         <Text key="shield">SHIELD</Text>
@@ -73,6 +108,7 @@ export default function Header() {
                             </Popover.Target>
                             <Popover.Dropdown>
                                 <Stack>
+                                    {solutionNav()}
                                     {TopNavItems}
                                 </Stack>
                             </Popover.Dropdown>

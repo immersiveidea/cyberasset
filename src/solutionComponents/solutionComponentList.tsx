@@ -1,5 +1,5 @@
 import {useDoc, useFind, usePouch} from "use-pouchdb";
-import {Autocomplete, SimpleGrid, Stack} from "@mantine/core";
+import {Affix, Autocomplete, Text, Drawer, NavLink, SimpleGrid, Stack} from "@mantine/core";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import log from "loglevel";
@@ -8,11 +8,14 @@ import {RowType} from "../types/rowType.ts";
 import {ComponentCard} from "../components/componentCard.tsx";
 import {TemplateComponent} from "../types/templateComponent.ts";
 import {cleanFlowstepsForComponent} from "../dbUtils.ts";
+import {useDisclosure} from "@mantine/hooks";
+import {IconArrowRight, IconChevronLeft, IconChevronRight, IconComponents} from "@tabler/icons-react";
 
 export function SolutionComponentList() {
     const logger = log.getLogger('SolutionComponentList');
     const params = useParams();
     const db = usePouch();
+    const [opened, { open, close }] = useDisclosure(false);
     const [currentComponent, setCurrentComponent] = useState({} as TemplateComponent);
     const [componentValues, setComponentValues] = useState([]);
     const {docs: solutionComponents, loading: solutionComponentsLoading} = useFind({
@@ -125,14 +128,17 @@ export function SolutionComponentList() {
         setCurrentComponent({name: '', _id: null, _rev: null, type: RowType.SolutionComponent, shape: 'Rectangle'});
         logger.debug("current", current, currentComponent);
     }
+    const componentlabel = () => {
+        return <><IconComponents size={18} style={{padding: '0px', margin: '0px'}}/>
+            <Text w={20}>Components</Text></>
+}
     return (
-        <Stack>
 
+        <NavLink label={componentlabel()}>
             <Autocomplete
                 key="input"
-                label={'Add Component'}
                 value={currentComponent.name}
-                placeholder={'Component'}
+                placeholder={'Search for Component to Add'}
                 data={componentValues}
                 onChange={(e) => {
                     setCurrentComponent({...currentComponent, name: e});
@@ -143,10 +149,9 @@ export function SolutionComponentList() {
                         saveComponent();
                     }
                 }}/>
-
-            <SimpleGrid cols={4}>
                 {renderOut}
-            </SimpleGrid>
-        </Stack>
+        </NavLink>
+
+
     )
 }

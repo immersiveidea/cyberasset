@@ -1,5 +1,5 @@
 import {Box, Button, Tooltip} from "@mantine/core";
-import {IconSelect} from "@tabler/icons-react";
+import {IconPencil, IconSelect} from "@tabler/icons-react";
 
 export default function SelectButton({onClick, id}) {
     return (<Box key={'delete-' + id} pt={24}>
@@ -8,7 +8,7 @@ export default function SelectButton({onClick, id}) {
                 onClick={() => {
                     onClick(id);
                 }}>
-            <IconSelect/>
+            <IconPencil/>
         </Button>
         </Tooltip>
     </Box>)
