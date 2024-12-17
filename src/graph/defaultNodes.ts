@@ -1,7 +1,7 @@
-import {shapes} from "@joint/core";
+import {shapes, elementTools} from "@joint/core";
 
 export function buildNode(id: string, x: number, y: number, name: string, type: string = 'Rectangle') {
-    return new shapes.standard[type](
+    const shape =  new shapes.standard[type](
         {
             id: id,
             position: {x: x, y: y},
@@ -20,6 +20,7 @@ export function buildNode(id: string, x: number, y: number, name: string, type: 
                 }
             }
         });
+    return shape;
 }
 
 export function defaultLink(sequence: number, id: string, source: string, target: string) {

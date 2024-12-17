@@ -1,5 +1,5 @@
 import {useDoc, useFind, usePouch} from "use-pouchdb";
-import {Affix, Autocomplete, Text, Drawer, NavLink, SimpleGrid, Stack} from "@mantine/core";
+import {Affix, Autocomplete, Text, Drawer, NavLink, SimpleGrid, Stack, Group} from "@mantine/core";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import log from "loglevel";
@@ -129,8 +129,8 @@ export function SolutionComponentList() {
         logger.debug("current", current, currentComponent);
     }
     const componentlabel = () => {
-        return <><IconComponents size={18} style={{padding: '0px', margin: '0px'}}/>
-            <Text w={20}>Components</Text></>
+        return <Group><IconComponents size={18} style={{padding: '0px', margin: '0px'}}/>
+            <Text w={20}>Components</Text></Group>
 }
     return (
 
@@ -138,7 +138,7 @@ export function SolutionComponentList() {
             <Autocomplete
                 key="input"
                 value={currentComponent.name}
-                placeholder={'Search for Component to Add'}
+                placeholder={'Component Name'}
                 data={componentValues}
                 onChange={(e) => {
                     setCurrentComponent({...currentComponent, name: e});

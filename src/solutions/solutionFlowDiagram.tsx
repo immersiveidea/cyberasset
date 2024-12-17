@@ -3,11 +3,10 @@ import log from "loglevel";
 
 import {useFind, usePouch} from "use-pouchdb";
 import FlowDiagram from "../graph/flowDiagram.ts";
-import {Affix, Box, Button, Container, Group, Stack, Tooltip} from "@mantine/core";
+import {Container} from "@mantine/core";
 import {useNavigate, useParams} from "react-router-dom";
 import {solutionEffect, solutionGraphSetup} from "./solutionEffects.ts";
 import {RowType} from "../types/rowType.ts";
-import DeleteButton from "../components/buttons/deleteButton.tsx";
 
 export default function SolutionFlowDiagram() {
     const params = useParams();
@@ -81,7 +80,7 @@ export default function SolutionFlowDiagram() {
             flowSteps, components, layoutDoc);
     }, [layoutDocState, componentsState, flowstepsState, logger, customGraph,
         flowSteps, components, layoutDoc]);
-    useEffect(()=> {
+    useEffect(() => {
         logger.debug(currentComponent);
     }, [currentComponent]);
 
@@ -112,18 +111,10 @@ export default function SolutionFlowDiagram() {
     }
 
     return (
-        <Stack>
-            <Affix position={{top: 90, right: 10}}>
-                <Group>
-                    <Tooltip label="Remove Item">
-                        <DeleteButton id={null} onClick={deleteComponent}></DeleteButton>
-                    </Tooltip>
-                </Group>
-            </Affix>
 
-            <Container id="sequencecanvas" ref={canvas}>
-            </Container>
-        </Stack>
+        <Container id="sequencecanvas" ref={canvas}>
+        </Container>
+
     )
 }
 

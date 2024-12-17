@@ -1,4 +1,4 @@
-import {dia, highlighters, shapes} from "@joint/core";
+import {dia, elementTools, highlighters, shapes} from "@joint/core";
 import log from "loglevel";
 import {defaultLink, buildNode} from "./defaultNodes.ts";
 import Graph = dia.Graph;
@@ -17,8 +17,8 @@ export default class FlowDiagram {
         this._graph = new Graph({}, {cellNamespace: shapes});
         this._paper = new dia.Paper({
             el: el,
-            width: 800,
-            height: 800,
+            width: 900,
+            height: 900,
             model: this._graph,
             async: true,
             gridSize: 10,
@@ -29,7 +29,25 @@ export default class FlowDiagram {
                 color: 'rgba(0, 0, 0, 0.1)'
             }
         });
+        this._graph.on('remove', (cell) => {
+            this._logger.debug('remove', cell);
+            this._on['delete']({id: cell.id});
+        })
+        this._paper.on('element:mouseenter', function(elementView) {
+            elementView.showTools();
+        });
 
+        this._paper.on('element:mouseleave', function(elementView) {
+            elementView.hideTools();
+        });
+
+        this._paper.on('link:mouseenter', function(elementView) {
+            elementView.showTools();
+        });
+
+        this._paper.on('link:mouseleave', function(elementView) {
+            elementView.hideTools();
+        });
         this._paper.on('cell:pointerup', () => {
             if (this._drop) {
                 //evt.preventDefault();
@@ -110,8 +128,8 @@ export default class FlowDiagram {
         const cells = this._graph.getCells().map((cell) => {return {id: cell.id, present: false, cell: cell}});
         for (const cell of cells) {
             if (components.find((comp) => comp._id === cell.id) == null) {
-                this._logger.debug('delete', cell.id);
-                cell.cell.remove();
+                //this._logger.debug('delete', cell.id);
+                //cell.cell.remove();
              //   this._on['delete']({id: cell.id});
             }
         }
@@ -163,6 +181,17 @@ export default class FlowDiagram {
         cell.on('change:position', (cell, position) => {
             this._drop = {id: cell.id, x: position.x, y: position.y};
         })
+
+        const view = this._paper.findViewByModel(node);
+        const removeButton = new elementTools.Remove({name: 'remove', x: '100%', y: '0', scale: 2});
+
+        const toolsView = new dia.ToolsView({
+            name: 'basic-tools',
+            tools: [removeButton]
+        });
+        removeButton.hide();
+
+        view.addTools(toolsView);
         this._logger.debug('createNode', id, x, y, name, exists);
         return node;
     }
@@ -182,6 +211,14 @@ export default class FlowDiagram {
             const d = this._graph.getCell(target);
             if (s && d) {
                 this._graph.addCell(link);
+                const view = this._paper.findViewByModel(link);
+                const removeButton = new elementTools.Remove({name: 'remove', y: '50%', scale: 2});
+                removeButton.hide();
+                const toolsView = new dia.ToolsView({
+                    name: 'basic-tools',
+                    tools: [removeButton]
+                })
+                view.addTools(toolsView);
             } else {
                 this._logger.error('source', s);
                 this._logger.error('destination', d);
