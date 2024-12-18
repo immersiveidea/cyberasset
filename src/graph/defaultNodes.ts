@@ -1,4 +1,4 @@
-import {shapes, elementTools} from "@joint/core";
+import {shapes, elementTools, util} from "@joint/core";
 
 export function buildNode(id: string, x: number, y: number, name: string, type: string = 'Rectangle') {
     const shape =  new shapes.standard[type](
@@ -15,7 +15,7 @@ export function buildNode(id: string, x: number, y: number, name: string, type: 
                     stroke: '#029'
                 },
                 label: {
-                    text: name,
+                    text: util.breakText(name, {width: 100}),
                     fill: '#cff'
                 }
             }

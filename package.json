@@ -1,5 +1,5 @@
 {
-  "name": "vite-min-template",
+  "name": "cyberasset",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -55,7 +55,8 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.5.2",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vite-plugin-full-reload": "^1.2.0"
   },
   "packageManager": "yarn@4.4.0"
 }
